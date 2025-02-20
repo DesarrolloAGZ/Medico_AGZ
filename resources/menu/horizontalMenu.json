@@ -1,0 +1,25 @@
+{
+  "menu": [
+    {
+      "url": "/",
+      "name": "Inicio",
+      "icon": "menu-icon tf-icons mdi mdi-home-outline",
+      "slug": "pantalla-inicio"
+    },
+    {
+      "menuHeader": "Secciones"
+    },
+    {
+      "url": "/pacientes/nuevo",
+      "name": "Nuevo Paciente",
+      "icon": "menu-icon tf-icons mdi mdi-account-plus",
+      "slug": "nuevo-paciente"
+    },
+    {
+      "url": "/pacientes/consultar",
+      "name": "Consultar Paciente",
+      "icon": "menu-icon tf-icons mdi mdi-account-search",
+      "slug": "consultar-paciente"
+    }
+  ]
+}
