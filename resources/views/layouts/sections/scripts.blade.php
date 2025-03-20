@@ -12,6 +12,9 @@
 <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
+<!-- AlertifyJS JS -->
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
 
 {{-- Funciones generales --}}
 <script src="{{ asset('assets/js/funciones_generales.js') }}"></script>

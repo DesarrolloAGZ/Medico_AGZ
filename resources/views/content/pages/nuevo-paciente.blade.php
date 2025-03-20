@@ -11,76 +11,79 @@ $configData = Helper::appClasses();
 
 @section('page-script')
   <script src="{{ asset('assets/js/pacientes/pacientes.js') }}"></script>
+  <script>
+    var datos_vista = @json($datos_vista);
+  </script>
 @endsection
 
 @section('vendor-style')
   <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-misc.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/formvalidation/dist/css/formValidation.min.css') }}">
+  <!-- Form Validation -->
+  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/formvalidation/dist/css/formValidation.min.css') }}" />
+  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+
 @endsection
 
 @section('vendor-script')
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.full.min.js') }}" >
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js') }}" >
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js') }}" >
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js') }}" >
+ <!-- Form Validation -->
+ <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js') }}"></script>
+ <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js') }}"></script>
+ <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js') }}"></script>
+ <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
 @endsection
+
+@include('content.pages.pantalla-carga')
 
 @section('content')
   <div class="card p-5" style="width: 100%; height: 100%;">
 
-    <div class="divider">
-      <div class="divider-text">Buscar paciente</div>
+    <div id="contenedor_buscador_empleado">
+      <div class="divider">
+        <div class="divider-text texto-titulo">Buscar paciente</div>
+      </div>
+
+      <form id="form-filtros_buscar_paciente" method="POST" enctype="multipart/form-data" onSubmit="return false">
+        @csrf
+        <div class="row" style="justify-content: center; align-items: center;">
+
+          <div class="col-md-3 mb-4">
+            <div class="form-floating form-floating-outline">
+              <input type="number" class="form-control" id="filtro-paciente_numero_gafete" name="filtro[paciente_numero_gafete]" placeholder="Ingresa el número de gafete." />
+              <label for="filtro-paciente_numero_gafete"># Empleado</label>
+            </div>
+          </div>
+
+          <div class="col-md-2 mb-4">
+            <button id="boton-buscar_paciente" type="button" class="btn btn-info me-2">
+              <span class="mdi mdi-magnify" style="margin-right: 10px;"></span>Buscar
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
 
-    <form id="form-filtros_buscar_paciente" method="POST" action="return false">
+    <div class="divider">
+      <div class="divider-text texto-titulo">Registrar Nuevo Paciente</div>
+    </div>
+
+    <form></form>
+
+    <form id="form-registrar_nuevo_paciente" method="POST" enctype="multipart/form-data" onSubmit="return false">
       @csrf
-      <meta name="csrf-token" content="{{ csrf_token() }}">
+
+      <input id="paciente_id" type="text" style="display: none;">
 
       <div class="row">
 
         <div class="col-md-2 mb-4">
           <div class="form-floating form-floating-outline">
-            <input type="number" class="form-control" id="filtro-paciente_numero_gafete" name="filtro[paciente_numero_gafete]" placeholder="Ingresa el número de gafete." />
-            <label for="filtro-paciente_numero_gafete">Número de gafete</label>
+            <input type="text" class="form-control" id="paciente-gafete" name="paciente[gafete]" placeholder="Ingresa el número de gafete." />
+            <label for="paciente-gafete"># Empleado <i class="text-danger">*</i></label>
           </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-          <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="filtro-paciente_nombre" name="filtro[paciente_nombre]" placeholder="Ingresa el nombre del paciente." />
-            <label for="filtro-paciente_nombre">Nombre</label>
-          </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-          <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="filtro-paciente_apellido_paterno" name="filtro[paciente_apellido_paterno]" placeholder="Ingresa el apellido paterno del paciente." />
-            <label for="filtro-paciente_apellido_paterno">Apellido Paterno</label>
-          </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-          <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="filtro-paciente_apellido_materno" name="filtro[paciente_apellido_materno]" placeholder="Ingresa el apellido materno del paciente." />
-            <label for="filtro-paciente_apellido_materno">Apellido Materno</label>
-          </div>
-        </div>
-
-      </div
-    </form>
-
-    <button id="boton-buscar_paciente" type="button" class="btn btn-info me-2">
-      <span class="mdi mdi-magnify" style="margin-right: 10px;"></span>Buscar
-    </button>
-
-    <div class="divider">
-      <div class="divider-text">Registrar Nuevo Paciente</div>
-    </div>
-
-    <form id="form-nuevo_paciente" action="return false">
-      <div class="row">
-
-        <div class="col-md-12 mb-4">
+        <div class="col-md-10 mb-4">
           <div class="form-floating form-floating-outline">
             <input type="text" class="form-control" id="paciente-nombre" name="paciente[nombre]" placeholder="Ingresa el nombre completo del paciente." />
             <label for="paciente-nombre">Nombre (s) <i class="text-danger">*</i></label>
@@ -103,10 +106,10 @@ $configData = Helper::appClasses();
 
         <div class="col-md-4 mb-4">
           <div class="form-floating form-floating-outline">
-            <select multiple class="form-select h-px-100" id="paciente-genero" name="paciente[genero]" aria-label="Multiple select example">
+            <select multiple class="form-select h-px-100 select2" id="paciente-genero" name="paciente[genero]" aria-label="Multiple select example">
               <option value="" selected disabled>Selecciona una opción</option>
-              <option value="1">Hombre</option>
-              <option value="2">Mujer</option>
+              <option value="M">Hombre</option>
+              <option value="F">Mujer</option>
             </select>
             <label for="paciente-genero">Género <i class="text-danger">*</i></label>
           </div>
@@ -135,22 +138,78 @@ $configData = Helper::appClasses();
 
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline mb-6">
-            <select class="form-select" id="paciente-ocupacion" name="paciente[ocupacion]" aria-label="Default select example">
+            <select class="form-select select2" id="paciente-paciente_empresa_id" name="paciente[paciente_empresa_id]">
               <option value="" selected disabled>Selecciona una opción</option>
-              <option value="1">opcion 1</option>
-              <option value="2">opcion 2</option>
-              <option value="3">opcion 3</option>
+              @foreach ($datos_vista['catalogos']['empresas'] as $empresa)
+                <option value="{{ $empresa['id'] }}">
+                  {{ $empresa['nombre'] }}
+                </option>
+              @endforeach
             </select>
-            <label for="paciente-ocupacion">Ocupación <i class="text-danger">*</i></label>
+            <label for="paciente-paciente_empresa_id">Empresa <i class="text-danger">*</i></label>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="form-floating form-floating-outline mb-6">
+            <select class="form-select select2" id="paciente-paciente_unidad_negocio_id" name="paciente[paciente_unidad_negocio_id]">
+              <option value="" selected disabled>Selecciona una opción</option>
+              @foreach ($datos_vista['catalogos']['unidad_negocio'] as $unidad_negocio)
+                <option value="{{ $unidad_negocio['id'] }}">
+                  {{ $unidad_negocio['nombre'] }}
+                </option>
+              @endforeach
+            </select>
+            <label for="paciente-paciente_unidad_negocio_id">Unidad de negocio <i class="text-danger">*</i></label>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="form-floating form-floating-outline mb-6">
+            <select class="form-select select2" id="paciente-paciente_area_id" name="paciente[paciente_area_id]">
+              <option value="" selected disabled>Selecciona una opción</option>
+              @foreach ($datos_vista['catalogos']['area'] as $area)
+                <option value="{{ $area['id'] }}">
+                  {{ $area['nombre'] }}
+                </option>
+              @endforeach
+            </select>
+            <label for="paciente-paciente_area_id">Area <i class="text-danger">*</i></label>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="form-floating form-floating-outline mb-6">
+            <select class="form-select select2" id="paciente-paciente_subarea_id" name="paciente[paciente_subarea_id]">
+              <option value="" selected disabled>Selecciona una opción</option>
+              @foreach ($datos_vista['catalogos']['subarea'] as $subarea)
+                <option value="{{ $subarea['id'] }}">
+                  {{ $subarea['nombre'] }}
+                </option>
+              @endforeach
+            </select>
+            <label for="paciente-paciente_subarea_id">Subarea <i class="text-danger">*</i></label>
           </div>
         </div>
 
       </div>
     </form>
 
-    <button id="boton-registrar_paciente" type="button" class="btn btn-success me-2" style="position: fixed; bottom: 0; right: 0; margin: 20px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
-      <span class="mdi mdi-content-save" style="margin-right: 10px;"></span>Registrar Paciente
-    </button>
+    <div class="col-md-12">
+      <div class="btn-flex-group" style="position: fixed; bottom: 2rem; right: 0.8rem; z-index: 1080;">
+        <a href="/" class="btn btn-principal waves-effect waves-light me-2" type="button" >
+          <span class="mdi mdi-home me-2"></span>Inicio
+        </a>
+
+        <button class="btn btn-success waves-effect waves-light me-2" id="boton-registrar_paciente" type="button" style="box-shadow: 0 1px 20px 1px #72e128 !important;">
+          <span class="mdi mdi-content-save" style="margin-right: 10px;"></span>Registrar Paciente
+        </button>
+
+        <button class="btn btn-warning waves-effect waves-light me-2" id="boton-continuar_valoracion" type="button" style="box-shadow: 0 1px 20px 1px #fdb528 !important; display: none !important;">
+          <span class="mdi mdi-medical-cotton-swab" style="margin-right: 10px;"></span>Continuar valoración
+        </button>
+      </div>
+    </div>
 
   </div>
 @endsection

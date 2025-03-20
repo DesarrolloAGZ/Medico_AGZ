@@ -92,6 +92,7 @@
     "@popperjs/core": "2.11.6",
     "@simonwep/pickr": "1.8.2",
     "@yaireo/tagify": "4.16.4",
+    "alertify.js": "^1.0.12",
     "animate.css": "4.1.1",
     "aos": "2.3.4",
     "apexcharts-clevision": "3.28.5",
@@ -108,7 +109,7 @@
     "cleave.js": "1.6.0",
     "clipboard": "2.0.11",
     "datatables.net": "^2.2.2",
-    "datatables.net-bs5": "1.13.1",
+    "datatables.net-bs5": "^1.13.1",
     "datatables.net-buttons": "2.3.3",
     "datatables.net-buttons-bs5": "2.3.3",
     "datatables.net-dt": "^2.2.2",
@@ -150,7 +151,7 @@
     "sweetalert2": "11.4.33",
     "swiper": "8.4.2",
     "timepicker": "1.13.18",
-    "toastr": "2.1.4",
+    "toastr": "^2.1.4",
     "typeahead.js": "0.11.1"
   }
 }

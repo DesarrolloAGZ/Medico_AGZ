@@ -10,6 +10,12 @@ $configData = Helper::appClasses();
 @endsection
 
 @section('page-script')
+  <script>
+    // Ocultamos la pantalla de carga cuando la pantalla termino de cargar todo el contenido
+    pantallaCarga('off');
+
+    var datos_vista = @json($datos_vista);
+  </script>
 @endsection
 
 @section('vendor-style')
@@ -18,16 +24,21 @@ $configData = Helper::appClasses();
 @section('vendor-script')
 @endsection
 
+@include('content.pages.pantalla-carga')
+
 @section('content')
   <div class="row justify-content-center align-items-center">
 
+    @php
+      // dd($datos_vista);
+    @endphp
     <!-- Inicio - Targeta de total de pacientes atendidos -->
     <div class="col-md-12 col-lg-8 mb-4">
         <div class="card">
             <div class="card-body text-nowrap">
                 <h5 class="card-title mb-0 flex-wrap text-nowrap">Total de pacientes</h5>
                 <p class="mb-5">Número total de pacientes atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">100 pacientes.</h4>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">{{ $datos_vista['pacientesHombres'] + $datos_vista['pacientesMujeres'] }}</h4>
                 <a href="{{ route('nuevo-paciente') }}" class="btn btn-sm btn-primary">Agregar nuevo</a>
             </div>
             <i class="fa-solid fa-user-group position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
@@ -41,7 +52,7 @@ $configData = Helper::appClasses();
             <div class="card-body text-nowrap">
                 <h5 class="card-title mb-0 flex-wrap text-nowrap">Total de mujeres</h5>
                 <p class="mb-5">Número total de pacientes mujeres atendidas.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">78 mujeres.</h4>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">{{ $datos_vista['pacientesMujeres'] }} mujeres.</h4>
             </div>
             <i class="fa-solid fa-person-dress position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
         </div>
@@ -54,7 +65,7 @@ $configData = Helper::appClasses();
             <div class="card-body text-nowrap">
                 <h5 class="card-title mb-0 flex-wrap text-nowrap">Total de hombres</h5>
                 <p class="mb-5">Número total de pacientes hombres atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">22 hombres.</h4>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw);">{{ $datos_vista['pacientesHombres'] }} hombres.</h4>
             </div>
             <i class="fa-solid fa-person position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
         </div>

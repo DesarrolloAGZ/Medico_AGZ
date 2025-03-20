@@ -109,3 +109,73 @@
   text-align: center;
   margin-top: 1.25rem;
 }
+
+/* Alertas */
+.ajs-message {
+  color: #ffffffff !important;
+}
+
+/* Clase para inputs deshabilitados */
+.solo_visualizar {
+  background: #f8f8f8 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  color: #a8a8a8 !important;
+  opacity: 1 !important; /* Aseguramos que no se pierda la opacidad */
+}
+
+/* Evitar que los elementos deshabilitados reciban foco al usar tabulador */
+.solo_visualizar:focus {
+  outline: none;
+  border: none;
+}
+
+/* Textos */
+.texto-titulo {
+  font-size: 20px !important;
+  font-weight: bold !important;
+}
+
+/* Boton principal */
+.btn-principal {
+  background-color: #006c39 !important;
+  box-shadow: 0 1px 20px 1px #006c39 !important;
+  border-color: #006c39 !important;
+  color: #ffffff !important;
+}
+
+.btn-principal:hover {
+  background-color: #00582f !important;
+}
+
+/* Estilos para botones de la tabla */
+.dataTables_filter {
+  align-content: end !important;
+  display: flex !important;
+  justify-content: end !important;
+  margin-bottom: 30px !important;
+}
+.buttons-excel {
+  border-color: #4caf50 !important;
+  border-radius: 8px !important;
+  background: #4caf50 !important;
+  width: 60px;
+  height: 40px;
+  color: #fff !important;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.buttons-excel:hover {
+  background: #378539 !important;
+}
+.buttons-print {
+  border-color: #007bff !important;
+  border-radius: 8px !important;
+  background: #007bff !important;
+  width: 60px;
+  height: 40px;
+  color: #fff !important;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.buttons-print:hover {
+  background: #0d67c7 !important;
+}

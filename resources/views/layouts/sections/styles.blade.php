@@ -21,6 +21,9 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate-css/animate.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.css') }}" />
 
+<!-- AlertifyJS CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+
 @yield('vendor-style')
 
 
