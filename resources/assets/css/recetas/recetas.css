@@ -1,0 +1,49 @@
+.row {
+  position: relative;
+}
+
+/* Estilo para el logo */
+.logo-superior-receta {
+  position: absolute;
+  width: 150px !important;
+  top: 50px;
+}
+
+/* Marca de agua con pseudo-elemento */
+.editor-con-marca::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-image: url('http://medicoagz.local/assets/img/logos/agzback.png') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 50% auto !important;
+  opacity: 0.08 !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* Contenedor para la firma */
+.firma-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Línea de la firma */
+.firma-linea {
+  width: 80%; /* Puedes ajustar el ancho de la línea */
+  height: 1px;
+  background-color: #000; /* Color de la línea */
+  margin-bottom: 5px; /* Espacio entre la línea y el texto */
+}
+
+/* Texto de la firma */
+.firma-texto {
+  font-size: 16px;
+  font-weight: bold;
+}

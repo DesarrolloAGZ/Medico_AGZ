@@ -17,7 +17,7 @@ $navbarDetached = ($navbarDetached ?? '');
       <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
         <a href="{{ url('/') }}" class="app-brand-link">
           <span class="app-brand-logo demo">
-            <img src="{{ asset('assets/img/logos/agzback.png') }}" width="45" alt="Logo">
+            {{-- <img /img/logos width="45" alt="Logo"> --}}
           </span>
           <span class="app-brand-text demo menu-text fw-bold ms-2">
             {{ config('variables.templateName') }}
@@ -46,123 +46,51 @@ $navbarDetached = ($navbarDetached ?? '');
         <!--/ Style Switcher -->
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
-
+          {{-- {{ dd(Auth::user()) }} --}}
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
-            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" id="userDropdownToggle">
               <div class="avatar avatar-online">
-                <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                <img src="{{ asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
               </div>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
+            <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu" style="display: none; right: 0px;">
+              <!-- Opciones del menú -->
               <li>
-                <a class="dropdown-item" href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
+                <a class="dropdown-item" href="">
                   <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                       <div class="avatar avatar-online">
-                        <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                        <img src="{{ asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
                       </div>
                     </div>
                     <div class="flex-grow-1">
                       <span class="fw-semibold d-block">
                         @if (Auth::check())
-                        {{ Auth::user()->name }}
+                        {{ Auth::user()->username }}
                         @else
-                        Josue
                         @endif
                       </span>
-                      <small class="text-muted">Admin</small>
+                      <small class="text-muted">Agrizar</small>
                     </div>
                   </div>
                 </a>
               </li>
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
-                  <i class="mdi mdi-account-outline me-2"></i>
-                  <span class="align-middle">My Profile</span>
-                </a>
-              </li>
-              @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
-              <li>
-                <a class="dropdown-item" href="{{ route('api-tokens.index') }}">
-                  <i class='mdi mdi-key-outline me-2'></i>
-                  <span class="align-middle">API Tokens</span>
-                </a>
-              </li>
-              @endif
+              <!-- Otras opciones -->
               <li>
                 <a class="dropdown-item" href="javascript:void(0);">
-                  <i class="mdi mdi-credit-card-outline me-2"></i>
-                  <span class="align-middle">Billing</span>
+                  <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                      <i class="mdi mdi-logout me-2"></i>
+                      <span class="align-middle">Cerrar sesión</span>
+                    </button>
+                  </form>
                 </a>
               </li>
-              @if (Auth::User() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              <li>
-                <h6 class="dropdown-header">Manage Team</h6>
-              </li>
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{{ Auth::user() ? route('teams.show', Auth::user()->currentTeam->id) : 'javascript:void(0)' }}">
-                  <i class='mdi mdi-cog-outline me-2'></i>
-                  <span class="align-middle">Team Settings</span>
-                </a>
-              </li>
-              @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-              <li>
-                <a class="dropdown-item" href="{{ route('teams.create') }}">
-                  <i class='mdi mdi-account-outline me-2'></i>
-                  <span class="align-middle">Create New Team</span>
-                </a>
-              </li>
-              @endcan
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              <lI>
-                <h6 class="dropdown-header">Switch Teams</h6>
-              </lI>
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              @if (Auth::user())
-              @foreach (Auth::user()->allTeams() as $team)
-              {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream. --}}
-
-              {{-- <x-switchable-team :team="$team" /> --}}
-              @endforeach
-              @endif
-              @endif
-              <li>
-                <div class="dropdown-divider"></div>
-              </li>
-              @if (Auth::check())
-              <li>
-                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                  <i class='mdi mdi-logout me-2'></i>
-                  <span class="align-middle">Logout</span>
-                </a>
-              </li>
-              <form method="POST" id="logout-form" action="{{ route('logout') }}">
-                @csrf
-              </form>
-              @else
-              <li>
-                <a class="dropdown-item" href="{{ Route::has('login') ? route('login') : url('auth/login-basic') }}">
-                  <i class='mdi mdi-login me-2'></i>
-                  <span class="align-middle">Login</span>
-                </a>
-              </li>
-              @endif
             </ul>
           </li>
+
           <!--/ User -->
         </ul>
       </div>
@@ -171,3 +99,32 @@ $navbarDetached = ($navbarDetached ?? '');
     @endif
 </nav>
 <!-- / Navbar -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Seleccionamos el avatar y el menú desplegable
+  const dropdownToggle = document.getElementById('userDropdownToggle');
+  const dropdownMenu = document.getElementById('userDropdownMenu');
+
+  // Añadimos el evento de clic en el avatar
+  dropdownToggle.addEventListener('click', function (event) {
+    // Evitar que el enlace haga su acción por defecto
+    event.preventDefault();
+
+    // Alternamos la visibilidad del menú desplegable
+    if (dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '') {
+      dropdownMenu.style.display = 'block';  // Mostrar el menú
+    } else {
+      dropdownMenu.style.display = 'none';  // Ocultar el menú
+    }
+  });
+
+  // Cerrar el menú si el usuario hace clic fuera de él
+  document.addEventListener('click', function (event) {
+    if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.style.display = 'none';  // Cerrar el menú si se hace clic fuera
+    }
+  });
+});
+
+
+</script>

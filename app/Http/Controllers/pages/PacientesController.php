@@ -15,10 +15,13 @@ use App\Models\PacienteCIEModel;
 use App\Models\PacienteDatosConsultaModel;
 use App\Models\PacienteDatosConsultaHistoricoModel;
 use App\Models\PacienteHistoricoModel;
+use App\Models\PacienteTipoVisitaModel;
+use App\Models\PacienteDatosConsultaNotaModel;
+use Illuminate\Support\Facades\Auth;
 
 class PacientesController extends Controller
 {
-  # Retorna la vista de registrar nuevo pocuente
+  # Retorna la vista de registrar nuevo paciente
   public function nuevoPaciente()
   {
     # Obtenemos las ocupaciones para mandarlas a la vista
@@ -184,9 +187,11 @@ class PacientesController extends Controller
     }
 
     $view_data['paciente_id'] = $pacienteId;
+    $view_data['paciente']['datos_paciente'] = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->where('borrado', 0)->first();
     $view_data['paciente']['datos_ultima_consulta'] = PacienteDatosConsultaModel::where('paciente_id', $pacienteId)->where('borrado', 0)->latest('created_at')->first();
-    $view_data['catalogos']['cie'] = PacienteCIEModel::where('borrado', 0)->get()->toArray();
-    # Mandamos a la  vista
+    $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
+    $view_data['catalogos']['cie'] = PacienteCIEModel::select('id','descripcion')->where('borrado', 0)->get()->toArray();
+    # Mandamos a la vista
     return view('content.pages.valoracion-paciente',['datos_vista' => $view_data]);
   }
 
@@ -264,6 +269,63 @@ class PacientesController extends Controller
       DB::connection('pgsql')->rollback();
       $result['error'] = true;
       $result["msg"] = "¡Lo sentimos! No fue posible registrar la valoracion del paciente, favor revisa que no existan campos vacíos en la captura. Inténtalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.";
+      $result['return'] = $e->getMessage();
+    }
+    return response()->json($result);
+  }
+
+  public function registrarNota(Request $request){
+    # Parametros iniciales para la respuesta
+    $result = array("error" => false, "msg" => null, 'url' => null);
+    # Obtenemos el POST
+    $post = $request->all();
+    // dd($post);
+    # Iniciamos transaccion de BD
+    DB::connection('pgsql')->beginTransaction();
+    try {
+      # Iniciamos con el guardamos los datos obtenidos del formulario.
+      foreach ($post as $key => $value)
+      {
+        switch ($key)
+        {
+          # Guardamos los datos de la nota
+          case "paciente_datos_consulta_nota":
+            # Asignamos la fecha de registro
+            $value['created_at'] = date("Y-m-d H:i:s");
+
+            # Usuario id que registra la nota
+            $value['usuario_id'] = Auth::user()->id;
+
+            #insertamos los valores en la tabla del paciente
+            $nota = PacienteDatosConsultaNotaModel::insertGetId($value);
+
+            if($nota !== null){
+            } else {
+              $result["error"] = true;
+              $result["msg"] = "No fue posible registrar la nota, intenta de nuevo.";
+            }
+          break;
+        }
+      }
+
+      # Si no existe error al guardar el registro de la nota entra
+      if (!$result["error"])
+      {
+        # Si todo esta correcto hacemos el commit de la transaccion
+        DB::connection('pgsql')->commit();
+        $result['error'] = false;
+        $result["msg"] = 'La nota fue registrada correctamente';
+      } else {
+        # Si existe un error no guardamos en la base de datos
+        DB::connection('pgsql')->rollback();
+        $result['error'] = true;
+        $result["msg"] = '¡Lo sentimos! No fue posible registrar información del paciente.';
+      }
+    } catch (\Exception $e) {
+      # Si existe un error no guardamos en la base de datos
+      DB::connection('pgsql')->rollback();
+      $result['error'] = true;
+      $result["msg"] = "¡Lo sentimos! No fue posible registrar la nota favor revisa que no existan campos vacíos en la captura. Inténtalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.";
       $result['return'] = $e->getMessage();
     }
     return response()->json($result);

@@ -23,14 +23,17 @@ return new class extends Migration
             $table->text('imc')->comment('IMC del paciente');
             $table->text('frecuencia_cardiaca')->comment('Frecuencia cardiaca del paciente');
             $table->text('saturacion_oxigeno')->comment('Saturacion de oxigeno del paciente');
+            $table->text('presion_arterial')->comment('Presion arterial del paciente');
             $table->text('observaciones')->nullable()->comment('Observaciones de la consulta');
             $table->text('medicamento_recetado')->nullable()->comment('Medicamento recetado en la consulta');
+            $table->unsignedBigInteger('paciente_tipo_visita_id')->comment('ID del tipo de consulta');
 
             $table->tinyInteger('borrado')->default('0')->comment('Borrado lógico 1=>Si 0=>No');
             $table->timestamps();
 
             $table->foreign('paciente_id')->references('id')->on('paciente');
             $table->foreign('cie_id')->references('id')->on('paciente_cie');
+            $table->foreign('paciente_tipo_visita_id')->references('id')->on('paciente_tipo_visita');
         });
     }
 

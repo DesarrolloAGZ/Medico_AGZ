@@ -1,41 +1,91 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-# Ruta para pagina principal.
-Route::get('/', 'App\Http\Controllers\pages\InicioController@index')->name('pantalla-inicio');
+Route::get('/login', 'App\Http\Controllers\pages\InicioController@login')->name('inicio-sesion');
+Route::post('/login', 'App\Http\Controllers\pages\InicioController@autenticar')->name('procesar-login');
+// Route::post('/valida-credenciales', 'App\Http\Controllers\pages\InicioController@validaCredenciales')->name('valida-credenciales');
+// Ruta de logout
+Route::post('/logout', function () {
+  Auth::logout(); // Cierra la sesión del usuario
+  return redirect('/login'); // Redirige a la página de login
+})->name('logout');
 
-# Grupo de rutas para pacientes.
-Route::prefix('pacientes')->group(function () {
+# Proteccion de rutas si no esta autenticado
+Route::middleware(['auth'])->group(function () {
 
-  # Ruta para vista de un nuevo paciente
-  Route::get('/nuevo', 'App\Http\Controllers\pages\PacientesController@nuevoPaciente')->name('nuevo-paciente');
+  # Ruta para pagina principal.
+  Route::get('/', 'App\Http\Controllers\pages\InicioController@index')->name('pantalla-inicio');
 
-  # Ruta para registrar datos en el expediente
-  Route::get('/registrar-valoracion', 'App\Http\Controllers\pages\PacientesController@registrarValoracionPaciente')->name('registrar-valoracion-paciente');
+  # Grupo de rutas para pacientes.
+  Route::prefix('pacientes')->group(function () {
 
-  # Ruta para ver los pacientes en lista
-  Route::get('/consultar', 'App\Http\Controllers\pages\PacientesSeguimientoController@listadoPacientes')->name('listado-paciente');
+    # Ruta para la vista de un nuevo paciente
+    Route::get('/nuevo', 'App\Http\Controllers\pages\PacientesController@nuevoPaciente')->name('nuevo-paciente');
+
+    # Ruta para la vista de registrar datos en el expediente
+    Route::get('/registrar-valoracion', 'App\Http\Controllers\pages\PacientesController@registrarValoracionPaciente')->name('registrar-valoracion-paciente');
+
+    # Ruta para la vista de ver los pacientes en lista
+    Route::get('/consultar', 'App\Http\Controllers\pages\PacientesSeguimientoController@listadoPacientes')->name('listado-paciente');
+
+    # Ruta para la vista de ver el expediente de los pacientes
+    Route::get('/expediente', 'App\Http\Controllers\pages\PacientesSeguimientoController@expedientePacientes')->name('listado-expediente-paciente');
+
+    Route::get('/detalles-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
 
 
 
-  # Grupo de rutas para APIS de pacientes.
-  Route::prefix('api')->group(function () {
+    # Grupo de rutas para APIS de pacientes.
+    Route::prefix('api')->group(function () {
 
-    # Ruta para consultar paciente \ busca el empleado en el APSI
-    Route::post('/consultar', 'App\Http\Controllers\pages\PacientesController@consultarPacienteApsi')->name('consultar-paciente');
+      # Ruta para consultar paciente \ busca el empleado en el APSI
+      Route::post('/consultar', 'App\Http\Controllers\pages\PacientesController@consultarPacienteApsi')->name('consultar-paciente');
 
-    # Ruta para registrar el paciente
-    Route::post('/registrar', 'App\Http\Controllers\pages\PacientesController@registrarPaciente')->name('registrar-paciente');
+      # Ruta para registrar el paciente
+      Route::post('/registrar', 'App\Http\Controllers\pages\PacientesController@registrarPaciente')->name('registrar-paciente');
 
-    # Ruta para registrar la valoracion el paciente
-    Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
+      # Ruta para registrar la valoracion el paciente
+      Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
 
-    # Ruta para obtener el listado de pacientes
-    Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
+      # Ruta para obtener el listado de pacientes
+      Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
+
+      # Ruta para obtener las consultas del paciente para la tabla
+      Route::post('/obtener-lista-consultas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoConsultasPaciente')->name('obtener-lista-consultas-paciente');
+
+      # Ruta para registrar la nota en el expediente
+      Route::post('/registrar-nota', 'App\Http\Controllers\pages\PacientesController@registrarNota')->name('registrar-nota');
+
+    });
 
   });
 
+  Route::prefix('receta')->group(function () {
+
+    # Ruta para la vista de crear receta nueva
+    Route::get('/nueva', 'App\Http\Controllers\pages\RecetaController@nuevaReceta')->name('receta-nueva');
 
 
+
+     # Grupo de rutas para APIS de recetas.
+     Route::prefix('api')->group(function () {
+
+      # Ruta para registrar la receta
+      Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
+
+    });
+
+  });
+
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 });

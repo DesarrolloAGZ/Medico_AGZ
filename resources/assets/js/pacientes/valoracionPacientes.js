@@ -1,3 +1,168 @@
+document.addEventListener('DOMContentLoaded', function () {
+  // Codigo para los mensajes de ayuda que estan de un lado de los input
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl);
+  });
+
+  // Codigo para detectar los eventos en el input de altura y que ponga la estructura correcta (ejemplo: 1.75)
+  const alturaInput = document.querySelector("[name='paciente_datos_consulta[altura]']");
+  alturaInput.addEventListener('input', function () {
+    let valor = this.value.replace(/[^0-9.]/g, ''); // Permite solo números y punto
+    valor = valor.replace(/^0+/, ''); // Elimina ceros a la izquierda
+    let partes = valor.split('.'); // Si hay más de un punto decimal, eliminar adicionales
+    if (partes.length > 2) {
+      valor = partes[0] + '.' + partes.slice(1).join('');
+    }
+    if (valor.length > 1 && valor.indexOf('.') === -1) {
+      valor = valor[0] + '.' + valor.substring(1);
+    } // Agrega automáticamente el punto después del primer número si aún no está
+    if (valor.includes('.')) {
+      // Limita a dos decimales si ya tiene un punto
+      let [entero, decimal] = valor.split('.');
+      decimal = decimal.substring(0, 2); // Solo deja dos decimales
+      valor = entero + (decimal ? '.' + decimal : '');
+    }
+    this.value = valor;
+  });
+
+  // Codigo para detectar los eventos en el input de temperatura y ponga la estructura correcta (ejemplo: 38 o 38.5)
+  const temperaturaInput = document.querySelector("[name='paciente_datos_consulta[temperatura]']");
+  temperaturaInput.addEventListener('input', function () {
+    let valor = this.value.replace(/[^0-9.]/g, ''); // Permite solo números y punto
+    valor = valor.replace(/^0+/, ''); // Elimina ceros a la izquierda
+    let partes = valor.split('.'); // Si hay más de un punto decimal, elimina los adicionales
+    if (partes.length > 2) {
+      valor = partes[0] + '.' + partes.slice(1).join('');
+    }
+    if (valor.length > 2 && valor.indexOf('.') === -1) {
+      // Agrega automáticamente el punto después del segundo número si aún no está
+      valor = valor.slice(0, 2) + '.' + valor.slice(2);
+    }
+    if (valor.includes('.')) {
+      // Limita a un solo decimal si ya tiene un punto
+      let [entero, decimal] = valor.split('.');
+      decimal = decimal.substring(0, 1); // Solo deja un decimal
+      valor = entero + (decimal ? '.' + decimal : '');
+    }
+    this.value = valor;
+  });
+
+  // Código para detectar los eventos en el input de peso y asegurar que tenga el formato correcto (ejemplo: 70 o 70.5)
+  const pesoInput = document.querySelector("[name='paciente_datos_consulta[peso]']");
+  pesoInput.addEventListener('input', function () {
+    let valor = this.value;
+    valor = valor.replace(/[^0-9.]/g, ''); // Permite solo números y un punto
+    // Evita que el usuario inicie con un punto
+    if (valor.startsWith('.')) {
+      valor = '0' + valor; // Agrega un cero al inicio si empieza con un punto
+    }
+    // Si hay más de un punto decimal, elimina los adicionales
+    let partes = valor.split('.');
+    if (partes.length > 2) {
+      valor = partes[0] + '.' + partes.slice(1).join('');
+    }
+    // Limita a un solo decimal si ya tiene un punto
+    if (valor.includes('.')) {
+      let [entero, decimal] = valor.split('.');
+      decimal = decimal.substring(0, 1); // Solo un decimal
+      valor = entero + '.' + decimal;
+    }
+    // Limita los dígitos antes del punto a tres
+    if (valor.indexOf('.') === -1 && valor.length > 3) {
+      valor = valor.slice(0, 3); // Limita a 3 dígitos antes del punto
+    }
+    this.value = valor;
+  });
+
+  // Código para detectar los eventos en el input de frecuencia cardiaca y asegurar que tenga el formato correcto (ejemplo: 80 o 80.5)
+  const frecuenciaCardiacaInput = document.querySelector("[name='paciente_datos_consulta[frecuencia_cardiaca]']");
+  frecuenciaCardiacaInput.addEventListener('input', function () {
+    let valor = this.value;
+    valor = valor.replace(/[^0-9.]/g, ''); // Permite solo números y un punto
+    // Evita que el usuario inicie con un punto
+    if (valor.startsWith('.')) {
+      valor = '0' + valor; // Agrega un cero al inicio si empieza con un punto
+    }
+    // Si hay más de un punto decimal, elimina los adicionales
+    let partes = valor.split('.');
+    if (partes.length > 2) {
+      valor = partes[0] + '.' + partes.slice(1).join('');
+    }
+    // Limita a un solo decimal si ya tiene un punto
+    if (valor.includes('.')) {
+      let [entero, decimal] = valor.split('.');
+      decimal = decimal.substring(0, 1); // Solo un decimal
+      valor = entero + '.' + decimal;
+    }
+    // Limita los dígitos antes del punto a tres
+    if (valor.indexOf('.') === -1 && valor.length > 3) {
+      valor = valor.slice(0, 3); // Limita a 3 dígitos antes del punto
+    }
+    this.value = valor;
+  });
+
+  // Código para detectar los eventos en el input de oxigenacion y asegurar que tenga el formato correcto (ejemplo: 80 o 90.5)
+  const oxigenacionInput = document.querySelector("[name='paciente_datos_consulta[saturacion_oxigeno]']");
+  oxigenacionInput.addEventListener('input', function () {
+    let valor = this.value;
+    valor = valor.replace(/[^0-9.]/g, ''); // Permite solo números y un punto decimal
+    // Evita que el usuario inicie con un punto
+    if (valor.startsWith('.')) {
+      valor = '0' + valor; // Agrega un cero al inicio si empieza con un punto
+    }
+    // Si hay más de un punto decimal, elimina los adicionales
+    let partes = valor.split('.');
+    if (partes.length > 2) {
+      valor = partes[0] + '.' + partes.slice(1).join('');
+    }
+    // Limita a un solo decimal si ya tiene un punto
+    if (valor.includes('.')) {
+      let [entero, decimal] = valor.split('.');
+      decimal = decimal.substring(0, 1); // Solo un decimal
+      valor = entero + '.' + decimal;
+    }
+    // Limita el valor máximo a 100 y el mínimo a 0
+    if (parseFloat(valor) > 100) {
+      valor = '100';
+    } else if (parseFloat(valor) < 0) {
+      valor = '0';
+    }
+    // Asigna el valor al campo de entrada
+    this.value = valor;
+  });
+
+  // Código para detectar los eventos en el input de presion arterial y asegurar que tenga el formato correcto (ejemplo: 120/50)
+  const presionArterialInput = document.querySelector("[name='paciente_datos_consulta[presion_arterial]']");
+  presionArterialInput.addEventListener('input', function () {
+    let valor = this.value;
+    valor = valor.replace(/[^0-9/]/g, ''); // Permite solo números y el separador '/'
+    // Evita que el valor comience con '/'
+    if (valor.startsWith('/')) {
+      valor = valor.substring(1);
+    }
+    // Si hay más de un '/' en el valor, elimina los adicionales
+    let partes = valor.split('/');
+    if (partes.length > 2) {
+      valor = partes[0] + '/' + partes[1];
+    }
+    // Limita la longitud de la presión sistólica a tres dígitos y la diastólica a tres dígitos
+    if (partes.length === 1) {
+      // Solo se ha ingresado la presión sistólica
+      if (partes[0].length > 3) {
+        valor = partes[0].slice(0, 3);
+      }
+    } else if (partes.length === 2) {
+      // Se han ingresado ambos valores
+      if (partes[1].length > 3) {
+        valor = partes[0] + '/' + partes[1].slice(0, 2);
+      }
+    }
+    // Asigna el valor formateado al campo de entrada
+    this.value = valor;
+  });
+});
+
 $(document).ready(function () {
   // Ocultamos la pantalla de carga cuando la pantalla termino de cargar todo el contenido
   pantallaCarga('off');
@@ -58,8 +223,8 @@ $(document).ready(function () {
             message: 'Este campo es obligatorio'
           },
           regexp: {
-            regexp: /^[1-9]{1}[0-9]{0,2}(\.[0-9]{1,2})$/, // Permitirá números como 1.75 o 1.80
-            message: 'Por favor ingrese una altura válida en formato m.cm (por ejemplo: 1.75 o 1.80)'
+            regexp: /^(1\.[4-9][0-9]?|2\.0[0-9]?|2\.10)$/,
+            message: 'Por favor ingrese una altura válida en formato m.cm'
           }
         }
       },
@@ -82,6 +247,24 @@ $(document).ready(function () {
           regexp: {
             regexp: /^(100(\.0{1})?|[1-9]{1}[0-9]{0,1}(\.[0-9]{1})?)$/, // Permite números entre 0 y 100, con un decimal opcional
             message: 'Por favor ingrese un valor de saturación de oxígeno válido (por ejemplo: 98 o 98.5)'
+          }
+        }
+      },
+      'paciente_datos_consulta[presion_arterial]': {
+        validators: {
+          notEmpty: {
+            message: 'Este campo es obligatorio'
+          },
+          regexp: {
+            regexp: /^(?:1[0-9]{2}|[1-9][0-9])\/(?:1[0-9]{2}|[1-9][0-9])$/,
+            message: 'Por favor ingrese una presión arterial válida en formato sistólica/diastólica (ejemplo: 120/80)'
+          }
+        }
+      },
+      'paciente_datos_consulta[paciente_tipo_visita_id]': {
+        validators: {
+          notEmpty: {
+            message: 'Debe seleccionar una opción'
           }
         }
       }
@@ -124,7 +307,7 @@ $(document).ready(function () {
     if (!campoInvalidoEncontrado) {
       // Pregunta si se desea guardar la valoracion del paciente
       alertify.confirm(
-        '¿Estás seguro de guardar la valoración del paciente?',
+        '¿Desea guardar la valoración del paciente?',
         function (e, ui) {
           guardarValoracionPaciente();
           boton.prop('disabled', false);

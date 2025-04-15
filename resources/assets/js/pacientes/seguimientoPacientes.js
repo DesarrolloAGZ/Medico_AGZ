@@ -18,7 +18,6 @@ function generarTabla() {
   }
 
   let table = $('.datatables-basic-filas').DataTable({
-    dom: 'Bfrtip',
     buttons: [
       {
         extend: 'excel',
@@ -92,7 +91,7 @@ function generarTabla() {
       {
         targets: 1,
         title: 'Gafete',
-        // orderable: false,
+        className: 'text-center',
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
@@ -106,8 +105,8 @@ function generarTabla() {
       },
       {
         targets: 2,
+        className: 'text-center',
         title: 'Nombre del paciente',
-        // orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
@@ -156,13 +155,13 @@ function generarTabla() {
         }
       },
       {
-        targets: 4,
+        targets: 5,
         className: 'text-center',
         title: 'Telefono celular',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
-                  <div class="row">
+                  <div class="row>
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
                               <small class="mb-0">${full.celular}</small>
@@ -174,6 +173,7 @@ function generarTabla() {
     ],
     order: [[1, 'asc']],
     displayLength: 10,
+    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     lengthMenu: [5, 10, 25, 50, 75, 100],
     language: {
       paginate: {

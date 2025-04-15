@@ -14,8 +14,8 @@ $(document).ready(function () {
             message: 'Para buscar llena este campo'
           },
           stringLength: {
-            min: 3,
-            message: 'El tamaño minimo es de 3 caracteres'
+            min: 1,
+            message: 'El tamaño minimo es de 1 caracteres'
           },
           regexp: {
             regexp: /^[A-Za-zÑñáéíóúÁÉÍÓÚ0-9\s\$.,()¿?¡!'/_#:;]*$/,
@@ -43,8 +43,8 @@ $(document).ready(function () {
             message: 'Este campo es obligatorio'
           },
           stringLength: {
-            min: 3,
-            message: 'El tamaño minimo es de 3 caracteres'
+            min: 1,
+            message: 'El tamaño minimo es de 1 caracteres'
           },
           regexp: {
             regexp: /^[0-9]+$/,
@@ -356,7 +356,7 @@ $(document).ready(function () {
     if (!campoInvalidoEncontrado) {
       // Pregunta si se desea guardar el registro del paciente
       alertify.confirm(
-        '¿Estás seguro de guardar el paciente?',
+        '¿Desea guardar el paciente?',
         function (e, ui) {
           guardarRegistroPaciente();
           boton.prop('disabled', false);

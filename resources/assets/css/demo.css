@@ -135,6 +135,9 @@
   font-size: 20px !important;
   font-weight: bold !important;
 }
+.texto-subtitulo {
+  font-size: 16px !important;
+}
 
 /* Boton principal */
 .btn-principal {
@@ -178,4 +181,48 @@
 }
 .buttons-print:hover {
   background: #0d67c7 !important;
+}
+
+/* Estilos para las alertas de alertify */
+.ajs-dialog {
+  border-radius: 10px !important;
+}
+.ajs-commands {
+  margin: -14px 7px 0 0 !important;
+}
+.ajs-header {
+  display: none !important;
+}
+.ajs-body {
+  justify-content: center !important;
+  display: flex !important;
+  font-size: 16px !important;
+}
+.ajs-footer {
+  border-radius: 10px !important;
+}
+.ajs-ok {
+  background: #006c39 !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  outline: none !important;
+  border: none !important;
+}
+.ajs-ok:hover {
+  background: #004b28 !important;
+}
+.ajs-cancel {
+  background: #f24141 !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  outline: none !important;
+  border: none !important;
+}
+.ajs-cancel:hover {
+  background: #b82626 !important;
+}
+
+.text-list-color {
+  color: #fff !important;
+  font-size: 13px !important;
 }

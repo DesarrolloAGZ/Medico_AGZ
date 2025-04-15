@@ -20,6 +20,12 @@
       "name": "Consultar Paciente",
       "icon": "menu-icon tf-icons mdi mdi-account-search",
       "slug": "consultar-paciente"
+    },
+    {
+      "url": "/receta/nueva",
+      "name": "Crear receta",
+      "icon": "menu-icon tf-icons mdi mdi-text-box-plus-outline",
+      "slug": "receta-nueva"
     }
   ]
 }

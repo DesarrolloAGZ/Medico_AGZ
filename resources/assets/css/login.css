@@ -1,0 +1,190 @@
+/* GENERALES
+================================================================================================== */
+html {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff !important;
+}
+.contenedor-body {
+  width: 100%;
+  /* height: 100%; */
+}
+img.responsive {
+  max-width: 100%;
+  height: auto;
+}
+table {
+  user-select: none;
+}
+table.centrada {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+td.centrada {
+  text-align: center;
+}
+
+.titulo-login {
+  color: #fff;
+  font-size: 30px;
+  text-align: center;
+  background: #0000005c;
+  margin: 0px;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+/* FONDO CON MOVIMIENTO GRADIENTE
+==================================================================================================*/
+.fondo-gradiente {
+  background: rgba(0, 0, 0, 0.192);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  overflow: auto;
+}
+
+/* FORMULARIO PARA EL LOGIN
+==================================================================================================== */
+.login-box {
+  margin-top: 150px;
+  margin-left: 32%;
+  margin-right: 32%;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.658);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.432);
+  border-radius: 0.5rem;
+  backdrop-filter: blur(4px);
+}
+.login-box .user-box {
+  position: relative;
+  padding: 30px 0;
+}
+.login-box .user-box input {
+  width: 100%;
+  padding: 0px 0;
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #ffffff;
+  outline: none;
+  background: transparent;
+}
+.login-box .user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  color: #ffffff;
+  pointer-events: none;
+  transition: 0.2s;
+}
+.login-box .user-box input:focus ~ label,
+.login-box .user-box input:valid ~ label {
+  top: -15px;
+  left: 0;
+  color: #ffffff;
+  font-size: 18px;
+}
+.login-box form button {
+  position: relative;
+  display: inline-block;
+  padding: 5px 20px;
+  color: #6d6d6d;
+  background: none;
+  border: none;
+  font-size: 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: 0.3s;
+  margin-top: 20px;
+  border-radius: 0px;
+  letter-spacing: 4px;
+}
+.logIn {
+  width: 200px;
+  height: 50px;
+}
+.logIn:hover {
+  background: #ffffffcb;
+  color: #000000b2;
+  border-radius: 5px;
+  box-shadow: 0 0 20px #ffffff;
+}
+.login-box button span {
+  position: absolute;
+  display: block;
+}
+@keyframes btn-anim1 {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+.login-box button span:nth-child(1) {
+  bottom: 2px;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffff);
+  animation: btn-anim1 2s linear infinite;
+}
+/* Estilos para el botón deshabilitado */
+#btnLogin:disabled {
+  cursor: not-allowed; /* Cambia el cursor para mostrar que el botón no está habilitado */
+  opacity: 0.6; /* Reduce la opacidad para mostrar que está deshabilitado */
+}
+
+/* Deshabilita el hover cuando el botón está deshabilitado */
+#btnLogin:disabled:hover {
+  background-color: inherit; /* Evita el cambio de fondo cuando el cursor pasa sobre el botón */
+  color: inherit; /* Evita que el color del texto cambie */
+}
+
+/* RESOLUCIONES PARA PANTALLA DE TELEFONO
+==================================================================================================*/
+@media (min-width: 0px) and (max-width: 767px) {
+  .login-box {
+    margin-left: 10%;
+    margin-right: 10%;
+    padding: 10px;
+  }
+}
+
+/* RESOLUCIONES PARA PANTALLA DE TABLET
+=====================================================================================================*/
+@media (min-width: 768px) and (max-width: 1024px) {
+  .login-box {
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 10px;
+  }
+}
+/*  RESOLUCION PARA PANTALLA DE LAPTOP
+======================================================================================================*/
+@media (min-width: 1025px) and (max-width: 1500px) {
+  .login-box {
+    padding: 10px;
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+}
