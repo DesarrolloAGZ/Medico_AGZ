@@ -78,35 +78,35 @@ $configData = Helper::appClasses();
 
         <div class="col-md-2 mb-4">
           <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="paciente-gafete" name="paciente[gafete]" placeholder="Ingresa el número de gafete." />
+            <input readonly type="text" class="form-control" id="paciente-gafete" name="paciente[gafete]" placeholder="Ingresa el número de gafete." />
             <label for="paciente-gafete"># Empleado <i class="text-danger">*</i></label>
           </div>
         </div>
 
         <div class="col-md-10 mb-4">
           <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="paciente-nombre" name="paciente[nombre]" placeholder="Ingresa el nombre completo del paciente." />
+            <input readonly type="text" class="form-control" id="paciente-nombre" name="paciente[nombre]" placeholder="Ingresa el nombre completo del paciente." />
             <label for="paciente-nombre">Nombre (s) <i class="text-danger">*</i></label>
           </div>
         </div>
 
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="paciente-apellido_paterno" name="paciente[apellido_paterno]" placeholder="Ingresa el apellido paterno del paciente." />
+            <input readonly type="text" class="form-control" id="paciente-apellido_paterno" name="paciente[apellido_paterno]" placeholder="Ingresa el apellido paterno del paciente." />
             <label for="paciente-apellido_paterno">Apellido Paterno <i class="text-danger">*</i></label>
           </div>
         </div>
 
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline">
-            <input type="text" class="form-control" id="paciente-apellido_materno" name="paciente[apellido_materno]" placeholder="Ingresa el apellido materno del paciente." />
+            <input readonly type="text" class="form-control" id="paciente-apellido_materno" name="paciente[apellido_materno]" placeholder="Ingresa el apellido materno del paciente." />
             <label for="paciente-apellido_materno">Apellido Materno <i class="text-danger">*</i></label>
           </div>
         </div>
 
         <div class="col-md-4 mb-4">
           <div class="form-floating form-floating-outline">
-            <select multiple class="form-select h-px-100 select2" id="paciente-genero" name="paciente[genero]" aria-label="Multiple select example">
+            <select readonly multiple class="form-select h-px-100 select2" id="paciente-genero" name="paciente[genero]" aria-label="Multiple select example">
               <option value="" selected disabled>Selecciona una opción</option>
               <option value="M">Hombre</option>
               <option value="F">Mujer</option>

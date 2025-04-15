@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/detalles-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
 
+    # Ruta para la vista de ver el listado de recetas del paciente
+    Route::get('/recetas', 'App\Http\Controllers\pages\PacientesSeguimientoController@recetasPaciente')->name('listado-recetas');
+
 
 
     # Grupo de rutas para APIS de pacientes.
@@ -57,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
       # Ruta para registrar la nota en el expediente
       Route::post('/registrar-nota', 'App\Http\Controllers\pages\PacientesController@registrarNota')->name('registrar-nota');
 
+      # Ruta para obtener las recetas del paciente para la tabla
+      Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
+
     });
 
   });
@@ -68,8 +74,8 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-     # Grupo de rutas para APIS de recetas.
-     Route::prefix('api')->group(function () {
+    # Grupo de rutas para APIS de recetas.
+    Route::prefix('api')->group(function () {
 
       # Ruta para registrar la receta
       Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');

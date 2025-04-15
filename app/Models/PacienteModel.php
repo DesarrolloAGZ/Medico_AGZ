@@ -21,4 +21,9 @@ class PacienteModel extends Model
     return $this->hasMany(PacienteDatosConsultaModel::class, 'paciente_id')->where('borrado', 0);
   }
 
+  public function recetas()
+  {
+    return $this->hasMany(RecetaModel::class, 'paciente_id', 'id')->where('borrado', 0)->select('id'); ;
+  }
+
 }

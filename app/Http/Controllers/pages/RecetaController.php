@@ -13,14 +13,36 @@ use Illuminate\Support\Facades\Auth;
 class RecetaController extends Controller
 {
   # Retorna la vista de crear una receta nueva
-  public function nuevaReceta()
+  public function nuevaReceta(Request $request)
   {
+    $post = $request->all();
+
+    $id = urldecode($request->id);
+    $medicamento = urldecode($request->medicamento);
+    $recomendaciones = urldecode($request->recomendaciones);
+    $paciente_id = urldecode($request->paciente_id);
+    $paciente_nombre = urldecode($request->paciente_nombre);
+    $paciente_apellido_p = urldecode($request->paciente_apellido_p);
+    $paciente_apellido_m = urldecode($request->paciente_apellido_m);
+    $paciente_edad = urldecode($request->paciente_edad);
+
     # Validamos si el usuario tiene permiso para acceder a esta seccion
     if(Auth::user()->usuario_perfil_id == 1){
       $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
 
       $lastFolio = RecetaModel::max('id');
       $view_data['folio'] = $lastFolio ? $lastFolio + 1 : 1;
+
+      $view_data['receta_existente'] = [
+          'medicamento' => $medicamento,
+          'recomendaciones' => $recomendaciones,
+          'id' => $id,
+          'paciente_id' => $paciente_id,
+          'paciente_nombre' => $paciente_nombre,
+          'paciente_apellido_p' => $paciente_apellido_p,
+          'paciente_apellido_m' => $paciente_apellido_m,
+          'paciente_edad' => $paciente_edad,
+      ];
 
       # Mandamos a la  vista
       return view('content.pages.nueva-receta',['datos_vista' => $view_data]);
