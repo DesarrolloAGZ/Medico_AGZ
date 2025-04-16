@@ -27,7 +27,7 @@ class RecetaController extends Controller
     $paciente_edad = urldecode($request->paciente_edad);
 
     # Validamos si el usuario tiene permiso para acceder a esta seccion
-    if(Auth::user()->usuario_perfil_id == 1){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2){
       $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
 
       $lastFolio = RecetaModel::max('id');

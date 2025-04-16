@@ -46,6 +46,7 @@ $configData = Helper::appClasses();
 
 @php
 // dd($datos_vista);
+// dd(Auth::user());
 @endphp
 
   <div class="card p-5 ajuste-hoja-impresion" style="width: 100%; height: 100%;">
@@ -88,7 +89,12 @@ $configData = Helper::appClasses();
           <label style="position: absolute; right: 0;"><strong>C.P.</strong> {{ Auth::user()->cedula_profesional }}</label>
           <h3>Dr. {{ Auth::user()->nombre.' '.Auth::user()->apellido_paterno.' '.Auth::user()->apellido_materno }}</h3>
           <label style="position: absolute; right: 0;"><strong>REG.SSA.</strong> {{ Auth::user()->registro_ssa }}</label>
-          <h4 style="color: #b1b0b0">Médico General</h4>
+          @if (Auth::user()->usuario_perfil_id == 1)
+            <h4 style="color: #b1b0b0">MEDICO GENERAL</h4>
+          @endif
+          @if (Auth::user()->usuario_perfil_id == 2)
+            <h4 style="color: #b1b0b0">MEDICO ESPECIALISTA</h4>
+          @endif
         </div>
 
         <div class="divider divider-dark">
