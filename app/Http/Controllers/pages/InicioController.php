@@ -56,11 +56,11 @@ class InicioController extends Controller
     $ldapAuth = $this->validaLDAP($credenciales['correo'], $credenciales['password']);
 
     # Si la respuesta es false indica que no existen las credenciales en el AD
-    // if (!$ldapAuth) {
-    //     return back()->withErrors([
-    //         'correo' => 'El correo proporcionado no está registrado o activo en el sistema AD. Si es un nuevo usuario, por favor contacte con el administrador para validar su cuenta.',
-    //     ])->withInput();
-    // }
+    if (!$ldapAuth) {
+        return back()->withErrors([
+            'correo' => 'El correo proporcionado no está registrado o activo en el sistema AD. Si es un nuevo usuario, por favor contacte con el administrador para validar su cuenta.',
+        ])->withInput();
+    }
 
     # Verificar si el usuario está activo en la base de datos del sistema
     $usuarioActivo = UsuarioModel::where('correo', $credenciales['correo'])->where('borrado',0)->first();
