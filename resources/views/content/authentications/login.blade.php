@@ -51,22 +51,16 @@
         <form id="frm-login" method="POST" action="{{ route('procesar-login') }}" style="padding: 50px;">
           @csrf
           <div class="user-box">
-            <div style="display: block ruby;">
-              <div class="col-lg-9 col-md-8 col-sm-8 col-6">
-                <input type="text" name="correo" id="correo" required minlength="2" maxlength="191">
-                <label id="labelUser">Correo corporativo</label>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-4 col-7">
-                <span style="font-size: 18px; color: #ffffff;">@agrizar.com</span>
-              </div>
-            </div>
-            <div class="user-box">
-              <input type="password" name="password" id="password" required minlength="8" maxlength="65">
-              <label id="labelPass">Contraseña</label>
-            </div>
-            <center>
-                <button class="logIn" id="btnLogin" value="Entrar">Autenticar<span></span></button>
-            </center>
+              <input type="text" name="correo" id="correo" required minlength="2" maxlength="191">
+              <label id="labelUser">Usuario</label>
+          </div>
+          <div class="user-box">
+            <input type="password" name="password" id="password" required minlength="8" maxlength="65">
+            <label id="labelPass">Contraseña</label>
+          </div>
+          <center>
+              <button class="logIn" id="btnLogin" value="Entrar">Autenticar<span></span></button>
+          </center>
         </form>
       </div>
     </section>

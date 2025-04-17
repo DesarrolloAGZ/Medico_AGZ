@@ -30,20 +30,8 @@ class InicioController extends Controller
 
   public function autenticar(Request $request)
   {
-    $correo = $request->input('correo');
-    if (!str_contains($correo, '@agrizar.com')) {
-      # Concatenamos el dominio de la empresa
-      $correo .= env('DOMINIO');
-    }
-
-    # Validar el correo ya con el dominio añadido
-    $request->merge(['correo' => $correo]); # Actualizamos el valor de correo en el request
-
     $request->validate([
-        'correo' => ['required', 'email'],
         'password' => ['required'],
-    ], [
-        'correo.email' => 'El campo correo debe ser una dirección de correo electrónico válida.',
     ]);
 
     # Credenciales ingresadas por el usuario
@@ -53,7 +41,7 @@ class InicioController extends Controller
     ];
 
     # Ahora validamos en LDAP si el usuario está activo
-    $ldapAuth = $this->validaLDAP($credenciales['correo'], $credenciales['password']);
+    $ldapAuth = $this->validaLDAP($credenciales['correo'].env('DOMINIO'), $credenciales['password']);
 
     # Si la respuesta es false indica que no existen las credenciales en el AD
     if (!$ldapAuth) {
