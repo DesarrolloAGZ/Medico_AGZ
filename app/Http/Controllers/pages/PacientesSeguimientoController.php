@@ -28,7 +28,7 @@ class PacientesSeguimientoController extends Controller
       'paciente.apellido_materno',
       'paciente.edad',
       'paciente.curp',
-      'paciente.celular'
+      DB::raw("COALESCE(paciente.celular::text, 'Sin número') as celular")
     )
     ->where('paciente.borrado', 0)
     // ->groupBy('paciente.id', 'paciente.nombre', 'paciente.apellido_paterno', 'paciente.apellido_materno', 'paciente.edad', 'paciente.curp', 'paciente.celular')

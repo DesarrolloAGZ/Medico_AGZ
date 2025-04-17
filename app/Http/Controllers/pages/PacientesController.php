@@ -116,7 +116,7 @@ class PacientesController extends Controller
           # Guardamos los datos del paciente
           case "paciente":
             # Asignamos la fecha de registro
-            $value['created_at'] = date("Y-m-d H:i:s");
+            $value['created_at'] = 'now()';
 
             #insertamos los valores en la tabla del paciente
             $paciente = PacienteModel::insertGetId($value);
@@ -214,7 +214,7 @@ class PacientesController extends Controller
           # Guardamos los datos del paciente
           case "paciente_datos_consulta":
             # Asignamos la fecha de registro
-            $value['created_at'] = date("Y-m-d H:i:s");
+            $value['created_at'] = 'now()';
 
             #insertamos los valores en la tabla del paciente
             $pacienteDatos = PacienteDatosConsultaModel::insertGetId($value);
@@ -291,7 +291,7 @@ class PacientesController extends Controller
           # Guardamos los datos de la nota
           case "paciente_datos_consulta_nota":
             # Asignamos la fecha de registro
-            $value['created_at'] = date("Y-m-d H:i:s");
+            $value['created_at'] = 'now()';
 
             # Usuario id que registra la nota
             $value['usuario_id'] = Auth::user()->id;

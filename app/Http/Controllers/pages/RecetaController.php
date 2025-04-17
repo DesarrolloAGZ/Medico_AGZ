@@ -70,7 +70,7 @@ class RecetaController extends Controller
           # Guardamos los datos de la receta
           case "receta":
             # Asignamos la fecha de registro
-            $value['created_at'] = date("Y-m-d H:i:s");
+            $value['created_at'] = 'now()';
 
             # Usuario id que registra la nota
             $value['usuario_id'] = Auth::user()->id;
