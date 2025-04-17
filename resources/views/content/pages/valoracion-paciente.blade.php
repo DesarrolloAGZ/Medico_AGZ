@@ -492,10 +492,6 @@ $configData = Helper::appClasses();
         <li class="list-group-item list-group-timeline-primary"><strong>Presión arterial:</strong> {{ isset($datos_vista['paciente']['datos_ultima_consulta']->presion_arterial) ? $datos_vista['paciente']['datos_ultima_consulta']->presion_arterial.' mmHg' : 'Sin presión.' }}</li>
         <li class="list-group-item list-group-timeline-success"><strong>Observaciones:</strong> {{ isset($datos_vista['paciente']['datos_ultima_consulta']->observaciones) ? $datos_vista['paciente']['datos_ultima_consulta']->observaciones : 'Sin observaciones.' }}</li>
         <li class="list-group-item list-group-timeline-primary"><strong>Medicamento(s) recetado(s):</strong> {{ isset($datos_vista['paciente']['datos_ultima_consulta']->medicamento_recetado) ? $datos_vista['paciente']['datos_ultima_consulta']->medicamento_recetado : 'Sin medicamento.' }}</li>
-        @foreach($datos_vista['catalogos']['tipo_visita'] as $tipo)
-          <li class="list-group-item list-group-timeline-success {{ $loop->first ? '' : 'd-none' }}"><strong>Tipo de visita:</strong> {{ $tipo['nombre'] }}.</li>
-        @endforeach
-
       </ul>
       <button type="button" class="btn btn-outline-secondary d-grid w-100 mt-5" data-bs-dismiss="offcanvas">Cerrar</button>
     </div>

@@ -104,22 +104,22 @@ $(document).ready(function () {
           }
         }
       },
-      'paciente[celular]': {
-        validators: {
-          notEmpty: {
-            message: 'Este campo es obligatorio'
-          },
-          stringLength: {
-            min: 10,
-            max: 10,
-            message: ' '
-          },
-          regexp: {
-            regexp: /^[0-9]{10}$/,
-            message: 'El número de celular debe ser solo números y contener 10 dígitos.'
-          }
-        }
-      },
+      // 'paciente[celular]': {
+      //   validators: {
+      //     notEmpty: {
+      //       message: 'Este campo es obligatorio'
+      //     },
+      //     stringLength: {
+      //       min: 10,
+      //       max: 10,
+      //       message: ' '
+      //     },
+      //     regexp: {
+      //       regexp: /^[0-9]{10}$/,
+      //       message: 'El número de celular debe ser solo números y contener 10 dígitos.'
+      //     }
+      //   }
+      // },
       'paciente[edad]': {
         validators: {
           notEmpty: {
