@@ -31,46 +31,33 @@ class InicioController extends Controller
   public function autenticar(Request $request)
   {
     $request->validate([
+        'correo' => ['required', 'string'],
         'password' => ['required'],
     ]);
 
-    # Credenciales ingresadas por el usuario
-    $credenciales = [
-        'correo' => $request->input('correo'),
-        'password' => $request->input('password'),
-    ];
+    $correoCompleto = $request->input('correo') . env('DOMINIO');
 
-    # Ahora validamos en LDAP si el usuario está activo
-    $ldapAuth = $this->validaLDAP($credenciales['correo'].env('DOMINIO'), $credenciales['password']);
+    $ldapAuth = $this->validaLDAP($correoCompleto, $request->input('password'));
 
-    # Si la respuesta es false indica que no existen las credenciales en el AD
     if (!$ldapAuth) {
         return back()->withErrors([
-            'correo' => 'El correo proporcionado no está registrado o activo en el sistema AD. Si es un nuevo usuario, por favor contacte con el administrador para validar su cuenta.',
+            'correo' => 'El usuario o contraseña no son válidos en el sistema AD.',
         ])->withInput();
     }
 
-    # Verificar si el usuario está activo en la base de datos del sistema
-    $usuarioActivo = UsuarioModel::where('correo', $credenciales['correo'])->where('borrado',0)->first();
+    $usuario = UsuarioModel::where('correo', $request->input('correo'))->where('borrado', 0)->first();
 
-    # Verificar si el usuario existe y si no está borrado logicamente en la DB
-    if ($usuarioActivo) {
-      # Intentar la autenticación de usuario en Laravel
-      if (Auth::attempt($credenciales)) {
-          $request->session()->regenerate();
-          return redirect()->intended('/');
-      }
-    } else {
-      return back()->withErrors([
-        'correo' => 'El correo proporcionado no está activo en el sistema. Por favor contacte con el administrador para validar su cuenta.',
-      ])->withInput();
+    if (!$usuario) {
+        return back()->withErrors([
+            'correo' => 'El usuario no está registrado o está desactivado en el sistema.',
+        ])->withInput();
     }
 
-    return back()->withErrors([
-        'correo' => 'Correo o contraseña incorrectos.',
-    ])->withInput();
-  }
+    Auth::login($usuario);
+    $request->session()->regenerate();
 
+    return redirect()->intended('/');
+  }
 
   private function validaLDAP($username, $password)
   {
