@@ -85,15 +85,10 @@ $configData = Helper::appClasses();
       <div class="row">
         <div class="col-md-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
-            <select class="form-select select2" id="paciente_datos_consulta-cie_id" name="paciente_datos_consulta[cie_id]">
-              <option value="" selected disabled>Selecciona una opción</option>
-              @foreach ($datos_vista['catalogos']['cie'] as $cie)
-                <option value="{{ $cie['id'] }}">
-                  {{ $cie['descripcion'] }}
-                </option>
-              @endforeach
-            </select>
-            <label for="paciente-paciente_empresa_id">CIE 10 <i class="text-danger">*</i></label>
+            <input type="text" class="form-control" id="cie-search" name="paciente_datos_consulta[cie_id]" autocomplete="off" placeholder="Buscar CIE-10">
+            <label for="cie-search">CIE 10 <i class="text-danger">*</i></label>
+            <div id="cie-results" class="dropdown-menu" style="width: 100%; display: none;"></div>
+            <input type="hidden" id="cie-id" name="paciente_datos_consulta[cie_id_hidden]">
           </div>
         </div>
       </div>

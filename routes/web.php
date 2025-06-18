@@ -38,48 +38,47 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recetas', 'App\Http\Controllers\pages\PacientesSeguimientoController@recetasPaciente')->name('listado-recetas');
 
 
+    # ****************************************************************************************
+    # ****************************************************************************************
+
 
     # Grupo de rutas para APIS de pacientes.
     Route::prefix('api')->group(function () {
 
       # Ruta para consultar paciente \ busca el empleado en el APSI
       Route::post('/consultar', 'App\Http\Controllers\pages\PacientesController@consultarPacienteApsi')->name('consultar-paciente');
-
       # Ruta para registrar el paciente
       Route::post('/registrar', 'App\Http\Controllers\pages\PacientesController@registrarPaciente')->name('registrar-paciente');
-
       # Ruta para registrar la valoracion el paciente
       Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
-
       # Ruta para obtener el listado de pacientes
       Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
-
       # Ruta para obtener las consultas del paciente para la tabla
       Route::post('/obtener-lista-consultas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoConsultasPaciente')->name('obtener-lista-consultas-paciente');
-
       # Ruta para registrar la nota en el expediente
       Route::post('/registrar-nota', 'App\Http\Controllers\pages\PacientesController@registrarNota')->name('registrar-nota');
-
       # Ruta para obtener las recetas del paciente para la tabla
       Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
+      # Ruta para registrar la nota en el expediente
+      Route::post('/buscar-cie', 'App\Http\Controllers\pages\PacientesController@buscarCie')->name('buscar-cie');
 
     });
 
   });
 
   Route::prefix('receta')->group(function () {
-
     # Ruta para la vista de crear receta nueva
     Route::get('/nueva', 'App\Http\Controllers\pages\RecetaController@nuevaReceta')->name('receta-nueva');
 
 
+    # ****************************************************************************************
+    # ****************************************************************************************
+
 
     # Grupo de rutas para APIS de recetas.
     Route::prefix('api')->group(function () {
-
       # Ruta para registrar la receta
       Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
-
     });
 
   });

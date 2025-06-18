@@ -190,7 +190,7 @@ class PacientesController extends Controller
     $view_data['paciente']['datos_paciente'] = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->where('borrado', 0)->first();
     $view_data['paciente']['datos_ultima_consulta'] = PacienteDatosConsultaModel::where('paciente_id', $pacienteId)->where('borrado', 0)->latest('created_at')->first();
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
-    $view_data['catalogos']['cie'] = PacienteCIEModel::select('id','descripcion')->where('borrado', 0)->get()->toArray();
+
     # Mandamos a la vista
     return view('content.pages.valoracion-paciente',['datos_vista' => $view_data]);
   }
@@ -200,6 +200,16 @@ class PacientesController extends Controller
     $result = array("error" => false, "msg" => null, 'url' => null);
     # Obtenemos el POST
     $post = $request->all();
+    // dd($post);
+
+    # Validación del CIE-10
+    if (empty($post['paciente_datos_consulta']['cie_id'])) {
+        $result["error"] = true;
+        $result["msg"] = "Debe seleccionar un CIE-10 válido";
+        return response()->json($result);
+    }
+
+    unset($post['paciente_datos_consulta']['cie_id_hidden']);
 
     # Iniciamos transaccion de BD
     DB::connection('pgsql')->beginTransaction();
@@ -329,5 +339,32 @@ class PacientesController extends Controller
       $result['return'] = $e->getMessage();
     }
     return response()->json($result);
+  }
+
+  public function buscarCie(Request $request)
+  {
+    try {
+      $query = $request->input('nombre_cie');
+
+      # Búsqueda con like y paginación
+      $results = PacienteCIEModel::select('id', 'codigo', 'descripcion')
+      ->where('borrado', 0)
+      ->where(function($q) use ($query) {
+        $q->where('descripcion', 'iLIKE', "%{$query}%")
+        ->orWhere('codigo', 'iLIKE', "%{$query}%");
+      })
+      ->orderBy('descripcion')->get()->toArray();
+
+      return response()->json([
+          'error' => false,
+          'data' => $results
+      ]);
+
+    } catch (\Exception $e) {
+      return response()->json([
+        'error' => true,
+        'msg' => 'Error al realizar la búsqueda: ' . $e->getMessage()
+      ], 500);
+    }
   }
 }
