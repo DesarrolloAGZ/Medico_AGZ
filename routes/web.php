@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
       Route::post('/registrar', 'App\Http\Controllers\pages\PacientesController@registrarPaciente')->name('registrar-paciente');
       # Ruta para registrar la valoracion el paciente
       Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
-      # Ruta para obtener el listado de pacientes
+      # Ruta para obtener el listado de expedientes
       Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
       # Ruta para obtener las consultas del paciente para la tabla
       Route::post('/obtener-lista-consultas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoConsultasPaciente')->name('obtener-lista-consultas-paciente');

@@ -9,6 +9,7 @@ use App\Models\PacienteDatosConsultaModel;
 use App\Models\PacienteTipoVisitaModel;
 use App\Models\UsuarioModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InicioController extends Controller
 {
@@ -19,6 +20,36 @@ class InicioController extends Controller
     $view_data['estadisticas']['enfermedadGeneral'] = PacienteDatosConsultaModel::where('paciente_tipo_visita_id', 1)->where('borrado', 0)->count(); # Total de pacientes que acuden por enfermedad general
     $view_data['estadisticas']['riesgoTrabajo'] = PacienteDatosConsultaModel::where('paciente_tipo_visita_id', 2)->where('borrado', 0)->count(); # Total de pacientes que acuden por riesgo de trabajo
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray(); # Tipos de la visita al servicio medico
+
+    # Consulta para mostrar las consultas de los últimos 8 días
+    $fechaInicio = now()->subDays(7)->format('Y-m-d');
+    $fechaFin = now()->format('Y-m-d');
+
+    $consultasPorDia = PacienteDatosConsultaModel::select(
+        DB::raw("DATE(created_at) as fecha_consulta"),
+        DB::raw("COUNT(*) as total")
+    )
+    ->where('borrado', 0)
+    ->whereBetween(DB::raw("DATE(created_at)"), [$fechaInicio, $fechaFin])
+    ->groupBy(DB::raw("DATE(created_at)"))
+    ->get()
+    ->keyBy('fecha_consulta');
+
+    # Genera serie de días
+    $dias = collect();
+    for ($i = 7; $i >= 0; $i--) {
+        $fecha = now()->subDays($i);
+        $diaSemana = $fecha->locale('es')->isoFormat('ddd');
+        $numeroDia = $fecha->day;
+        $esHoy = $i === 0;
+        $formatoDia = $diaSemana.' '.$numeroDia.($esHoy ? ' (Hoy)' : '');
+        $dias->push([
+            'dia' => $formatoDia,
+            'cantidad_consultas' => $consultasPorDia[$fecha->format('Y-m-d')]->total ?? 0
+        ]);
+    }
+
+    $view_data['estadisticas']['consultasPorDia'] = $dias;
 
     return view('content.pages.inicio',['datos_vista' => $view_data]);
   }

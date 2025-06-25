@@ -39,7 +39,7 @@
 @section('content')
   <div class="card p-5">
     <div class="divider">
-      <div class="divider-text texto-titulo">Listado de pacientes</div>
+      <div class="divider-text texto-titulo">Listado de Expedientes</div>
     </div>
     <div class="card-datatable table-responsive pt-0">
       <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">

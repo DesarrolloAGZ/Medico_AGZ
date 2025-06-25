@@ -17,8 +17,8 @@
     },
     {
       "url": "/pacientes/consultar",
-      "name": "Consultar Paciente",
-      "icon": "menu-icon tf-icons mdi mdi-account-search",
+      "name": "Buscar Expediente",
+      "icon": "menu-icon tf-icons mdi mdi-folder-search-outline",
       "slug": "consultar-paciente"
     },
     {

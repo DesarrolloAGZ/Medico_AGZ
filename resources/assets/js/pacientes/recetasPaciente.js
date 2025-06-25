@@ -42,7 +42,7 @@ function generarTabla() {
       {
         extend: 'print',
         text: '<i class="fas fa-print"></i>',
-        title: 'Listado de Pacientes',
+        title: 'Listado de Expedientes',
         exportOptions: {
           modifier: {
             page: 'all'

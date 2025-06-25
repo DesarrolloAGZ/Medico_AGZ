@@ -22,7 +22,7 @@ function generarTabla() {
       {
         extend: 'excel',
         text: '<i class="fas fa-file-excel"></i>',
-        title: 'Listado de Pacientes',
+        title: 'Listado de Expedientes',
         filename: 'pacientes_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
         exportOptions: {
           modifier: {
@@ -35,7 +35,7 @@ function generarTabla() {
       {
         extend: 'print',
         text: '<i class="fas fa-print"></i>',
-        title: 'Listado de Pacientes',
+        title: 'Listado de Expedientes',
         exportOptions: {
           modifier: {
             page: 'all'

@@ -62,38 +62,7 @@ $(document).ready(function () {
             message: 'El tamaño minimo es de 3 caracteres'
           },
           regexp: {
-            regexp: /^(?!.*\s{2,})[A-ZÑ\s]+$/,
             message: 'Solo se aceptan letras y espacios.'
-          }
-        }
-      },
-      'paciente[apellido_paterno]': {
-        validators: {
-          notEmpty: {
-            message: 'Este campo es obligatorio'
-          },
-          stringLength: {
-            min: 3,
-            message: 'El tamaño minimo es de 3 caracteres'
-          },
-          regexp: {
-            regexp: /^[A-ZÑ¥$.,()¿?¡!'/_#:;]+$/,
-            message: 'Solo se aceptan letras.'
-          }
-        }
-      },
-      'paciente[apellido_materno]': {
-        validators: {
-          notEmpty: {
-            message: 'Este campo es obligatorio'
-          },
-          stringLength: {
-            min: 3,
-            message: 'El tamaño minimo es de 3 caracteres'
-          },
-          regexp: {
-            regexp: /^[A-ZÑ¥$.,()¿?¡!'/_#:;]+$/,
-            message: 'Solo se aceptan letras.'
           }
         }
       },
@@ -104,22 +73,6 @@ $(document).ready(function () {
           }
         }
       },
-      // 'paciente[celular]': {
-      //   validators: {
-      //     notEmpty: {
-      //       message: 'Este campo es obligatorio'
-      //     },
-      //     stringLength: {
-      //       min: 10,
-      //       max: 10,
-      //       message: ' '
-      //     },
-      //     regexp: {
-      //       regexp: /^[0-9]{10}$/,
-      //       message: 'El número de celular debe ser solo números y contener 10 dígitos.'
-      //     }
-      //   }
-      // },
       'paciente[edad]': {
         validators: {
           notEmpty: {

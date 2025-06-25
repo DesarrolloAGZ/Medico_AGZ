@@ -24,14 +24,13 @@ class PacientesSeguimientoController extends Controller
       'paciente.id',
       'paciente.gafete',
       'paciente.nombre',
-      'paciente.apellido_paterno',
-      'paciente.apellido_materno',
+      DB::raw("COALESCE(paciente.apellido_paterno::text, '') as apellido_paterno"),
+      DB::raw("COALESCE(paciente.apellido_materno::text, '') as apellido_materno"),
       'paciente.edad',
       'paciente.curp',
       DB::raw("COALESCE(paciente.celular::text, 'Sin número') as celular")
     )
     ->where('paciente.borrado', 0)
-    // ->groupBy('paciente.id', 'paciente.nombre', 'paciente.apellido_paterno', 'paciente.apellido_materno', 'paciente.edad', 'paciente.curp', 'paciente.celular')
     ->orderBy('paciente.nombre', 'asc');
 
     return DataTables::eloquent($paciente)
