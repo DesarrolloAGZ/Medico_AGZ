@@ -28,22 +28,37 @@ class PacientesSeguimientoController extends Controller
       DB::raw("COALESCE(paciente.apellido_materno::text, '') as apellido_materno"),
       'paciente.edad',
       'paciente.curp',
-      DB::raw("COALESCE(paciente.celular::text, 'Sin número') as celular")
+      DB::raw("COALESCE(paciente.celular::text, 'Sin número') as celular"),
+      DB::raw("COUNT(paciente_datos_consulta.paciente_id) as consultas_count")
     )
-    ->where('paciente.borrado', 0)
+    ->leftJoin('paciente_datos_consulta', function($join) {
+      $join->on('paciente.id', '=', 'paciente_datos_consulta.paciente_id')
+      ->where('paciente_datos_consulta.borrado', 0);
+    })
+    ->where('paciente_datos_consulta.borrado', 0)->where('paciente.borrado', 0)
+    ->groupBy([
+      'paciente.id',
+      'paciente.gafete',
+      'paciente.nombre',
+      'paciente.apellido_paterno',
+      'paciente.apellido_materno',
+      'paciente.edad',
+      'paciente.curp',
+      'paciente.celular'
+    ])
     ->orderBy('paciente.nombre', 'asc');
-
     return DataTables::eloquent($paciente)
     # filtrar por nombre sin importar mayusculas y minusculas
     ->filter(function ($query) use ($request) {
-      // buscar en tramite_detalle search[value]
-      if (request()->has('search')) {
-        if (request()->input('search.value')) {
-          $search = strtolower($request->input('search.value'));
-          $query->whereRaw('LOWER(paciente.nombre) LIKE LOWER(\'%' . $search . '%\')');
-          $query->whereRaw('LOWER(paciente.nombre) LIKE LOWER(?) OR paciente.gafete::text LIKE ?', ["%{$search}%", "%{$search}%"]);
+        if ($request->has('search') && $request->input('search.value')) {
+            $search = strtolower($request->input('search.value'));
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(paciente.nombre) LIKE ?', ["%{$search}%"])
+                  ->orWhere('paciente.gafete', 'LIKE', "%{$search}%")
+                  ->orWhereRaw('LOWER(paciente.apellido_paterno) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(paciente.apellido_materno) LIKE ?', ["%{$search}%"]);
+            });
         }
-      }
     })
     ->addColumn('acciones', function ($paciente) {
       $botones = '';
@@ -111,7 +126,7 @@ class PacientesSeguimientoController extends Controller
     return DataTables::eloquent($detalle_consulta)
     # filtrar por nombre sin importar mayusculas y minusculas
     ->filter(function ($query) use ($request) {
-      # buscar en tramite_detalle search[value]
+      # buscar search[value]
       if (request()->has('search')) {
         if (request()->input('search.value')) {
           $search = strtolower($request->input('search.value'));
@@ -172,73 +187,5 @@ class PacientesSeguimientoController extends Controller
     $view_data['notas'] = PacienteDatosConsultaNotaModel::where('paciente_datos_consulta_id',$detalle_consultaId)->where('borrado', 0)->get()->toArray();
     # Mandamos a la  vista
     return view('content.pages.expediente-paciente',['datos_vista' => $view_data]);
-  }
-
-  public function recetasPaciente(Request $request){
-    # Obtiene el ID desde la URL
-    $pacienteId = $request->query('paciente_id');
-
-    # Verifica si el ID existe
-    if (!$pacienteId) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
-    }
-
-    $view_data['paciente_id'] = $pacienteId;
-    $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$pacienteId)->where('borrado', 0)->get()->toArray();
-    $view_data['paciente']['recetas'] = RecetaModel::where('paciente_id',$pacienteId)->where('borrado', 0)->get()->toArray();
-
-    # Mandamos a la  vista
-    return view('content.pages.listado-receta-paciente',['datos_vista' => $view_data]);
-  }
-
-  public function obtenerListadoRecetasPaciente(Request $request){
-    # Obtener el paciente_id desde los datos POST
-    $pacienteId = $request->input('paciente_id');
-
-    $detalle_receta = RecetaModel::select(
-      'receta.id as id',
-      'receta.paciente_id as paciente_id',
-      'usuario.nombre as nombre',
-      'usuario.apellido_paterno as apellido_p',
-      'usuario.apellido_materno as apellido_m',
-      'paciente.nombre as paciente_nombre',
-      'paciente.apellido_paterno as paciente_apellido_p',
-      'paciente.apellido_materno as paciente_apellido_m',
-      'paciente.edad as paciente_edad',
-      'receta.medicamento_indicaciones as medicamento',
-      'receta.recomendaciones as recomendaciones',
-      'receta.created_at as fecha_creacion'
-    )
-    ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
-    ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
-    ->where('receta.paciente_id', $pacienteId)
-    ->where('usuario.borrado', 0)
-    ->where('receta.borrado', 0)
-    ->orderBy('receta.created_at', 'desc');
-    // dd($detalle_receta->toSql()); // Muestra la consulta SQL
-
-    return DataTables::eloquent($detalle_receta)
-    # filtrar por nombre sin importar mayusculas y minusculas
-    ->filter(function ($query) use ($request) {
-      # buscar en tramite_detalle search[value]
-      if (request()->has('search')) {
-        if (request()->input('search.value')) {
-          $search = strtolower($request->input('search.value'));
-          $query->whereRaw('LOWER(receta.medicamento_indicaciones) LIKE LOWER(\'%' . $search . '%\')');
-        }
-      }
-    })
-    ->addColumn('acciones', function ($detalle_receta) {
-      $botones = '';
-      // Enlace en la tabla
-      $botones .= '<a href="' . route('receta-nueva', ['medicamento' => urlencode($detalle_receta->medicamento),'recomendaciones' => urlencode($detalle_receta->recomendaciones),'id' => urlencode($detalle_receta->id),'paciente_nombre' => urlencode($detalle_receta->paciente_nombre),'paciente_apellido_p' => urlencode($detalle_receta->paciente_apellido_p),'paciente_apellido_m' => urlencode($detalle_receta->paciente_apellido_m),'paciente_edad' => urlencode($detalle_receta->paciente_edad),'paciente_id' => urlencode($detalle_receta->paciente_id)]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
-        '<i class="mdi mdi-text-box-check-outline mdi-20px"></i>' .
-      '</a>';
-
-
-      return $botones;
-    })
-    ->rawColumns(['acciones'])
-    ->make(true);
   }
 }

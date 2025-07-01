@@ -10,22 +10,48 @@
       "menuHeader": "Secciones"
     },
     {
-      "url": "/pacientes/nuevo",
-      "name": "Nuevo Paciente",
-      "icon": "menu-icon tf-icons mdi mdi-account-plus",
-      "slug": "nuevo-paciente"
+      "name": "Pacientes",
+      "icon": "menu-icon tf-icons mdi mdi-account-multiple",
+      "slug": "pacientes",
+      "submenu": [
+        {
+          "url": "/pacientes/nuevo",
+          "name": "Nuevo Paciente",
+          "icon": "menu-icon tf-icons mdi mdi-account-plus",
+          "slug": "nuevo-paciente"
+        },
+        {
+          "url": "/pacientes/consultar",
+          "name": "Buscar Expediente",
+          "icon": "menu-icon tf-icons mdi mdi-folder-search-outline",
+          "slug": "consultar-paciente"
+        },
+        {
+          "url": "",
+          "name": "Buscar Consulta",
+          "icon": "menu-icon tf-icons mdi mdi-file-find-outline",
+          "slug": ""
+        }
+      ]
     },
     {
-      "url": "/pacientes/consultar",
-      "name": "Buscar Expediente",
-      "icon": "menu-icon tf-icons mdi mdi-folder-search-outline",
-      "slug": "consultar-paciente"
-    },
-    {
-      "url": "/receta/nueva",
-      "name": "Crear receta",
-      "icon": "menu-icon tf-icons mdi mdi-text-box-plus-outline",
-      "slug": "receta-nueva"
+      "name": "Recetas",
+      "icon": "menu-icon tf-icons mdi mdi-text-box-multiple",
+      "slug": "recetas",
+      "submenu": [
+        {
+          "url": "/receta/nueva",
+          "name": "Crear receta",
+          "icon": "menu-icon tf-icons mdi mdi-text-box-plus-outline",
+          "slug": "receta-nueva"
+        },
+        {
+          "url": "",
+          "name": "Historial",
+          "icon": "menu-icon tf-icons mdi mdi-history",
+          "slug": ""
+        }
+      ]
     }
   ]
 }

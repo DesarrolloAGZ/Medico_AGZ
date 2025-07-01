@@ -15,8 +15,8 @@ class InicioController extends Controller
 {
   public function index()
   {
-    $view_data['estadisticas']['pacientesHombres'] = PacienteModel::where('genero', 'M')->where('borrado', 0)->count(); # Total de hombres atendidos
-    $view_data['estadisticas']['pacientesMujeres'] = PacienteModel::where('genero', 'F')->where('borrado', 0)->count(); # Total de mujeres atendidas
+    $view_data['estadisticas']['pacientesHombres'] = PacienteModel::where('genero', 'M')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->count('paciente.id'); # Total de hombres atendidos
+    $view_data['estadisticas']['pacientesMujeres'] = PacienteModel::where('genero', 'F')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->count('paciente.id'); # Total de mujeres atendidas
     $view_data['estadisticas']['enfermedadGeneral'] = PacienteDatosConsultaModel::where('paciente_tipo_visita_id', 1)->where('borrado', 0)->count(); # Total de pacientes que acuden por enfermedad general
     $view_data['estadisticas']['riesgoTrabajo'] = PacienteDatosConsultaModel::where('paciente_tipo_visita_id', 2)->where('borrado', 0)->count(); # Total de pacientes que acuden por riesgo de trabajo
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray(); # Tipos de la visita al servicio medico
@@ -24,7 +24,6 @@ class InicioController extends Controller
     # Consulta para mostrar las consultas de los últimos 8 días
     $fechaInicio = now()->subDays(7)->format('Y-m-d');
     $fechaFin = now()->format('Y-m-d');
-
     $consultasPorDia = PacienteDatosConsultaModel::select(
         DB::raw("DATE(created_at) as fecha_consulta"),
         DB::raw("COUNT(*) as total")

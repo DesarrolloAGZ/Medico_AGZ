@@ -7,12 +7,12 @@ $configData = Helper::appClasses();
 @section('title', 'Nueva Receta')
 
 @section('page-style')
-  <link rel="stylesheet" href="{{ asset('assets/css/recetas/recetas.css') }}">
-  <link rel="stylesheet" href="{{asset('assets/css/recetas/impresionReceta.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/css/recetas/recetas.css') }}?v={{ date('YmdHis')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/recetas/impresionReceta.css') }}?v={{ date('YmdHis')}}">
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/recetas/receta.js') }}"></script>
+  <script src="{{ asset('assets/js/recetas/receta.js') }}?v={{ date('YmdHis')}}"></script>
 
   <script>
     var datos_vista = @json($datos_vista);

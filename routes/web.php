@@ -32,10 +32,9 @@ Route::middleware(['auth'])->group(function () {
     # Ruta para la vista de ver el expediente de los pacientes
     Route::get('/expediente', 'App\Http\Controllers\pages\PacientesSeguimientoController@expedientePacientes')->name('listado-expediente-paciente');
 
+    # Ruta para la vista de las consultas del paciente seleccionado
     Route::get('/detalles-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
 
-    # Ruta para la vista de ver el listado de recetas del paciente
-    Route::get('/recetas', 'App\Http\Controllers\pages\PacientesSeguimientoController@recetasPaciente')->name('listado-recetas');
 
 
     # ****************************************************************************************
@@ -69,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
   Route::prefix('receta')->group(function () {
     # Ruta para la vista de crear receta nueva
     Route::get('/nueva', 'App\Http\Controllers\pages\RecetaController@nuevaReceta')->name('receta-nueva');
+
+    # Ruta para la vista de ver el listado de recetas del paciente
+    Route::get('/listado', 'App\Http\Controllers\pages\RecetaController@recetasPaciente')->name('listado-recetas');
 
 
     # ****************************************************************************************

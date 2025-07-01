@@ -10,7 +10,7 @@ $configData = Helper::appClasses();
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/pacientes/valoracionPacientes.js') }}"></script>
+  <script src="{{ asset('assets/js/pacientes/valoracionPacientes.js') }}?v={{ date('YmdHis')}}"></script>
   <script>
     var datos_vista = @json($datos_vista);
   </script>

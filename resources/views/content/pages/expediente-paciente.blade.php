@@ -3,12 +3,12 @@
 @section('title', 'Detalles de Consulta Paciente')
 
 @section('page-style')
-  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css')}}">
-  <link rel="stylesheet" href="{{asset('assets/css/pacientes/impresionExpediente.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css') }}?v={{ date('YmdHis')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/pacientes/impresionExpediente.css') }}?v={{ date('YmdHis')}}">
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/pacientes/expedientePaciente.js') }}"></script>
+  <script src="{{ asset('assets/js/pacientes/expedientePaciente.js') }}?v={{ date('YmdHis')}}"></script>
   <script>
     var datos_vista = @json($datos_vista);
   </script>

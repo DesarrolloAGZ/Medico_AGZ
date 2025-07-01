@@ -7,7 +7,7 @@
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/pacientes/seguimientoPacientes.js') }}"></script>
+  <script src="{{ asset('assets/js/pacientes/seguimientoPacientes.js') }}?v={{ date('YmdHis')}}"></script>
 @endsection
 
 @section('vendor-style')
@@ -49,8 +49,8 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-12">
-            <table class="table datatables-basic-filas">
+          <div class="table-responsive">
+            <table class="table datatables-basic-filas table-hover table-striped">
               <thead class="table-dark">
                 <tr style="height: 50px;">
                   <th>#</th>
@@ -59,6 +59,7 @@
                   <th class="text-center">Edad</th>
                   <th class="text-center">CURP</th>
                   <th class="text-center">Telefono celular</th>
+                  <th class="text-center">Número de consultas</th>
                   <th class="text-center" style="width: 100px;">Acciones</th>
                 </tr>
               </thead>

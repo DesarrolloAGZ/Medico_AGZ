@@ -7,7 +7,7 @@
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/pacientes/consultasPaciente.js') }}"></script>
+  <script src="{{ asset('assets/js/pacientes/consultasPaciente.js') }}?v={{ date('YmdHis')}}"></script>
   <script>
     var datos_vista = @json($datos_vista);
   </script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\pages;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
 use App\Models\PacienteModel;
 use App\Models\RecetaModel;
@@ -111,4 +112,61 @@ class RecetaController extends Controller
     return response()->json($result);
   }
 
+  public function recetasPaciente(Request $request){
+    $view_data['data'] = '';
+
+    # Mandamos a la  vista
+    return view('content.pages.listado-receta-paciente',['datos_vista' => $view_data]);
+  }
+
+  public function obtenerListadoRecetasPaciente(Request $request){
+    # Obtener el paciente_id desde los datos POST
+    $pacienteId = $request->input('paciente_id');
+
+    $detalle_receta = RecetaModel::select(
+      'receta.id as id',
+      'receta.paciente_id as paciente_id',
+      'usuario.nombre as nombre',
+      'usuario.apellido_paterno as apellido_p',
+      'usuario.apellido_materno as apellido_m',
+      'paciente.nombre as paciente_nombre',
+      'paciente.apellido_paterno as paciente_apellido_p',
+      'paciente.apellido_materno as paciente_apellido_m',
+      'paciente.edad as paciente_edad',
+      'receta.medicamento_indicaciones as medicamento',
+      'receta.recomendaciones as recomendaciones',
+      'receta.created_at as fecha_creacion'
+    )
+    ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+    ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+    ->where('receta.paciente_id', $pacienteId)
+    ->where('usuario.borrado', 0)
+    ->where('receta.borrado', 0)
+    ->orderBy('receta.created_at', 'desc');
+    // dd($detalle_receta->toSql()); // Muestra la consulta SQL
+
+    return DataTables::eloquent($detalle_receta)
+    # filtrar por nombre sin importar mayusculas y minusculas
+    ->filter(function ($query) use ($request) {
+      # buscar search[value]
+      if (request()->has('search')) {
+        if (request()->input('search.value')) {
+          $search = strtolower($request->input('search.value'));
+          $query->whereRaw('LOWER(receta.medicamento_indicaciones) LIKE LOWER(\'%' . $search . '%\')');
+        }
+      }
+    })
+    ->addColumn('acciones', function ($detalle_receta) {
+      $botones = '';
+      // Enlace en la tabla
+      $botones .= '<a href="' . route('receta-nueva', ['medicamento' => urlencode($detalle_receta->medicamento),'recomendaciones' => urlencode($detalle_receta->recomendaciones),'id' => urlencode($detalle_receta->id),'paciente_nombre' => urlencode($detalle_receta->paciente_nombre),'paciente_apellido_p' => urlencode($detalle_receta->paciente_apellido_p),'paciente_apellido_m' => urlencode($detalle_receta->paciente_apellido_m),'paciente_edad' => urlencode($detalle_receta->paciente_edad),'paciente_id' => urlencode($detalle_receta->paciente_id)]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
+        '<i class="mdi mdi-text-box-check-outline mdi-20px"></i>' .
+      '</a>';
+
+
+      return $botones;
+    })
+    ->rawColumns(['acciones'])
+    ->make(true);
+  }
 }
