@@ -64,7 +64,7 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <table class="table datatables-basic-filas">
+            <table class="table datatables-basic-filas table-hover table-striped">
               <thead class="table-dark">
                 <tr style="height: 50px;">
                   <th>#</th>

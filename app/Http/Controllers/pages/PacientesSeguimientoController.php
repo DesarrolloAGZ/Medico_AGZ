@@ -188,4 +188,83 @@ class PacientesSeguimientoController extends Controller
     # Mandamos a la  vista
     return view('content.pages.expediente-paciente',['datos_vista' => $view_data]);
   }
+
+  public function todasLasConsultas(Request $request){
+    $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
+
+    $view_data['tipo_visita_seleccionado'] = $request->input('tipo_visita_seleccionado');
+
+    # Mandamos a la  vista
+    return view('content.pages.listado-consultas',['datos_vista' => $view_data]);
+  }
+
+  public function obtenerListadoTodasConsultas(Request $request) {
+    $query = PacienteDatosConsultaModel::query()
+    ->select([
+        'paciente_datos_consulta.id as consulta_id',
+        'paciente.gafete as paciente_gafete',
+        DB::raw("CONCAT(paciente.nombre, ' ', paciente.apellido_paterno, ' ', paciente.apellido_materno) as paciente_nombre"),
+        'paciente.edad as paciente_edad',
+        'paciente_tipo_visita.nombre as tipo_visita',
+        'paciente_datos_consulta.cie_descripcion as motivo_consulta',
+        'paciente_datos_consulta.observaciones as consulta_observaciones',
+        'paciente_datos_consulta.medicamento_recetado as consulta_medicamento',
+        'paciente_empresa.nombre as paciente_empresa',
+        'paciente_unidad_negocio.nombre as paciente_unidad_negocio',
+        'paciente_area.nombre as paciente_area',
+        'paciente_subarea.nombre as paciente_subarea',
+        'paciente_datos_consulta.created_at as fecha_consulta'
+    ])
+    ->join('paciente', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')
+    ->join('paciente_tipo_visita', 'paciente_tipo_visita.id', '=', 'paciente_datos_consulta.paciente_tipo_visita_id')
+    ->join('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
+    ->join('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
+    ->join('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
+    ->join('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
+    ->where('paciente_datos_consulta.borrado', 0);
+
+    # Filtros de fechas en la query
+    if ($request->filled('fecha_inicio') && !$request->filled('fecha_fin')) {
+      $query->whereDate('paciente_datos_consulta.created_at', '=', $request->fecha_inicio);
+    }
+    elseif (!$request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+      $query->whereDate('paciente_datos_consulta.created_at', '=', $request->fecha_fin);
+    }
+    elseif ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+      $query->whereBetween('paciente_datos_consulta.created_at', [
+          $request->fecha_inicio . ' 00:00:00',
+          $request->fecha_fin . ' 23:59:59'
+      ]);
+    }
+
+    # Filtro por nombre
+    if ($request->filled('empleado_nombre')) {
+      $nombre = $request->empleado_nombre;
+      $query->where(function($q) use ($nombre) {
+        $q->where('paciente.nombre', 'iLIKE', "%$nombre%")
+          ->orWhere('paciente.apellido_paterno', 'iLIKE', "%$nombre%")
+          ->orWhere('paciente.apellido_materno', 'iLIKE', "%$nombre%")
+          ->orWhereRaw("CONCAT(paciente.nombre, ' ', paciente.apellido_paterno, ' ', paciente.apellido_materno) iLIKE ?", ["%$nombre%"]);
+      });
+    }
+
+    # Filtro por numero de empleado
+    if ($request->filled('numero_empleado')) {
+      $query->where('paciente.gafete', 'iLIKE', "%$request->numero_empleado%");
+    }
+
+    # Filtro por tipo de visita
+    if ($request->filled('tipo_visita')) {
+      $query->where('paciente_datos_consulta.paciente_tipo_visita_id', '=', $request->tipo_visita);
+    }
+
+    return DataTables::eloquent($query)
+    ->addColumn('acciones', function ($consulta) {
+      return '<a class="btn btn-icon rounded-pill btn-success waves-effect waves-light m-1" title="Ver detalle de la consulta" href="'.route('detalle-consulta-paciente', ['detalle_consulta_id' => $consulta->consulta_id]).'">
+                <i class="mdi mdi-account-details mdi-20px"></i>
+              </a>';
+    })
+    ->rawColumns(['acciones'])
+    ->toJson();
+  }
 }

@@ -24,13 +24,13 @@
           "url": "/pacientes/consultar",
           "name": "Buscar Expediente",
           "icon": "menu-icon tf-icons mdi mdi-folder-search-outline",
-          "slug": "consultar-paciente"
+          "slug": "listado-paciente"
         },
         {
-          "url": "",
+          "url": "/pacientes/buscar-consulta",
           "name": "Buscar Consulta",
           "icon": "menu-icon tf-icons mdi mdi-file-find-outline",
-          "slug": ""
+          "slug": "listado-consultas"
         }
       ]
     },

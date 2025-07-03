@@ -41,15 +41,24 @@ $configData = Helper::appClasses();
         <!-- Columna del card de total de numero de pacientes -->
         <div class="row mb-3">
           <div class="col-12">
-            <div class="card">
-              <div class="card-body">
+            <div class="card position-relative overflow-hidden">
+              <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de pacientes</h5>
                 <p class="mb-5">Número total de pacientes atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">{{ $datos_vista['estadisticas']['pacientesHombres'] + $datos_vista['estadisticas']['pacientesMujeres'] }} Pacientes.</h4>
-                <a href="{{ route('nuevo-paciente') }}" class="btn btn-sm btn-primary">Agregar nuevo</a>
-                <a href="{{ route('listado-paciente') }}" class="btn btn-sm btn-primary">Ver lista de pacientes</a>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                    {{ $datos_vista['estadisticas']['pacientesHombres'] + $datos_vista['estadisticas']['pacientesMujeres'] }} Pacientes.
+                </h4>
+                <div class="row">
+                  <div class="col-md-4">
+                    <a href="{{ route('nuevo-paciente') }}" class="btn btn-sm btn-primary mb-2">Agregar nuevo</a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="{{ route('listado-paciente') }}" class="btn btn-sm btn-primary">Ver lista de pacientes</a>
+                  </div>
+                </div>
               </div>
-              <i class="fa-solid fa-user-group position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
+              <!-- Icono grande -->
+              <i class="fa-solid fa-user-group position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0;"></i>
             </div>
           </div>
         </div>
@@ -58,25 +67,31 @@ $configData = Helper::appClasses();
 
           <!-- Columna de total de mujeres atendidas -->
           <div class="col-md-6 mb-3">
-            <div class="card">
-              <div class="card-body">
+            <div class="card position-relative overflow-hidden">
+              <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de mujeres</h5>
                 <p class="mb-5">Número total de pacientes mujeres atendidas.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">{{ $datos_vista['estadisticas']['pacientesMujeres'] }} Mujeres.</h4>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                  {{ $datos_vista['estadisticas']['pacientesMujeres'] }} Mujeres.
+                </h4>
               </div>
-              <i class="fa-solid fa-person-dress position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
+              <!-- Icono grande -->
+              <i class="fa-solid fa-person-dress position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0; color: #ff6b9d;"></i>
             </div>
           </div>
 
           <!-- Columna de total de hombres atendidos -->
           <div class="col-md-6 mb-3">
-            <div class="card">
-              <div class="card-body">
+            <div class="card position-relative overflow-hidden">
+              <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de hombres</h5>
                 <p class="mb-5">Número total de pacientes hombres atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">{{ $datos_vista['estadisticas']['pacientesHombres'] }} Hombres.</h4>
+                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                  {{ $datos_vista['estadisticas']['pacientesHombres'] }} Hombres.
+                </h4>
               </div>
-              <i class="fa-solid fa-person position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
+              <!-- Icono grande -->
+              <i class="fa-solid fa-person position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0; color: #4d8eff;"></i>
             </div>
           </div>
 
@@ -86,12 +101,14 @@ $configData = Helper::appClasses();
 
       <!-- Columna que muestra el numero de consultas por dias de la semana -->
       <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title mb-0 flex-wrap">Número de consultas por dia</h5>
+        <div class="card position-relative overflow-hidden">
+          <div class="card-body position-relative z-1">
+            <h5 class="card-title mb-0 flex-wrap">Número de consultas por día</h5>
             <p class="mb-5">Distribución de consultas médicas - últimos 8 días.</p>
             <div id="horizontalBarChart"></div>
           </div>
+          <!-- Icono grande -->
+          <i class="fa-solid fa-stethoscope position-absolute" style="font-size: 120px; right: -20px; bottom: -20px; opacity: 0.08; z-index: 0; color: #6c757d;"></i>
         </div>
       </div>
 
@@ -101,29 +118,41 @@ $configData = Helper::appClasses();
 
       <!-- Columna para saber el tipo de consulta por enfermedad general -->
       <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-body">
-            <div class="col-md-12">
-              <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}</h5>
-              <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][0]['descripcion'] }}</p>
-              <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">{{ $datos_vista['estadisticas']['enfermedadGeneral'] }} {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}</h4>
+        <div class="card position-relative overflow-hidden">
+          <div class="card-body position-relative z-1">
+            <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}</h5>
+            <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][0]['descripcion'] }}</p>
+            <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+              {{ $datos_vista['estadisticas']['enfermedadGeneral'] }} {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}
+            </h4>
+            <div class="row">
+              <div class="col-md-12">
+                <a href="{{ route('listado-consultas', ['tipo_visita_seleccionado' => 1]) }}" class="btn btn-sm btn-primary mb-2">Ver clasificación</a>
+              </div>
             </div>
-            <div class="col-md-12">
-              <i class="fa-solid fa-virus-covid position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
           </div>
-          </div>
+          <!-- Icono grande -->
+          <i class="fa-solid fa-virus position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.08; z-index: 0; color: #28a745;"></i>
         </div>
       </div>
 
       <!-- Columna para saber el tipo de consulta por rieso de trabajo -->
       <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-body">
-              <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}</h5>
-              <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][1]['descripcion'] }}</p>
-              <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">{{ $datos_vista['estadisticas']['riesgoTrabajo'] }} {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}</h4>
+        <div class="card position-relative overflow-hidden">
+          <div class="card-body position-relative z-1">
+            <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}</h5>
+            <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][1]['descripcion'] }}</p>
+            <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+              {{ $datos_vista['estadisticas']['riesgoTrabajo'] }} {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}
+            </h4>
+            <div class="row">
+              <div class="col-md-12">
+                <a href="{{ route('listado-consultas', ['tipo_visita_seleccionado' => 2]) }}" class="btn btn-sm btn-primary mb-2">Ver clasificación</a>
+              </div>
+            </div>
           </div>
-          <i class="fa-solid fa-user-injured position-absolute bottom-0 end-0 me-5 mb-5" style="font-size: 50px;"></i>
+          <!-- Icono grande -->
+          <i class="fa-solid fa-user-injured position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.08; z-index: 0; color: #fd7e14;"></i>
         </div>
       </div>
 

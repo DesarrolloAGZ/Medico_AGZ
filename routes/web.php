@@ -33,8 +33,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/expediente', 'App\Http\Controllers\pages\PacientesSeguimientoController@expedientePacientes')->name('listado-expediente-paciente');
 
     # Ruta para la vista de las consultas del paciente seleccionado
-    Route::get('/detalles-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
+    Route::get('/detalle-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
 
+    # Ruta para la vista de todas las consultas
+    Route::get('/buscar-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@todasLasConsultas')->name('listado-consultas');
+
+    # Ruta para la vista de todas las consultas mandando el tipo de visita
+    // Route::get('/buscar-consulta?tipo_visita=', 'App\Http\Controllers\pages\PacientesSeguimientoController@todasLasConsultas')->name('listado-consultas');
 
 
     # ****************************************************************************************
@@ -60,7 +65,8 @@ Route::middleware(['auth'])->group(function () {
       Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
       # Ruta para registrar la nota en el expediente
       Route::post('/buscar-cie', 'App\Http\Controllers\pages\PacientesController@buscarCie')->name('buscar-cie');
-
+      # Ruta para obtener el listado de consultas
+      Route::post('/obtener-lista-todas-consultas', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoTodasConsultas')->name('obtener-lista-pacientes');
     });
 
   });
