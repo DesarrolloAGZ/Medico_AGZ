@@ -143,7 +143,7 @@
         <div class="col-md-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <textarea class="form-control h-px-100" id="paciente_datos_consulta_nota-descripcion" name="paciente_datos_consulta_nota[descripcion]" placeholder="Escribe la nota a imprimir..."></textarea>
-            <label for="paciente_datos_consulta_nota-descripcion">Nota de envío:</label>
+            <label for="paciente_datos_consulta_nota-descripcion">Nota de evolución:</label>
           </div>
         </div>
         <div class="col-md-12 mb-4 text-end no-imprimir">

@@ -35,7 +35,7 @@ function generarTabla() {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4]
+          columns: [1, 2, 3, 4, 5]
         },
         footer: true
       },
@@ -47,7 +47,7 @@ function generarTabla() {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4]
+          columns: [1, 2, 3, 4, 5]
         },
         customize: function (win) {
           $(win.document.body).css('font-size', '12pt');
@@ -85,6 +85,7 @@ function generarTabla() {
       { data: 'nombre' },
       { data: 'medicamento' },
       { data: 'recomendaciones' },
+      { data: 'id' },
       { data: 'fecha_creacion' },
       { data: 'acciones' }
     ],
@@ -120,7 +121,7 @@ function generarTabla() {
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12">
+                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
                               <small class="mb-0">${full.medicamento != null ? full.medicamento : ''}</small>
                           </div>
@@ -136,7 +137,7 @@ function generarTabla() {
         render: function (data, type, full, meta) {
           return `
                    <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12">
+                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
                               <small class="mb-0">${full.recomendaciones != null ? full.recomendaciones : ''}</small>
                           </div>
@@ -146,6 +147,22 @@ function generarTabla() {
       },
       {
         targets: 4,
+        className: 'text-center',
+        title: 'Folio',
+        orderable: false,
+        render: function (data, type, full, meta) {
+          return `
+                   <div class="row">
+                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                          <div class="card-info ">
+                              <small class="mb-0">#F-${full.id != null ? full.id : ''}</small>
+                          </div>
+                      </div>
+                  </div>`;
+        }
+      },
+      {
+        targets: 5,
         className: 'text-center',
         title: 'Fecha de creación',
         orderable: false,
@@ -158,7 +175,7 @@ function generarTabla() {
 
           return `
                   <div class="row">
-                    <div class="d-flex gap-2 align-items-center col-12">
+                    <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                       <div class="card-info">
                           <small class="mb-0">${fecha_creacion}</small><br>
                       </div>

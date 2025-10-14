@@ -12,13 +12,11 @@ $(document).ready(function () {
   generarTabla();
 });
 
-$('#boton-recargar-tabla-pacientes').on('click', function () {
+$('#boton-recargar-tabla-historicos').on('click', function () {
   generarTabla();
 });
 
 function generarTabla() {
-  var paciente_id = $('#paciente_id_hidden').val();
-
   // Verificar si la tabla ya existe y destruirla para evitar el error de reinitialise
   if ($.fn.DataTable.isDataTable('.datatables-basic-filas')) {
     $('.datatables-basic-filas').DataTable().clear().destroy();
@@ -29,25 +27,25 @@ function generarTabla() {
       {
         extend: 'excel',
         text: '<i class="fas fa-file-excel"></i>',
-        title: 'Listado de consultas del paciente',
-        filename: 'consultas_paciente_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
+        title: 'Listado de historicos clinicos',
+        filename: 'historicos_clinicos_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
         exportOptions: {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
         },
         footer: true
       },
       {
         extend: 'print',
         text: '<i class="fas fa-print"></i>',
-        title: 'Listado de Expedientes',
+        title: 'Listado de historicos clinicos',
         exportOptions: {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
         },
         customize: function (win) {
           $(win.document.body).css('font-size', '12pt');
@@ -57,13 +55,10 @@ function generarTabla() {
     processing: true,
     serverSide: true,
     ajax: {
-      url: '/pacientes/api/obtener-lista-consultas-paciente',
+      url: '/historia_clinica/api/obtener-lista-historicos-clinicos',
       type: 'POST',
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      data: {
-        paciente_id: paciente_id // Pasar paciente_id como parte de los datos
       },
       beforeSend: function () {
         pantallaCarga('on');
@@ -82,16 +77,15 @@ function generarTabla() {
     },
     columns: [
       { data: 'id' },
-      { data: 'motivo_consulta' },
-      { data: 'codigo' },
-      { data: 'temperatura' },
-      { data: 'peso' },
-      { data: 'altura' },
-      { data: 'imc' },
-      { data: 'frecuencia_cardiaca' },
-      { data: 'saturacion_oxigeno' },
-      { data: 'presion_arterial' },
-      { data: 'fecha_registro' },
+      { data: 'tipo_registro' },
+      { data: 'curp' },
+      { data: 'nombre_completo' },
+      { data: 'genero' },
+      { data: 'edad' },
+      { data: 'antidoping' },
+      { data: 'calificacion' },
+      { data: 'idx' },
+      { data: 'created_at' },
       { data: 'acciones' }
     ],
     columnDefs: [
@@ -105,15 +99,15 @@ function generarTabla() {
       /* Acciones a realizar para cada fila */
       {
         targets: 1,
-        title: 'Motivo de consulta',
+        title: 'Tipo de histórico',
+        orderable: false,
         className: 'text-center',
-        width: '300px',
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <h6 class="mb-0">${full.motivo_consulta != null ? full.motivo_consulta : ''}</h6>
+                              <h6 class="mb-0">${full.tipo_registro != null ? full.tipo_registro : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -122,13 +116,14 @@ function generarTabla() {
       {
         targets: 2,
         className: 'text-center',
-        title: 'CIE-10',
+        orderable: false,
+        title: 'CURP',
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                      <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.codigo != null ? full.codigo : ''}</small>
+                            <h6 class="mb-0">${full.curp != null ? full.curp : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -137,14 +132,14 @@ function generarTabla() {
       {
         targets: 3,
         className: 'text-center',
-        title: '°C',
+        title: 'Nombre',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                      <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.temperatura}</small>
+                            <h6 class="mb-0">${full.nombre_completo != null ? full.nombre_completo : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -153,14 +148,16 @@ function generarTabla() {
       {
         targets: 4,
         className: 'text-center',
-        title: 'kg',
+        title: 'Genero',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                      <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.peso}</small>
+                            <h6 class="mb-0">${
+                              full.genero != null ? (full.genero == 'F' ? 'Mujer' : 'Hombre') : ''
+                            }</h6>
                           </div>
                       </div>
                   </div>`;
@@ -169,14 +166,14 @@ function generarTabla() {
       {
         targets: 5,
         className: 'text-center',
-        title: 'Cm',
+        title: 'Edad',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                      <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.altura}</small>
+                            <h6 class="mb-0">${full.edad != null ? full.edad + ' años' : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -185,14 +182,16 @@ function generarTabla() {
       {
         targets: 6,
         className: 'text-center',
-        title: 'IMC',
+        title: 'Antidoping',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.imc}</small>
+                            <h6 class="mb-0" style="color: ${
+                              full.antidoping != null ? (full.antidoping == 1 ? '#f43232' : '#006c39') : ''
+                            }">${full.antidoping != null ? (full.antidoping == 1 ? 'Positivo' : 'Negativo') : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -201,30 +200,43 @@ function generarTabla() {
       {
         targets: 7,
         className: 'text-center',
-        title: 'Lpm',
+        title: 'Calificación',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.frecuencia_cardiaca}</small>
+                            <h6 class="mb-0">${full.calificacion != null ? full.calificacion : ''}</h6>
                           </div>
                       </div>
                   </div>`;
+        },
+        createdCell: function (td, cellData, rowData, row, col) {
+          var color = '';
+
+          if (rowData.calificacion === 'Apto') {
+            color = '#D6FFC7';
+          } else if (rowData.calificacion === 'No apto') {
+            color = '#FFD6C7';
+          } else if (rowData.calificacion === 'Apto con condicionante') {
+            color = '#FFE9C7';
+          }
+
+          $(td).css('background-color', color);
         }
       },
       {
         targets: 8,
         className: 'text-center',
-        title: '%O',
+        title: 'IDX',
         orderable: false,
         render: function (data, type, full, meta) {
           return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                  <div class="row" style="max-height: 200px;overflow: auto;width: 200px;">
+                      <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.saturacion_oxigeno}</small>
+                            <h6 class="mb-0">${full.idx != null ? full.idx : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -233,34 +245,18 @@ function generarTabla() {
       {
         targets: 9,
         className: 'text-center',
-        title: 'mmHg',
-        orderable: false,
-        render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <small class="mb-0">${full.presion_arterial}</small>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 10,
-        className: 'text-center',
-        title: 'Fecha consulta',
+        title: 'Fecha creación',
         orderable: false,
         render: function (data, type, full, meta) {
           // Formatear la fecha usando moment.js en español
-          let fecha_creacion = moment(full.fecha_registro).format('DD MMMM YYYY, HH:mm');
+          let fecha_creacion = moment(full.fecha_creacion).format('DD MMMM YYYY, HH:mm');
 
           // Capitalizar la primera letra del mes
           fecha_creacion = capitalizeFirstLetter(fecha_creacion);
 
           return `
                   <div class="row">
-                    <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
+                    <div class="d-flex gap-2 align-items-center col-12">
                       <div class="card-info">
                           <small class="mb-0">${fecha_creacion}</small><br>
                       </div>

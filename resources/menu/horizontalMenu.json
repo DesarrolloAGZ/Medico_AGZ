@@ -17,19 +17,19 @@
         {
           "url": "/pacientes/nuevo",
           "name": "Nuevo Paciente",
-          "icon": "menu-icon tf-icons mdi mdi-account-plus",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-account-plus",
           "slug": "nuevo-paciente"
         },
         {
           "url": "/pacientes/consultar",
           "name": "Buscar Expediente",
-          "icon": "menu-icon tf-icons mdi mdi-folder-search-outline",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-folder-search-outline",
           "slug": "listado-paciente"
         },
         {
           "url": "/pacientes/buscar-consulta",
           "name": "Buscar Consulta",
-          "icon": "menu-icon tf-icons mdi mdi-file-find-outline",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-file-find-outline",
           "slug": "listado-consultas"
         }
       ]
@@ -42,14 +42,27 @@
         {
           "url": "/receta/nueva",
           "name": "Crear receta",
-          "icon": "menu-icon tf-icons mdi mdi-text-box-plus-outline",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-plus-outline",
           "slug": "receta-nueva"
+        }
+      ]
+    },
+    {
+      "name": "Historia clinica",
+      "icon": "menu-icon tf-icons mdi mdi-clipboard-text-clock",
+      "slug": "historia-clinica",
+      "submenu": [
+        {
+          "url": "/historia_clinica/crear",
+          "name": "Crear historia",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-plus-outline",
+          "slug": "historia-clinica-crear"
         },
         {
-          "url": "",
-          "name": "Historial",
-          "icon": "menu-icon tf-icons mdi mdi-history",
-          "slug": ""
+          "url": "/historia_clinica/listado",
+          "name": "Ver historias",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-format-list-text",
+          "slug": "historia-clinica-listado"
         }
       ]
     }

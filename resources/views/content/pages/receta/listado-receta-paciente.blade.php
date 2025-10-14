@@ -47,12 +47,12 @@
 
   <div class="card p-5">
 
-    {{-- <input id="paciente_id_hidden" value="{{ $datos_vista['paciente_id'] }}" style="display: none;"> --}}
+    <input id="paciente_id_hidden" value="{{ $datos_vista['paciente_id'] }}" style="display: none;">
 
     <div class="divider">
       <div class="divider-text texto-titulo">
         Listado de consultas del paciente </br>
-        {{-- {{ (isset($datos_vista['paciente']['datos_generales'])) ? $datos_vista['paciente']['datos_generales'][0]['nombre'].' '.$datos_vista['paciente']['datos_generales'][0]['apellido_paterno'].' '. $datos_vista['paciente']['datos_generales'][0]['apellido_materno'] : '' }} --}}
+        {{ (isset($datos_vista['paciente']['datos_generales'])) ? $datos_vista['paciente']['datos_generales'][0]['nombre'].' '.$datos_vista['paciente']['datos_generales'][0]['apellido_paterno'].' '. $datos_vista['paciente']['datos_generales'][0]['apellido_materno'] : '' }}
       </div>
     </div>
     <div class="card-datatable table-responsive pt-0">
@@ -71,6 +71,7 @@
                   <th class="text-center">Recetó</th>
                   <th class="text-center">Medicamentos</th>
                   <th class="text-center">Recomendaciones</th>
+                  <th class="text-center">Folio</th>
                   <th class="text-center">Fecha de creación</th>
                   <th class="text-center" style="width: 100px;">Acciones</th>
                 </tr>

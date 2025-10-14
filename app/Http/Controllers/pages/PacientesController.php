@@ -30,7 +30,7 @@ class PacientesController extends Controller
     $view_data['catalogos']['area'] = PacienteAreaModel::where('borrado', 0)->get()->toArray();
     $view_data['catalogos']['subarea'] = PacienteSubareaModel::where('borrado', 0)->get()->toArray();
     # Mandamos a la  vista
-    return view('content.pages.nuevo-paciente',['datos_vista' => $view_data]);
+    return view('content.pages.paciente.nuevo-paciente',['datos_vista' => $view_data]);
   }
 
   public function consultarPacienteApsi(Request $request)
@@ -192,7 +192,7 @@ class PacientesController extends Controller
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
 
     # Mandamos a la vista
-    return view('content.pages.valoracion-paciente',['datos_vista' => $view_data]);
+    return view('content.pages.paciente.valoracion-paciente',['datos_vista' => $view_data]);
   }
 
   public function guardarValoracionPaciente(Request $request){

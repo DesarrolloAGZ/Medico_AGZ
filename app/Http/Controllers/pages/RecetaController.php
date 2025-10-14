@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\PacienteModel;
 use App\Models\RecetaModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class RecetaController extends Controller
 {
@@ -18,15 +19,37 @@ class RecetaController extends Controller
   {
     $post = $request->all();
 
-    $id = urldecode($request->id);
-    $medicamento = urldecode($request->medicamento);
-    $recomendaciones = urldecode($request->recomendaciones);
-    $paciente_id = urldecode($request->paciente_id);
-    $paciente_nombre = urldecode($request->paciente_nombre);
-    $paciente_apellido_p = urldecode($request->paciente_apellido_p);
-    $paciente_apellido_m = urldecode($request->paciente_apellido_m);
-    $paciente_edad = urldecode($request->paciente_edad);
+    if(count($post) == 1){
+      # Obtiene el ID desde la URL
+      $detalle_receta_id = Crypt::decryptString($request->query('detalle_receta_id'));
 
+      $detalle_receta = RecetaModel::select(
+        'receta.id as receta_id',
+        'usuario.nombre as usuario_creados_nombre',
+        'usuario.apellido_paterno as usuario_creador_apellido_p',
+        'usuario.apellido_materno as usuario_creador_apellido_m',
+        'usuario.registro_ssa as registro_ssa',
+        'usuario.cedula_profesional as cedula_profesional',
+        'usuario.usuario_perfil_id as usuario_perfil_id',
+        'paciente.nombre as paciente_nombre',
+        'paciente.apellido_paterno as paciente_apellido_p',
+        'paciente.apellido_materno as paciente_apellido_m',
+        'paciente.edad as paciente_edad',
+        'receta.medicamento_indicaciones as medicamento',
+        'receta.recomendaciones as recomendaciones',
+        'receta.created_at as fecha_creacion'
+      )
+      ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+      ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+      ->where('receta.id', $detalle_receta_id)
+      ->where('usuario.borrado', 0)
+      ->where('receta.borrado', 0)
+      ->orderBy('receta.created_at', 'desc')->get()->toArray();
+
+      $view_data['detalles_receta'] = $detalle_receta;
+    }
+
+    # Perfiles => 1=MEDICO GENERAL ; 2=MEDICO ESPECIALISTA
     # Validamos si el usuario tiene permiso para acceder a esta seccion
     if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2){
       $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
@@ -34,19 +57,8 @@ class RecetaController extends Controller
       $lastFolio = RecetaModel::max('id');
       $view_data['folio'] = $lastFolio ? $lastFolio + 1 : 1;
 
-      $view_data['receta_existente'] = [
-          'medicamento' => $medicamento,
-          'recomendaciones' => $recomendaciones,
-          'id' => $id,
-          'paciente_id' => $paciente_id,
-          'paciente_nombre' => $paciente_nombre,
-          'paciente_apellido_p' => $paciente_apellido_p,
-          'paciente_apellido_m' => $paciente_apellido_m,
-          'paciente_edad' => $paciente_edad,
-      ];
-
       # Mandamos a la  vista
-      return view('content.pages.nueva-receta',['datos_vista' => $view_data]);
+      return view('content.pages.receta.nueva-receta',['datos_vista' => $view_data]);
     } else {
       return view('content.pages.pages-misc-error');
     }
@@ -113,10 +125,19 @@ class RecetaController extends Controller
   }
 
   public function recetasPaciente(Request $request){
-    $view_data['data'] = '';
+    $paciente_id = Crypt::decryptString($request->query('paciente_id'));
+
+    # Verifica si el ID existe
+    if (!$paciente_id) {
+      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+    }
+
+    $view_data['paciente_id'] = $paciente_id;
+    $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
+    $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
 
     # Mandamos a la  vista
-    return view('content.pages.listado-receta-paciente',['datos_vista' => $view_data]);
+    return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
   }
 
   public function obtenerListadoRecetasPaciente(Request $request){
@@ -129,6 +150,9 @@ class RecetaController extends Controller
       'usuario.nombre as nombre',
       'usuario.apellido_paterno as apellido_p',
       'usuario.apellido_materno as apellido_m',
+      'usuario.registro_ssa as registro_ssa',
+      'usuario.cedula_profesional as cedula_profesional',
+      'usuario.usuario_perfil_id as usuario_perfil_id',
       'paciente.nombre as paciente_nombre',
       'paciente.apellido_paterno as paciente_apellido_p',
       'paciente.apellido_materno as paciente_apellido_m',
@@ -157,12 +181,14 @@ class RecetaController extends Controller
       }
     })
     ->addColumn('acciones', function ($detalle_receta) {
+      $detalle_receta_id_encriptado = Crypt::encryptString($detalle_receta->id);
+
       $botones = '';
+
       // Enlace en la tabla
-      $botones .= '<a href="' . route('receta-nueva', ['medicamento' => urlencode($detalle_receta->medicamento),'recomendaciones' => urlencode($detalle_receta->recomendaciones),'id' => urlencode($detalle_receta->id),'paciente_nombre' => urlencode($detalle_receta->paciente_nombre),'paciente_apellido_p' => urlencode($detalle_receta->paciente_apellido_p),'paciente_apellido_m' => urlencode($detalle_receta->paciente_apellido_m),'paciente_edad' => urlencode($detalle_receta->paciente_edad),'paciente_id' => urlencode($detalle_receta->paciente_id)]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
+      $botones .= '<a href="' . route('receta-nueva', ['detalle_receta_id' => $detalle_receta_id_encriptado]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
         '<i class="mdi mdi-text-box-check-outline mdi-20px"></i>' .
       '</a>';
-
 
       return $botones;
     })

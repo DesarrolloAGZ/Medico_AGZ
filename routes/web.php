@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
       # Ruta para registrar la nota en el expediente
       Route::post('/registrar-nota', 'App\Http\Controllers\pages\PacientesController@registrarNota')->name('registrar-nota');
       # Ruta para obtener las recetas del paciente para la tabla
-      Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
+      Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\RecetaController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
       # Ruta para registrar la nota en el expediente
       Route::post('/buscar-cie', 'App\Http\Controllers\pages\PacientesController@buscarCie')->name('buscar-cie');
       # Ruta para obtener el listado de consultas
@@ -89,6 +89,31 @@ Route::middleware(['auth'])->group(function () {
       Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
     });
 
+  });
+
+  Route::prefix('historia_clinica')->group(function () {
+    # Ruta para la vista de crear un historico clinico
+    Route::get('/crear', 'App\Http\Controllers\pages\HistoricoClinicoController@crearHistorico')->name('historia-clinica-crear');
+
+    # Ruta para la vista de ver el listado de historico clinico
+    Route::get('/listado', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@listadoHistoricos')->name('historia-clinica-listado');
+
+    # Ruta para la vista de ver un historico clinico en especifico
+    Route::get('/consultar', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@consultarHistoricoClinico')->name('historico-clinico-consultar');
+
+
+    # ****************************************************************************************
+    # ****************************************************************************************
+
+
+    # Grupo de rutas para APIS de historico clinico.
+    Route::prefix('api')->group(function () {
+      # Ruta para registrar el historico clinico
+      Route::post('/registrar-historico', 'App\Http\Controllers\pages\HistoricoClinicoController@registrarHistoricoClinico')->name('registrar-historico');
+
+      # Ruta para obtener el listado de historicos clinicos
+      Route::post('/obtener-lista-historicos-clinicos', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@obtenerListadoHistoricosClinicos')->name('obtener-lista-historicos-clinicos');
+    });
   });
 
 });

@@ -50,7 +50,7 @@ $(document).ready(function () {
     if (!campoInvalidoEncontrado) {
       // Pregunta si se desea guardar el registro del paciente
       alertify.confirm(
-        '¿Desea guardar e imprimir la nota de envío?',
+        '¿Desea guardar e imprimir la nota de evolución?',
         function (e, ui) {
           document.querySelector('.alertify')?.style.setProperty('display', 'none', 'important');
           guardarNota();

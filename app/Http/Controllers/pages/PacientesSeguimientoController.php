@@ -12,11 +12,12 @@ use App\Models\PacienteDatosConsultaModel;
 use App\Models\PacienteTipoVisitaModel;
 use App\Models\PacienteDatosConsultaNotaModel;
 use App\Models\RecetaModel;
+use Illuminate\Support\Facades\Crypt;
 
 class PacientesSeguimientoController extends Controller
 {
   public function listadoPacientes(){
-    return view('content.pages.listado-pacientes');
+    return view('content.pages.paciente.listado-pacientes');
   }
 
   public function obtenerListadoPacientes(Request $request){
@@ -61,6 +62,8 @@ class PacientesSeguimientoController extends Controller
         }
     })
     ->addColumn('acciones', function ($paciente) {
+      $paciente_id_encriptado = Crypt::encryptString($paciente->id);
+
       $botones = '';
 
       $botones .= '<a  class="btn btn-icon rounded-pill btn-primary waves-effect waves-light m-1" title="Ver expediente" href="' . route('listado-expediente-paciente', ['paciente_id' => $paciente->id]) . '">' .
@@ -73,7 +76,7 @@ class PacientesSeguimientoController extends Controller
 
       // Solo mostrar botón si tiene al menos una receta
       if (count($paciente->recetas) > 0) {
-        $botones .= '<a class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver recetas" href="' . route('listado-recetas', ['paciente_id' => $paciente->id]) . '">' .
+        $botones .= '<a class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver recetas" href="' . route('listado-recetas', ['paciente_id' => $paciente_id_encriptado]) . '">' .
                       '<i class="mdi mdi-text-box-multiple mdi-20px"></i>' .
                     '</a>';
       }
@@ -97,7 +100,7 @@ class PacientesSeguimientoController extends Controller
     $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$pacienteId)->where('borrado', 0)->get()->toArray();
 
     # Mandamos a la  vista
-    return view('content.pages.listado-expediente-paciente',['datos_vista' => $view_data]);
+    return view('content.pages.paciente.listado-expediente-paciente',['datos_vista' => $view_data]);
   }
 
   public function obtenerListadoConsultasPaciente(Request $request){
@@ -186,7 +189,7 @@ class PacientesSeguimientoController extends Controller
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
     $view_data['notas'] = PacienteDatosConsultaNotaModel::where('paciente_datos_consulta_id',$detalle_consultaId)->where('borrado', 0)->get()->toArray();
     # Mandamos a la  vista
-    return view('content.pages.expediente-paciente',['datos_vista' => $view_data]);
+    return view('content.pages.paciente.expediente-paciente',['datos_vista' => $view_data]);
   }
 
   public function todasLasConsultas(Request $request){
@@ -195,7 +198,7 @@ class PacientesSeguimientoController extends Controller
     $view_data['tipo_visita_seleccionado'] = $request->input('tipo_visita_seleccionado');
 
     # Mandamos a la  vista
-    return view('content.pages.listado-consultas',['datos_vista' => $view_data]);
+    return view('content.pages.paciente.listado-consultas',['datos_vista' => $view_data]);
   }
 
   public function obtenerListadoTodasConsultas(Request $request) {

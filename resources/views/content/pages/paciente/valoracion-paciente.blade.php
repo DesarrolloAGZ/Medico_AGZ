@@ -415,7 +415,7 @@ $configData = Helper::appClasses();
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-presion_arterial" name="paciente_datos_consulta[presion_arterial]" type="text" placeholder="Ingresa la presion arterial" />
-              <label for="paciente_datos_consulta-presion_arterial">Presión arterial (mmHg)</label>
+              <label for="paciente_datos_consulta-presion_arterial">Presión arterial (mmHg) <i class="text-danger">*</i></label>
             </div>
             <span style="color: #006c39; cursor: pointer;" class="mdi mdi-information" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="popover-primary" data-bs-html="true" data-bs-trigger="hover"
               data-bs-content='

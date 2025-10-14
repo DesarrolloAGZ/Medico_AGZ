@@ -25,4 +25,9 @@ class UsuarioModel extends Model implements Authenticatable
     protected $hidden = ['password', 'remember_token', 'created_at', 'updated_at', 'borrado'];
     protected $table = 'usuario';
     public $timestamps = true;
+
+    public function usuario()
+    {
+      return $this->belongsTo(User::class, 'elaborado_por_usuario_id');
+    }
 }

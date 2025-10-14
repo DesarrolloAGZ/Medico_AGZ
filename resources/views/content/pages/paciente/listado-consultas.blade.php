@@ -102,7 +102,7 @@
         <button type="button" title="Recargar tabla" style="background: #f4f4f6;" id="boton-recargar-tabla-consultas" class="btn btn-label-secondary"><span class="mdi mdi-autorenew"></span></button>
       </div>
     </div>
-
+ 
     <div class="card-datatable table-responsive pt-0">
       <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
         <div class="row">

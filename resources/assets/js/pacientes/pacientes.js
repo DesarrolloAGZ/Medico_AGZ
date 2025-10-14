@@ -4,6 +4,11 @@ $(document).ready(function () {
 
   $('.select2').select2();
 
+  formateaCampoNumeroEmpleado("[name='filtro[paciente_numero_gafete]']");
+  formateaCampoCelular("[name='paciente[celular]']");
+  formateaCampoEdad("[name='paciente[edad]']");
+  formateaCampoCURP("[name='paciente[curp]']");
+
   // Inicializa el formulario de filtros para buscar empleado
   const formFiltroPaciente = document.getElementById('form-filtros_buscar_paciente');
   const validacionesFiltroPaciente = FormValidation.formValidation(formFiltroPaciente, {
@@ -100,7 +105,6 @@ $(document).ready(function () {
           }
         }
       },
-
       'paciente[paciente_empresa_id]': {
         validators: {
           notEmpty: {
@@ -108,7 +112,6 @@ $(document).ready(function () {
           }
         }
       },
-
       'paciente[paciente_unidad_negocio_id]': {
         validators: {
           notEmpty: {
@@ -116,7 +119,6 @@ $(document).ready(function () {
           }
         }
       },
-
       'paciente[paciente_area_id]': {
         validators: {
           notEmpty: {
@@ -124,7 +126,6 @@ $(document).ready(function () {
           }
         }
       },
-
       'paciente[paciente_subarea_id]': {
         validators: {
           notEmpty: {
