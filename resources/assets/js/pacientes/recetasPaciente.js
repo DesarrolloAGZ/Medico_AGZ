@@ -187,7 +187,10 @@ function generarTabla() {
     order: [[1, 'asc']],
     displayLength: 30,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-    lengthMenu: [30, 50, 75, 100, 150, 200],
+    lengthMenu: [
+        [30, 50, 75, 100, 150, 200, -1],
+        [30, 50, 75, 100, 150, 200, "Todos"]
+    ],
     language: {
       paginate: {
         // remove previous & next text from pagination
