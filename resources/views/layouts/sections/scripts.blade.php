@@ -17,7 +17,8 @@
 
 
 {{-- Funciones generales --}}
-<script src="{{ asset('assets/js/funciones_generales.js') }}"></script>
+<script src="{{ asset('assets/js/funciones_generales.js') }}?v={{ date('YmdHis')}}"></script>
+
 
 @yield('vendor-script')
 <!-- END: Page Vendor JS-->
