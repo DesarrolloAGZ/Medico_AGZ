@@ -4,7 +4,7 @@
     <h6 class="mb-0"><span class="mdi mdi-chart-arc me-2"></span>Interrogatorio por aparatos y sistemas</h6>
     <small>Los datos marcados con <i class="text-danger">*</i> son obligatorios</small>
   </div>
-
+{{-- {{ dd($datos_vista)}} --}}
   <div class="list-group mb-4">
 
     <div class="list-group-item list-group-item-action active">
@@ -13,7 +13,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-sintomas_generales" name="historico_clinico_aparatos_sistemas[sintomas_generales]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['sintomas_generales'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['sintomas_generales'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -36,7 +36,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-aparato_digestivo" name="historico_clinico_aparatos_sistemas[aparato_digestivo]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['aparato_digestivo'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['aparato_digestivo'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -59,7 +59,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-aparato_respiratorio" name="historico_clinico_aparatos_sistemas[aparato_respiratorio]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['aparato_respiratorio'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['aparato_respiratorio'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -82,7 +82,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-cardiovascular" name="historico_clinico_aparatos_sistemas[cardiovascular]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['cardiovascular'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['cardiovascular'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -105,7 +105,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-urogenital" name="historico_clinico_aparatos_sistemas[urogenital]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['urogenital'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['urogenital'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -128,7 +128,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-musculoesqueletico" name="historico_clinico_aparatos_sistemas[musculoesqueletico]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['musculoesqueletico'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['musculoesqueletico'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -151,7 +151,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-endocrino" name="historico_clinico_aparatos_sistemas[endocrino]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['endocrino'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['endocrino'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -174,7 +174,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-hematopoyetico" name="historico_clinico_aparatos_sistemas[hematopoyetico]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['hematopoyetico'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['hematopoyetico'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -197,7 +197,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-nervioso" name="historico_clinico_aparatos_sistemas[nervioso]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['nervioso'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['nervioso'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">
@@ -220,7 +220,7 @@
         <small>
           <label class="switch switch-primary ms-2" style="justify-content: center;">
             <input type="checkbox" class="switch-input campo_visualizar" id="historico_clinico_aparatos_sistemas-piel_faneras" name="historico_clinico_aparatos_sistemas[piel_faneras]"
-              {{ (isset($datos_vista['historico_clinico']) && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['piel_faneras'] == 1) ? 'checked': '' }} />
+              {{ (isset($datos_vista['historico_clinico']) && count($datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas']) > 0 && $datos_vista['historico_clinico'][0]['historico_clinico_aparatos_sistemas'][0]['piel_faneras'] == 1) ? 'checked': '' }} />
             <span class="switch-label" style="display: contents; color: #ff4d49;">No</span>
             <span class="switch-toggle-slider">
               <span class="switch-on">

@@ -100,7 +100,7 @@
     {{-- acordion de exploracion de fisica - cabeza --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" style="background-color: #e9ebee;" data-bs-toggle="collapse" data-bs-target="#acordion_cabeza" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" style="background-color: #f4f4f6;" data-bs-toggle="collapse" data-bs-target="#acordion_cabeza" aria-expanded="false">
           <span class="mdi mdi-head mdi-24px me-2"></span>Cabeza
         </button>
       </h2>
@@ -196,7 +196,7 @@
     {{-- acordion de exploracion de fisica - cuello --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #e9ebee;" data-bs-target="#acordion_cuello" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #f4f4f6;" data-bs-target="#acordion_cuello" aria-expanded="false">
           <span class="mdi mdi-account-voice mdi-24px me-2"></span>Cuello
         </button>
       </h2>
@@ -217,7 +217,7 @@
     {{-- acordion de exploracion de fisica - torax --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #e9ebee;" data-bs-target="#acordion_torax" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #f4f4f6;" data-bs-target="#acordion_torax" aria-expanded="false">
           <span class="mdi mdi-lungs mdi-24px me-2"></span>Torax
         </button>
       </h2>
@@ -238,7 +238,7 @@
     {{-- acordion de exploracion de fisica - columna --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #e9ebee;" data-bs-target="#acordion_columna" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #f4f4f6;" data-bs-target="#acordion_columna" aria-expanded="false">
           <span class="mdi mdi-bone mdi-24px me-2"></span>Columna
         </button>
       </h2>
@@ -259,7 +259,7 @@
     {{-- acordion de exploracion de fisica - abdomen --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #e9ebee;" data-bs-target="#acordion_abdomen" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #f4f4f6;" data-bs-target="#acordion_abdomen" aria-expanded="false">
           <span class="mdi mdi-stomach mdi-24px me-2"></span>Abdomen
         </button>
       </h2>
@@ -280,7 +280,7 @@
     {{-- acordion de exploracion de fisica - extremidades --}}
     <div class="accordion-item">
       <h2 class="accordion-header d-flex align-items-center">
-        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #e9ebee;" data-bs-target="#acordion_extremidades" aria-expanded="false">
+        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" style="background-color: #f4f4f6;" data-bs-target="#acordion_extremidades" aria-expanded="false">
           <span class="mdi mdi-arm-flex mdi-24px me-2"></span>Extremidades
         </button>
       </h2>
