@@ -66,11 +66,11 @@ class PacientesSeguimientoController extends Controller
 
       $botones = '';
 
-      $botones .= '<a  class="btn btn-icon rounded-pill btn-primary waves-effect waves-light m-1" title="Ver expediente" href="' . route('listado-expediente-paciente', ['paciente_id' => $paciente->id]) . '">' .
+      $botones .= '<a  class="btn btn-icon rounded-pill btn-primary waves-effect waves-light m-1" title="Ver expediente" href="' . route('listado-expediente-paciente', ['paciente_id' => $paciente_id_encriptado]) . '">' .
                     '<i class="mdi mdi-format-list-text mdi-20px"></i>' .
                   '</a>';
 
-      $botones .= '<a class="btn btn-icon rounded-pill btn-warning waves-effect waves-light m-1" title="Valorar paciente" href="' . route('registrar-valoracion-paciente', ['paciente_id' => $paciente->id]) . '">' .
+      $botones .= '<a class="btn btn-icon rounded-pill btn-warning waves-effect waves-light m-1" title="Valorar paciente" href="' . route('registrar-valoracion-paciente', ['paciente_id' => $paciente_id_encriptado]) . '">' .
                     '<i class="mdi mdi-medical-cotton-swab mdi-20px"></i>' .
                   '</a>';
 
@@ -89,7 +89,7 @@ class PacientesSeguimientoController extends Controller
 
   public function expedientePacientes(Request $request){
     # Obtiene el ID desde la URL
-    $pacienteId = $request->query('paciente_id');
+    $pacienteId = Crypt::decryptString($request->query('paciente_id'));
 
     # Verifica si el ID existe
     if (!$pacienteId) {
@@ -140,7 +140,7 @@ class PacientesSeguimientoController extends Controller
     ->addColumn('acciones', function ($detalle_consulta) {
       $botones = '';
 
-      $botones .= '<a  class="btn btn-icon rounded-pill btn-success waves-effect waves-light m-1" title="Ver detalle de la consulta" href="' . route('detalle-consulta-paciente', ['detalle_consulta_id' => $detalle_consulta->id]) . '">' .
+      $botones .= '<a  class="btn btn-icon rounded-pill btn-success waves-effect waves-light m-1" title="Ver detalle de la consulta" href="' . route('detalle-consulta-paciente', ['detalle_consulta_id' => Crypt::encryptString($detalle_consulta->id)]) . '">' .
                     '<i class="mdi mdi-account-details mdi-20px"></i>' .
                   '</a>';
 
@@ -152,7 +152,7 @@ class PacientesSeguimientoController extends Controller
 
   public function detalleConsultaPaciente(Request $request){
     # Obtiene el ID desde la URL
-    $detalle_consultaId = $request->query('detalle_consulta_id');
+    $detalle_consultaId = Crypt::decryptString($request->query('detalle_consulta_id'));
 
     # Verifica si el ID existe
     if (!$detalle_consultaId) {
@@ -263,7 +263,8 @@ class PacientesSeguimientoController extends Controller
 
     return DataTables::eloquent($query)
     ->addColumn('acciones', function ($consulta) {
-      return '<a class="btn btn-icon rounded-pill btn-success waves-effect waves-light m-1" title="Ver detalle de la consulta" href="'.route('detalle-consulta-paciente', ['detalle_consulta_id' => $consulta->consulta_id]).'">
+      $detalle_consulta_id_encriptado = Crypt::encryptString($consulta->consulta_id);
+      return '<a class="btn btn-icon rounded-pill btn-success waves-effect waves-light m-1" title="Ver detalle de la consulta" href="'.route('detalle-consulta-paciente', ['detalle_consulta_id' => $detalle_consulta_id_encriptado]).'">
                 <i class="mdi mdi-account-details mdi-20px"></i>
               </a>';
     })

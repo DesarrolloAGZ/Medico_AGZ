@@ -181,7 +181,7 @@
 
       </ul>
       <button type="button" class="btn btn-outline-warning d-grid w-100 mt-5" onclick="window.location.reload()">Recargar</button>
-      <button type="button" class="btn btn-outline-secondary d-grid w-100 mt-1" data-bs-dismiss="offcanvas">Cerrar</button>
+      <button type="button" class="btn btn-outline-danger d-grid w-100 mt-1" data-bs-dismiss="offcanvas">Cerrar</button>
     </div>
   </div>
 @endsection

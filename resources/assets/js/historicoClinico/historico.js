@@ -754,6 +754,7 @@ function eliminarAntecedente(id) {
 
 function deshabilitarCamposFormulario() {
   const campos = document.querySelectorAll('.campo_visualizar');
+  $('#boton-guardar_historico').hide();
   campos.forEach(campo => {
     campo.setAttribute('disabled', true);
   });

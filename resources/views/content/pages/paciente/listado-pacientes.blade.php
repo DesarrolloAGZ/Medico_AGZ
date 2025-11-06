@@ -50,7 +50,7 @@
         </div>
         <div class="row">
           <div class="table-responsive">
-            <table class="table datatables-basic-filas table-hover table-striped">
+            <table class="table datatables-basic-filas table-hover table-striped w-100">
               <thead class="table-dark">
                 <tr style="height: 50px;">
                   <th>#</th>

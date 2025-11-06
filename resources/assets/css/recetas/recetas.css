@@ -9,23 +9,6 @@
   top: 50px;
 }
 
-/* Marca de agua con pseudo-elemento */
-.editor-con-marca::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-image: url('http://medicoagz.local/assets/img/logos/agzback.png') !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: 50% auto !important;
-  opacity: 0.08 !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
 /* Contenedor para la firma */
 .firma-contenedor {
   display: flex;

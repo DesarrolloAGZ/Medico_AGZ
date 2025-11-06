@@ -18,6 +18,7 @@ use App\Models\PacienteHistoricoModel;
 use App\Models\PacienteTipoVisitaModel;
 use App\Models\PacienteDatosConsultaNotaModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class PacientesController extends Controller
 {
@@ -54,7 +55,7 @@ class PacientesController extends Controller
           'error' => false,
           'msg' => 'El paciente ya cuenta con expediente en el sistema',
           'body' => [
-            'id' => $pacienteExistente->id,
+            'id' => Crypt::encryptString($pacienteExistente->id),
             'codigo' => $pacienteExistente->gafete,
             'nombre' => $pacienteExistente->nombre,
             'ap_paterno' => $pacienteExistente->apellido_paterno,
@@ -157,7 +158,7 @@ class PacientesController extends Controller
         # Si todo esta correcto hacemos el commit de la transaccion
         DB::connection('pgsql')->commit();
         $result['error'] = false;
-        $result["paciente_id"] = $array_ids["paciente_id"];
+        $result["paciente_id"] = Crypt::encryptString($array_ids["paciente_id"]);
         $result["msg"] = 'El paciente fue registrado correctamente';
         $result["url"] = '/pacientes/nuevo';
       } else {
@@ -179,14 +180,14 @@ class PacientesController extends Controller
   public function registrarValoracionPaciente(Request $request)
   {
     # Obtiene el ID desde la URL
-    $pacienteId = $request->query('paciente_id');
+    $pacienteId = Crypt::decryptString($request->query('paciente_id'));
 
     # Verifica si el ID existe
     if (!$pacienteId) {
       return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
     }
 
-    $view_data['paciente_id'] = $pacienteId;
+    $view_data['paciente_id'] = Crypt::encryptString($pacienteId);
     $view_data['paciente']['datos_paciente'] = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->where('borrado', 0)->first();
     $view_data['paciente']['datos_ultima_consulta'] = PacienteDatosConsultaModel::where('paciente_id', $pacienteId)->where('borrado', 0)->latest('created_at')->first();
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
@@ -200,7 +201,6 @@ class PacientesController extends Controller
     $result = array("error" => false, "msg" => null, 'url' => null);
     # Obtenemos el POST
     $post = $request->all();
-    // dd($post);
 
     # Validación del CIE-10
     if (empty($post['paciente_datos_consulta']['cie_id'])) {
@@ -225,6 +225,8 @@ class PacientesController extends Controller
           case "paciente_datos_consulta":
             # Asignamos la fecha de registro
             $value['created_at'] = 'now()';
+
+            $value['paciente_id'] = Crypt::decryptString($value['paciente_id']);
 
             #insertamos los valores en la tabla del paciente
             $pacienteDatos = PacienteDatosConsultaModel::insertGetId($value);

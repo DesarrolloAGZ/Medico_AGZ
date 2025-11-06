@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="{{asset('assets/css/login.css')}}">
   <!-- AlertifyJS CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+  <style>
+    html{
+      zoom: 1 !important;
+    }
+  </style>
 @endsection
 
 @section('page-script')

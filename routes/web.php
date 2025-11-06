@@ -87,6 +87,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('api')->group(function () {
       # Ruta para registrar la receta
       Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
+
+      # Ruta para obtener los medicamentos
+      Route::post('/obtener-catalogo-medicamentos-hispatec', 'App\Http\Controllers\pages\RecetaController@obtenerMedicamentosHispatec')->name('obtener-catalogo-medicamentos-hispatec');
     });
 
   });

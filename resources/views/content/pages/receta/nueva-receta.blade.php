@@ -9,6 +9,39 @@ $configData = Helper::appClasses();
 @section('page-style')
   <link rel="stylesheet" href="{{ asset('assets/css/recetas/recetas.css') }}?v={{ date('YmdHis')}}">
   <link rel="stylesheet" href="{{asset('assets/css/recetas/impresionReceta.css') }}?v={{ date('YmdHis')}}">
+
+  <style>
+    .editor-con-marca::before {
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background-image: url('{{ env('APP_URL') }}/assets/img/logos/agzback.png') !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      background-size: 50% auto !important;
+      opacity: 0.08 !important;
+      pointer-events: none !important;
+      z-index: 0 !important;
+    }
+    .list-group-timeline-item {
+      border-left: 3px solid #7367f0;
+      margin-bottom: 10px;
+    }
+
+    .list-group-timeline-item:hover {
+      background-color: #eae9f1;
+      border-radius: 10px;
+    }
+    #canvasMedicamentos{
+      zoom: 0.8;
+    }
+    #form-receta{
+      zoom: 0.8;
+    }
+  </style>
 @endsection
 
 @section('page-script')
@@ -61,7 +94,7 @@ $configData = Helper::appClasses();
 
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline mb-6">
-            <select class="form-select select2" id="receta-paciente_id" name="receta[paciente_id]" onchange="colocarPacienteEnReceta(this)">
+            <select class="form-select select2 form-select-sm" id="receta-paciente_id" name="receta[paciente_id]" onchange="colocarPacienteEnReceta(this)">
               <option value="" selected disabled>Selecciona una opción</option>
               @foreach ($datos_vista['pacientes'] as $pacientes)
                 <option value="{{ $pacientes['id'] }}"
@@ -123,11 +156,22 @@ $configData = Helper::appClasses();
         </div>
 
         <div class="col-md-12">
-          <p class="text-center" style="background: #eee;"><strong>Medicamentos e indicaciones</strong></p>
+          <p class="text-center" style="background: #eee;"><strong>Medicamentos</strong></p>
+        </div>
+        <div class="col-md-12" id="contenedor-medicamentos">
+          <div class="container" style="width: 100%;padding: 0;margin: 0;display: contents;"></div>
+        </div>
+        <div class="col-md-12 text-center no-imprimir">
+          <button type="button" class="btn btn-label-info mb-4 mt-4 btn-sm" id="boton-obtener_listado_medicamentos">Agregar medicamento</button>
+        </div>
+
+        <div class="col-md-12">
+          <p class="text-center" style="background: #eee;"><strong>Indicaciones del medicamento</strong></p>
         </div>
         <div class="col-md-12">
           <textarea {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'disabled' : '' }} id="receta-medicamento_indicaciones" name="receta[medicamento_indicaciones]" cols="30" rows="5" style="border: none; background: transparent; outline: none; width: 100%;">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['medicamento']) ? $datos_vista['detalles_receta'][0]['medicamento']:'' }}</textarea>
         </div>
+
         <div class="col-md-12">
           <p class="text-center" style="background: #eee;"><strong>Recomendaciones generales</strong></p>
         </div>
@@ -156,7 +200,7 @@ $configData = Helper::appClasses();
     <div class="row mt-5 no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
       <div class="col-md-12 mb-4 text-end">
         <button id="boton-imprimir_receta" type="button" class="btn btn-warning me-2">
-          <span class="mdi mdi-printer" style="margin-right: 10px;"></span>Imprimir receta
+          <span class="mdi mdi-printer" style="margin-right: 10px;"></span>Guardar e imprimir receta
         </button>
       </div>
     </div>
@@ -167,6 +211,58 @@ $configData = Helper::appClasses();
           <span class="mdi mdi-home me-2"></span>Inicio
         </a>
       </div>
+    </div>
+  </div>
+
+  {{-- Listado del medicamento en un modal lateral --}}
+  <div class="offcanvas offcanvas-end no-imprimir" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="canvasMedicamentos" aria-labelledby="canvasMedicamentosLabel" style="width: 700px;">
+    <div class="offcanvas-header">
+      <h5 id="canvasMedicamentosLabel" class="offcanvas-title"><span class="mdi mdi-format-list-bulleted-square"></span> Listado de medicamentos</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0 d-flex flex-column">
+      <!-- Sección FIJA (sin scroll) -->
+      <div class="p-3 border-bottom bg-white" style="flex-shrink: 0;">
+        <div class="row justify-content-center">
+          <div class="col-md-12 mb-3">
+            <div class="form-floating form-floating-outline">
+              <select class="form-select form-select-sm" id="almacen_medicamentos" name="almacen_medicamentos" onchange="obtenerCatalogoMedicamentosHispatec()">
+                <option value="" selected disabled>Selecciona una opción</option>
+                @foreach ($datos_vista['usuario_almacenes'] as $almacen)
+                  <option value="{{ $almacen['almacen_id'] }}" data-empresa_id="{{$almacen['empresa_id']}}" data-almacen_codigo="{{$almacen['almacen_codigo']}}">
+                    {{ $almacen['almacen_codigo'] }} - {{ $almacen['almacen_nombre'] }} ({{ $almacen['empresa_nombre'] }})
+                  </option>
+                @endforeach
+              </select>
+              <label for="almacen_medicamentos">Almacén <i class="text-danger">*</i></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center" id="contenedor-filtros-medicamento" style="display: none;">
+          <div class="col-md-12">
+            <div class="form-floating form-floating-outline">
+              <input type="text" id="filtro-medicamento" name="filtro-medicamento" class="form-control" placeholder="Ingresa el medicamento a buscar." />
+              <label for="filtro-medicamento">Buscar medicamento</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección con SCROLL (solo la lista) -->
+      <div class="flex-grow-1" style="overflow-y: auto;">
+        <div class="p-3">
+          <ul class="list-group list-group-timeline" id="listado-medicamentos-receta">
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="offcanvas-footer p-3 border-top bg-white">
+      <button type="button" class="btn btn-outline-danger w-100" data-bs-dismiss="offcanvas">
+        Cerrar
+      </button>
     </div>
   </div>
 @endsection

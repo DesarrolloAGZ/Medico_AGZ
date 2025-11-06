@@ -102,12 +102,12 @@
         <button type="button" title="Recargar tabla" style="background: #f4f4f6;" id="boton-recargar-tabla-consultas" class="btn btn-label-secondary"><span class="mdi mdi-autorenew"></span></button>
       </div>
     </div>
- 
+
     <div class="card-datatable table-responsive pt-0">
       <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
         <div class="row">
           <div class="col-md-12">
-            <table class="table datatables-basic-filas table-hover table-striped">
+            <table class="table datatables-basic-filas table-hover table-striped w-100">
               <thead class="table-dark">
                 <tr style="height: 50px;">
                   <th class="text-center">id</th>
