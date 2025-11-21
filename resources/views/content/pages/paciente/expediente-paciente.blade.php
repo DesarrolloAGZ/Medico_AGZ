@@ -131,7 +131,6 @@
         <div style="">
           <ul class="list-group list-group-timeline">
             <li class="list-group-item list-group-timeline-warning" style="align-items: center;display: flex;"><span class="mdi mdi-eye mdi-36px p-2"></span><strong>Observaciones:</strong> <mark>{{ (isset($datos_vista['paciente']['detalles_consulta'])) ? $datos_vista['paciente']['detalles_consulta']->observaciones : 'Sin observaciones' }}</mark></li>
-            <li class="list-group-item list-group-timeline-warning" style="align-items: center;display: flex;"><span class="mdi mdi-pill mdi-36px p-2"></span><strong>Medicamento recetado:</strong> <mark>{{ (isset($datos_vista['paciente']['detalles_consulta'])) ? $datos_vista['paciente']['detalles_consulta']->medicamento_recetado : 'Sin medicamento recetado' }}</mark></li>
           </ul>
         </div>
       </div>

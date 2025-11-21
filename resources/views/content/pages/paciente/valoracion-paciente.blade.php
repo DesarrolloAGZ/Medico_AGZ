@@ -436,17 +436,10 @@ $configData = Helper::appClasses();
       </div>
 
       <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <textarea class="form-control h-px-100" id="paciente_datos_consulta-observaciones" name="paciente_datos_consulta[observaciones]" placeholder="Escribe las observaciones de la consulta..."></textarea>
             <label for="paciente_datos_consulta-observaciones">Observaciones</label>
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-          <div class="form-floating form-floating-outline mb-6">
-            <textarea class="form-control h-px-100" id="paciente_datos_consulta-medicamento_recetado" name="paciente_datos_consulta[medicamento_recetado]" placeholder="Escribe el medicamento recetado..."></textarea>
-            <label for="paciente_datos_consulta-medicamento_recetado">Medicamento recetado</label>
           </div>
         </div>
       </div>

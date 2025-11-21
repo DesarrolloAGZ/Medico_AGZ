@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers\pages;
 
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -11,6 +11,7 @@ use App\Models\PacienteModel;
 use App\Models\RecetaModel;
 use App\Models\RecetaMedicamentoModel;
 use App\Models\UsuarioAlmacenModel;
+use App\Models\RecetaValeHistoricoModel;
 use App\Models\RecetaConsumoHistoricoModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -31,23 +32,41 @@ class RecetaController extends Controller
         'usuario.nombre as usuario_creados_nombre',
         'usuario.apellido_paterno as usuario_creador_apellido_p',
         'usuario.apellido_materno as usuario_creador_apellido_m',
-        'usuario.registro_ssa as registro_ssa',
-        'usuario.cedula_profesional as cedula_profesional',
-        'usuario.usuario_perfil_id as usuario_perfil_id',
+        'usuario.registro_ssa',
+        'usuario.cedula_profesional',
+        'usuario.usuario_perfil_id',
         'paciente.nombre as paciente_nombre',
         'paciente.apellido_paterno as paciente_apellido_p',
         'paciente.apellido_materno as paciente_apellido_m',
         'paciente.edad as paciente_edad',
         'receta.medicamento_indicaciones as medicamento',
-        'receta.recomendaciones as recomendaciones',
-        'receta.created_at as fecha_creacion'
+        'receta.recomendaciones',
+        'receta.created_at as fecha_creacion',
+        DB::raw("string_agg(receta_medicamento.medicamento_nombre || ' -> Cantidad: ' || receta_medicamento.cantidad_solicitada || '', ' || ') as medicamentos_txt")
       )
       ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
       ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+      ->join('receta_medicamento', 'receta_medicamento.receta_id', '=', 'receta.id')
       ->where('receta.id', $detalle_receta_id)
       ->where('usuario.borrado', 0)
+      ->where('receta_medicamento.borrado', 0)
       ->where('receta.borrado', 0)
-      ->orderBy('receta.created_at', 'desc')->get()->toArray();
+      ->groupBy(
+        'receta.id',
+        'usuario.nombre',
+        'usuario.apellido_paterno',
+        'usuario.apellido_materno',
+        'usuario.registro_ssa',
+        'usuario.cedula_profesional',
+        'usuario.usuario_perfil_id',
+        'paciente.nombre',
+        'paciente.apellido_paterno',
+        'paciente.apellido_materno',
+        'paciente.edad',
+        'receta.medicamento_indicaciones',
+        'receta.recomendaciones',
+        'receta.created_at'
+      )->get()->toArray();
 
       $view_data['detalles_receta'] = $detalle_receta;
     }
@@ -73,20 +92,46 @@ class RecetaController extends Controller
   # Funcion para guardar los datos de la receta
   public function registrarReceta(Request $request)
   {
-    $result = array("error" => false, "msg" => null, 'url' => null, 'receta_id' => null);
+    $token = Helpers::obtenerToken();
+    if (!$token) {
+      return response()->json(['error' => true, 'msg' => 'No se pudo obtener token'], 500);
+    }
+
+    $result = ["error" => false, "msg" => null, 'url' => null, 'receta_id' => null];
     $post = $request->all();
     $post['medicamentos'] = json_decode($request->input('medicamentos'), true);
 
-    $datosPaciente = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $post['receta']['paciente_id'])->first();
+    $datosPaciente = $this->obtenerDatosPaciente($post['receta']['paciente_id']);
 
-    $url = env('CONSUMO_MEDICAMENTOS_HISPATEC');
+    # Agrupamos medicamentos por empresa y almacén
+    $grupos = $this->agruparMedicamentos($post['medicamentos']);
 
-    # Agrupamos los medicamentos por empresa y almacén
+    # Procesamos cada grupo (vale y consumo)
+    foreach ($grupos as $grupo) {
+      $respuesta = $this->procesarGrupo($grupo, $token, $datosPaciente);
+
+      if ($respuesta['error']) {
+        return response()->json($respuesta);
+      }
+    }
+
+    # Guardamos receta en BD
+    $respuestaBD = $this->guardarRecetaBD($post, $result);
+    return response()->json($respuestaBD);
+  }
+
+  private function obtenerDatosPaciente($pacienteId){
+    return PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->first();
+  }
+
+  private function agruparMedicamentos($medicamentos){
     $grupos = [];
-    foreach ($post['medicamentos'] as $item) {
+    foreach ($medicamentos as $item) {
       $clave = $item['empresa_id'] . '-' . $item['almacen_id'];
+
       $grupos[$clave]['empresa_id'] = $item['empresa_id'];
       $grupos[$clave]['almacen_id'] = $item['almacen_id'];
+
       $grupos[$clave]['items'][] = [
         "id" => $item["medicamento_id"],
         "codigo" => $item["medicamento_codigo"],
@@ -96,112 +141,145 @@ class RecetaController extends Controller
         "cantidad" => $item["cantidad_solicitada"]
       ];
     }
+    return $grupos;
+  }
 
-    # Enviamos un POST por cada grupo empresa/almacén
-    foreach ($grupos as $grupo) {
+  private function crearJsonVale($grupo, $paciente){
+    return [
+      "fecha" => date('Y-m-d'),
+      "solicitanteid" => 159,
+      "autorizadorid" => 159,
+      "estadoid" => 3,
+      "empresaid" => $grupo['empresa_id'],
+      "almacenid" => $grupo['almacen_id'],
+      "prioridadid" => 1,
+      "tipoid" => 1,
+      "almacenaltaid" => 1,
+      "centrocostoid" => 540,
+      "ordencompraid" => "",
+      "nombreentregado" => $this->nombreCompleto($paciente),
+      "fechaaplicacion" => date('Y-m-d'),
+      "items" => $grupo['items']
+    ];
+  }
 
-      $jsonData = [
-        "fecha" => date('Y-m-d'),
-        "solicitanteid" => 159,
-        "autorizadorid" => 159,
-        "estadoid" => 3,
-        "empresaid" => $grupo['empresa_id'],
-        "almacenid" => $grupo['almacen_id'],
-        "prioridadid" => 1,
-        "tipoid" => 1,
-        "almacenaltaid" => 1,
-        "centrocostoid" => 540,
-        "ordencompraid" => "",
-        "nombreentregado" => "DR. ".Auth::user()->nombre." ".Auth::user()->apellido_paterno." ".Auth::user()->apellido_materno." > Paciente: ".$datosPaciente->nombre." ".$datosPaciente->apellido_paterno." ".$datosPaciente->apellido_materno,
-        "fechaaplicacion" => date('Y-m-d'),
-        "items" => $grupo['items']
+  private function crearJsonConsumo($valeId, $paciente){
+    return [
+      "moveuserid" => 59,
+      "passhispatec" => "MarJim2024",
+      "valeid" => $valeId,
+      "aplicationdate" => date('Y-m-d'),
+      "receptionname" => $this->nombreCompleto($paciente),
+      "signature" => "",
+      "observations" => "Consumo generado desde el sistema del Servicio Médico AGZ"
+    ];
+  }
+
+  private function nombreCompleto($paciente)
+  {
+    return "DR. ".Auth::user()->nombre." ".Auth::user()->apellido_paterno." ".Auth::user()->apellido_materno." > Paciente: ".$paciente->nombre." ".$paciente->apellido_paterno." ".$paciente->apellido_materno;
+  }
+
+  private function postAPI($url, $json, $token){
+    $response = Http::withHeaders([
+      'Authorization' => 'Bearer ' . $token,
+      'Accept' => 'application/json',
+      'Content-Type'  => 'application/json'
+    ])->withoutVerifying()->send('POST', $url, ['json' => $json]);
+
+    if (!$response->successful()) {
+      return [
+        'error' => true,
+        'msg' => "No fue posible conectar con la API",
       ];
-
-      try {
-        $response = Http::withoutVerifying()->post($url, $jsonData);
-
-        if (!$response->successful()) {
-          $result['error'] = true;
-          $result['msg'] = "No fue posible conectarse a la API de Hispatec para la empresa {$grupo['empresa_id']} / almacén {$grupo['almacen_id']}.";
-          return response()->json($result);
-        }
-
-        $respuestaAPI = $response->json();
-
-        $historicoConsumo = RecetaConsumoHistoricoModel::insertGetId([
-          'json_data' => json_encode($jsonData), # Convertir array a JSON string
-          'respuesta_api' => json_encode($respuestaAPI), # Convertir array a JSON string
-          'created_at' => now()
-        ]);
-
-        if ($historicoConsumo == null) {
-          $result["error"] = true;
-          $result["msg"] = "No fue posible registrar el historico del consumo, intenta de nuevo.";
-        }
-
-        if (isset($respuestaAPI['error']) && $respuestaAPI['error'] == true) {
-          $result['error'] = true;
-          $result['msg'] = "La API de Hispatec devolvió un error para empresa {$grupo['empresa_id']} / almacén {$grupo['almacen_id']}.";
-          $result['api_response'] = $respuestaAPI;
-          return response()->json($result);
-        }
-
-      } catch (\Exception $e) {
-        $result['error'] = true;
-        $result['msg'] = "Error al intentar comunicarse con la API de Hispatec.";
-        $result['return'] = $e->getMessage();
-        return response()->json($result);
-      }
     }
 
-    # Si todas las APIs se enviaron correctamente, ahora sí guardamos la receta
+    $data = $response->json();
+
+    if (isset($data['error']) && $data['error'] == true) {
+      return [
+        'error' => true,
+        'msg' => "La API devolvió un error",
+        'data' => $data
+      ];
+    }
+
+    return ['error' => false, 'data' => $data];
+  }
+
+  private function guardarRecetaBD($post, $result)  {
     DB::connection('pgsql')->beginTransaction();
     try {
       foreach ($post as $key => $value) {
-        switch ($key) {
-          case "receta":
-            $value['created_at'] = now();
-            $value['usuario_id'] = Auth::user()->id;
+        if ($key === "receta") {
+          $value['created_at'] = now();
+          $value['usuario_id'] = Auth::user()->id;
 
-            $receta = RecetaModel::insertGetId($value);
+          $result["receta_id"] = RecetaModel::insertGetId($value);
 
-            if ($receta !== null) {
-              $result["receta_id"] = $receta;
-            } else {
-              $result["error"] = true;
-              $result["msg"] = "No fue posible registrar la receta, intenta de nuevo.";
-            }
-          break;
-
-          case "medicamentos":
-            if (isset($result["receta_id"]) && is_array($value)) {
-              foreach ($value as $medicamento) {
-                $medicamento['receta_id'] = $result["receta_id"];
-                $medicamento['created_at'] = now();
-                RecetaMedicamentoModel::insert($medicamento);
-              }
-            }
-          break;
+          if (!$result["receta_id"]) {
+            return ['error' => true, 'msg' => "No fue posible registrar la receta"];
+          }
+        }
+        if ($key === "medicamentos") {
+          foreach ($value as $medicamento) {
+            $medicamento['receta_id'] = $result["receta_id"];
+            $medicamento['created_at'] = now();
+            RecetaMedicamentoModel::insert($medicamento);
+          }
         }
       }
-
-      if (!$result["error"]) {
-        DB::connection('pgsql')->commit();
-        $result["msg"] = 'La receta fue registrada correctamente';
-      } else {
-        DB::connection('pgsql')->rollback();
-        $result["msg"] = '¡Lo sentimos! No fue posible registrar información del paciente.';
-      }
-
+      DB::connection('pgsql')->commit();
+      return [
+        "error" => false,
+        "msg" => "La receta fue registrada correctamente",
+        "receta_id" => $result["receta_id"]
+      ];
     } catch (\Exception $e) {
       DB::connection('pgsql')->rollback();
-      $result['error'] = true;
-      $result['msg'] = "Error al registrar receta en BD.";
-      $result['return'] = $e->getMessage();
+      return ['error' => true,'msg' => "Error al registrar receta en BD",'return' => $e->getMessage()];
     }
-
-    return response()->json($result);
   }
+
+  private function procesarGrupo($grupo, $token, $datosPaciente){
+    try {
+      # Generar vale
+      $jsonVale = $this->crearJsonVale($grupo, $datosPaciente);
+      $respuestaVale = $this->postAPI(env('GENERA_VALE_RD'), $jsonVale, $token);
+
+      if ($respuestaVale['error']) {
+        return $respuestaVale;
+      }
+
+      # Guardar histórico del vale
+      RecetaValeHistoricoModel::insert([
+          'json_data' => json_encode($jsonVale),
+          'respuesta_api' => json_encode($respuestaVale['data']),
+          'created_at' => now()
+      ]);
+
+      # Generar consumo en Hispatec
+      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente);
+      $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
+
+      if ($respuestaConsumo['error']) {
+          return $respuestaConsumo;
+      }
+
+      # Guardar histórico consumo
+      RecetaConsumoHistoricoModel::insert([
+          'json_data' => json_encode($jsonConsumo),
+          'respuesta_api' => json_encode($respuestaConsumo['data']),
+          'created_at' => now()
+      ]);
+
+      return ['error' => false];
+
+    } catch (\Exception $e) {
+      return ['error' => true,'msg' => "Error al comunicarse con las APIs",'return' => $e->getMessage()];
+    }
+  }
+
 
   public function recetasPaciente(Request $request){
     $paciente_id = Crypt::decryptString($request->query('paciente_id'));
@@ -236,7 +314,7 @@ class RecetaController extends Controller
       'paciente.apellido_paterno as paciente_apellido_p',
       'paciente.apellido_materno as paciente_apellido_m',
       'paciente.edad as paciente_edad',
-      'receta.medicamento_indicaciones as medicamento',
+      'receta.medicamento_indicaciones as indicaciones_medicamento',
       'receta.recomendaciones as recomendaciones',
       'receta.created_at as fecha_creacion'
     )
@@ -285,9 +363,9 @@ class RecetaController extends Controller
     ]);
 
     try {
-      $url =  env('API_URL_KUDE') . '/obtenerCatalogoMedicamentosHispatec.php';
+      $url_obtener_medicamento =  env('API_URL_KUDE') . '/obtenerCatalogoMedicamentosHispatec.php';
 
-      $response = Http::timeout(30)->asForm()->post($url, [
+      $response = Http::timeout(30)->asForm()->post($url_obtener_medicamento, [
         'empresaid' => $validado['empresaid'],
         'almacenid' => $validado['almacenid'],
         'almacencodigo' => $validado['almacencodigo'],

@@ -117,7 +117,6 @@
                   <th class="text-center">Tipo de visita</th>
                   <th class="text-center">CIE-10</th>
                   <th class="text-center">Observaciones</th>
-                  <th class="text-center">Medicamento</th>
                   <th class="text-center">Empresa</th>
                   <th class="text-center">Unidad negocio</th>
                   <th class="text-center">Area</th>

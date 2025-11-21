@@ -69,7 +69,7 @@
                 <tr style="height: 50px;">
                   <th>#</th>
                   <th class="text-center">Recetó</th>
-                  <th class="text-center">Medicamentos</th>
+                  <th class="text-center">Indicaciones del medicamento</th>
                   <th class="text-center">Recomendaciones</th>
                   <th class="text-center">Folio</th>
                   <th class="text-center">Fecha de creación</th>

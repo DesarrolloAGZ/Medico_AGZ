@@ -60,7 +60,7 @@ function generarTabla() {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         },
         footer: true
       },
@@ -72,7 +72,7 @@ function generarTabla() {
           modifier: {
             page: 'all'
           },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         },
         customize: function (win) {
           $(win.document.body).css('font-size', '12pt');
@@ -120,7 +120,6 @@ function generarTabla() {
       { data: 'tipo_visita' },
       { data: 'motivo_consulta' },
       { data: 'consulta_observaciones' },
-      { data: 'consulta_medicamento' },
       { data: 'paciente_empresa' },
       { data: 'paciente_unidad_negocio' },
       { data: 'paciente_area' },
@@ -234,24 +233,6 @@ function generarTabla() {
       {
         targets: 7,
         className: 'text-center',
-        title: 'Medicamento',
-        orderable: false,
-        render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12">
-                          <div class="card-info ">
-                            <small class="mb-0">${
-                              full.consulta_medicamento != null ? full.consulta_medicamento : ''
-                            }</small>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 8,
-        className: 'text-center',
         title: 'Empresa',
         orderable: false,
         render: function (data, type, full, meta) {
@@ -266,7 +247,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 9,
+        targets: 8,
         className: 'text-center',
         title: 'Unidad de negocio',
         orderable: false,
@@ -284,7 +265,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 10,
+        targets: 9,
         className: 'text-center',
         title: 'Area',
         orderable: false,
@@ -300,7 +281,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 11,
+        targets: 10,
         className: 'text-center',
         title: 'Subarea',
         orderable: false,
@@ -316,7 +297,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 12,
+        targets: 11,
         className: 'text-center',
         title: 'Fecha consulta',
         orderable: false,
@@ -342,8 +323,8 @@ function generarTabla() {
     displayLength: 30,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"B>><"row"<"col-sm-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     lengthMenu: [
-        [30, 50, 75, 100, 150, 200, -1],
-        [30, 50, 75, 100, 150, 200, "Todos"]
+      [30, 50, 75, 100, 150, 200, -1],
+      [30, 50, 75, 100, 150, 200, 'Todos']
     ],
     language: {
       paginate: {

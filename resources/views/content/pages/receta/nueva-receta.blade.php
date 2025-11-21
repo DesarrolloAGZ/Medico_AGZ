@@ -158,24 +158,26 @@ $configData = Helper::appClasses();
         <div class="col-md-12">
           <p class="text-center" style="background: #eee;"><strong>Medicamentos</strong></p>
         </div>
-        <div class="col-md-12" id="contenedor-medicamentos">
-          <div class="container" style="width: 100%;padding: 0;margin: 0;display: contents;"></div>
+        <div class="col-md-12" id="contenedor-medicamentos" style="min-height: 100px;">
+          <div class="container" style="width: 100%;padding: 0;margin: 0;display: contents; font-weight: bold; font-size: 16px;">
+            {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['medicamentos_txt']) ? $datos_vista['detalles_receta'][0]['medicamentos_txt'] : '' }}
+          </div>
         </div>
-        <div class="col-md-12 text-center no-imprimir">
+        <div class="col-md-12 text-center no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
           <button type="button" class="btn btn-label-info mb-4 mt-4 btn-sm" id="boton-obtener_listado_medicamentos">Agregar medicamento</button>
         </div>
 
         <div class="col-md-12">
           <p class="text-center" style="background: #eee;"><strong>Indicaciones del medicamento</strong></p>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-12" style="font-size: 17px;">
           <textarea {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'disabled' : '' }} id="receta-medicamento_indicaciones" name="receta[medicamento_indicaciones]" cols="30" rows="5" style="border: none; background: transparent; outline: none; width: 100%;">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['medicamento']) ? $datos_vista['detalles_receta'][0]['medicamento']:'' }}</textarea>
         </div>
 
         <div class="col-md-12">
           <p class="text-center" style="background: #eee;"><strong>Recomendaciones generales</strong></p>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-12" style="font-size: 17px;">
           <textarea {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ?'disabled':'' }} id="receta-recomendaciones" name="receta[recomendaciones]" class="mb-5" cols="30" rows="5" style="border: none; background: transparent; outline: none; width: 100%;">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['recomendaciones']) ? $datos_vista['detalles_receta'][0]['recomendaciones'] : '' }}</textarea>
         </div>
 

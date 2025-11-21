@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Config;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class Helpers
@@ -181,5 +182,23 @@ class Helpers
         }
       }
     }
+  }
+
+  public static function obtenerToken()
+  {
+    $loginUrl = env('API_GENERA_TOKEN');
+
+    $response = Http::withoutVerifying()->post($loginUrl, [
+        'username' => env('API_RHPAY_USER'),
+        'password' => env('API_RHPAY_PASS')
+    ]);
+
+    if (!$response->successful()) {
+        return null;
+    }
+
+    $json = $response->json();
+
+    return $json['token'] ?? null;
   }
 }

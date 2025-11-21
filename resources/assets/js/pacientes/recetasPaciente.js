@@ -42,7 +42,7 @@ function generarTabla() {
       {
         extend: 'print',
         text: '<i class="fas fa-print"></i>',
-        title: 'Listado de Expedientes',
+        title: 'Listado de recetas del paciente',
         exportOptions: {
           modifier: {
             page: 'all'
@@ -83,7 +83,7 @@ function generarTabla() {
     columns: [
       { data: 'id' },
       { data: 'nombre' },
-      { data: 'medicamento' },
+      { data: 'indicaciones_medicamento' },
       { data: 'recomendaciones' },
       { data: 'id' },
       { data: 'fecha_creacion' },
@@ -117,13 +117,15 @@ function generarTabla() {
       {
         targets: 2,
         className: 'text-center',
-        title: 'Medicamentos',
+        title: 'Indicaciones del medicamento',
         render: function (data, type, full, meta) {
           return `
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.medicamento != null ? full.medicamento : ''}</small>
+                              <small class="mb-0">${
+                                full.indicaciones_medicamento != null ? full.indicaciones_medicamento : ''
+                              }</small>
                           </div>
                       </div>
                   </div>`;
@@ -188,8 +190,8 @@ function generarTabla() {
     displayLength: 30,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     lengthMenu: [
-        [30, 50, 75, 100, 150, 200, -1],
-        [30, 50, 75, 100, 150, 200, "Todos"]
+      [30, 50, 75, 100, 150, 200, -1],
+      [30, 50, 75, 100, 150, 200, 'Todos']
     ],
     language: {
       paginate: {
