@@ -174,10 +174,10 @@ class PacientesSeguimientoController extends Controller
       'paciente_area.nombre as area_nombre',
       'paciente_subarea.nombre as subarea_nombre',
     )
-    ->join('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
-    ->join('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
-    ->join('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
-    ->join('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
+    ->leftjoin('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
+    ->leftjoin('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
+    ->leftjoin('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
+    ->leftjoin('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
     ->where('paciente.id', function($query) use ($detalle_consultaId) {
       $query->select('paciente_id')->from('paciente_datos_consulta')->where('id', $detalle_consultaId)->where('borrado', 0)->limit(1);
     })
@@ -220,10 +220,10 @@ class PacientesSeguimientoController extends Controller
     ])
     ->join('paciente', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')
     ->join('paciente_tipo_visita', 'paciente_tipo_visita.id', '=', 'paciente_datos_consulta.paciente_tipo_visita_id')
-    ->join('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
-    ->join('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
-    ->join('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
-    ->join('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
+    ->leftjoin('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
+    ->leftjoin('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
+    ->leftjoin('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
+    ->leftjoin('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
     ->where('paciente_datos_consulta.borrado', 0);
 
     # Filtros de fechas en la query

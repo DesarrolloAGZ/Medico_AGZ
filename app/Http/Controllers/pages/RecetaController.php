@@ -13,6 +13,7 @@ use App\Models\RecetaMedicamentoModel;
 use App\Models\UsuarioAlmacenModel;
 use App\Models\RecetaValeHistoricoModel;
 use App\Models\RecetaConsumoHistoricoModel;
+use App\Models\CatalogoRanchosAgrizarModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
@@ -22,6 +23,16 @@ class RecetaController extends Controller
   public function nuevaReceta(Request $request)
   {
     $post = $request->all();
+
+    # Obtener todos los empleados APSI
+    $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
+    $response = Http::get($urlTodosLosEmpleadosApsi,[]);
+    $response = $response->body();
+    $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
+    $response = json_decode($response, true);
+
+    # guardamos los empleados en la variable de vista
+    $view_data['todos_empleados_apsi'] = $response['response'];
 
     if(count($post) == 1){
       # Obtiene el ID desde la URL
@@ -101,7 +112,20 @@ class RecetaController extends Controller
     $post = $request->all();
     $post['medicamentos'] = json_decode($request->input('medicamentos'), true);
 
-    $datosPaciente = $this->obtenerDatosPaciente($post['receta']['paciente_id']);
+    $validaEmpleadoRegistradoEnSistemaMedico = PacienteModel::where('gafete', $post['empleado']['gafete'])->where('borrado', 0)->first();
+
+    $post['empleado']['created_at'] = now();
+    if(!$validaEmpleadoRegistradoEnSistemaMedico){
+      $registrarEmpleadoAlServicioMedico = PacienteModel::insertGetId($post['empleado']);
+      if(!$registrarEmpleadoAlServicioMedico){
+        return response()->json(['error' => true, 'msg' => 'No fue posible registrar al empleado en el sistema médico automaticamente'], 500);
+      } else {
+        $datosPaciente = $this->obtenerDatosPaciente($registrarEmpleadoAlServicioMedico);
+      }
+    } else {
+      $datosPaciente = $this->obtenerDatosPaciente($validaEmpleadoRegistradoEnSistemaMedico->id);
+    }
+    $post['receta']['paciente_id'] = $validaEmpleadoRegistradoEnSistemaMedico ? $validaEmpleadoRegistradoEnSistemaMedico->id : $registrarEmpleadoAlServicioMedico;
 
     # Agrupamos medicamentos por empresa y almacén
     $grupos = $this->agruparMedicamentos($post['medicamentos']);
@@ -121,7 +145,7 @@ class RecetaController extends Controller
   }
 
   private function obtenerDatosPaciente($pacienteId){
-    return PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->first();
+    return PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno', 'gafete')->where('id', $pacienteId)->first();
   }
 
   private function agruparMedicamentos($medicamentos){
@@ -145,6 +169,24 @@ class RecetaController extends Controller
   }
 
   private function crearJsonVale($grupo, $paciente){
+    # Descomentar para obtener centro de costos dinámico del APSI
+    $gafete = $paciente->gafete;
+    $urlDatosEmpleadoApsi =  env('API_URL_KUDE') . '/buscaEmpleadoAPSI.php';
+
+    $response = Http::get($urlDatosEmpleadoApsi, ['numeroEmpleado' => $gafete]);
+    $response = $response->body();
+    $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
+    $response = json_decode($response, true);
+
+    $centroCostos = trim($response['response']['centro']);
+
+
+
+    /*
+    #centro de costos fijo por el momento por usuario logueado
+    $centroCostos = CatalogoRanchosAgrizarModel::where('id', Auth::user()->catalogo_ranchos_agrizar_id)->where('borrado', 0)->first()->centro_costo;
+    */
+
     return [
       "fecha" => date('Y-m-d'),
       "solicitanteid" => 159,
@@ -155,7 +197,7 @@ class RecetaController extends Controller
       "prioridadid" => 1,
       "tipoid" => 1,
       "almacenaltaid" => 1,
-      "centrocostoid" => 540,
+      "centrocostoid" => $centroCostos,
       "ordencompraid" => "",
       "nombreentregado" => $this->nombreCompleto($paciente),
       "fechaaplicacion" => date('Y-m-d'),
@@ -163,7 +205,7 @@ class RecetaController extends Controller
     ];
   }
 
-  private function crearJsonConsumo($valeId, $paciente){
+  private function crearJsonConsumo($valeId, $paciente, $centroCostosId){
     return [
       "moveuserid" => 59,
       "passhispatec" => "MarJim2024",
@@ -171,13 +213,13 @@ class RecetaController extends Controller
       "aplicationdate" => date('Y-m-d'),
       "receptionname" => $this->nombreCompleto($paciente),
       "signature" => "",
-      "observations" => "Consumo generado desde el sistema del Servicio Médico AGZ"
+      "observations" => "Consumo generado desde: Sistema del Servicio Medico -> Centro de costos: ".$centroCostosId." -> Vale id: ".$valeId
     ];
   }
 
   private function nombreCompleto($paciente)
   {
-    return "DR. ".Auth::user()->nombre." ".Auth::user()->apellido_paterno." ".Auth::user()->apellido_materno." > Paciente: ".$paciente->nombre." ".$paciente->apellido_paterno." ".$paciente->apellido_materno;
+    return "Dr. ".Auth::user()->nombre." ".Auth::user()->apellido_paterno." ".Auth::user()->apellido_materno." > Paciente: ".$paciente->nombre." ".$paciente->apellido_paterno." ".$paciente->apellido_materno;
   }
 
   private function postAPI($url, $json, $token){
@@ -259,7 +301,7 @@ class RecetaController extends Controller
       ]);
 
       # Generar consumo en Hispatec
-      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente);
+      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente, $jsonVale['centrocostoid']);
       $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
 
       if ($respuestaConsumo['error']) {
@@ -324,7 +366,6 @@ class RecetaController extends Controller
     ->where('usuario.borrado', 0)
     ->where('receta.borrado', 0)
     ->orderBy('receta.created_at', 'desc');
-    // dd($detalle_receta->toSql()); // Muestra la consulta SQL
 
     return DataTables::eloquent($detalle_receta)
     # filtrar por nombre sin importar mayusculas y minusculas

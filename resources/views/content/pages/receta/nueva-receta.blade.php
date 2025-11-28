@@ -91,19 +91,21 @@ $configData = Helper::appClasses();
     <form id="form-receta" method="POST" enctype="multipart/form-data" onSubmit="return false">
       @csrf
       <div class="row no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ?'d-none':'' }}" style="justify-content: center; align-items: center;">
-
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline mb-6">
-            <select class="form-select select2 form-select-sm" id="receta-paciente_id" name="receta[paciente_id]" onchange="colocarPacienteEnReceta(this)">
+            <select class="form-select select2 form-select-sm" id="empleado-gafete" name="empleado[gafete]" onchange="colocarPacienteEnReceta(this)">
               <option value="" selected disabled>Selecciona una opción</option>
-              @foreach ($datos_vista['pacientes'] as $pacientes)
-                <option value="{{ $pacientes['id'] }}"
-                  {{ isset($datos_vista['detalles_receta']['paciente_id']) && $datos_vista['detalles_receta']['paciente_id'] == $pacientes['id'] ? 'selected' : '' }}>
-                  {{ $pacientes['nombre'].' '.$pacientes['apellido_paterno'].' '.$pacientes['apellido_materno'] }}
+              @foreach ($datos_vista['todos_empleados_apsi'] as $empleado)
+                <option
+                  value="{{ $empleado['codigo'] }}" data-genero="{{ $empleado['sexo'] }}" data-curp="{{ $empleado['curp'] }}"
+                  data-nombre="{{ $empleado['nombre'] }}" data-ap_paterno="{{ $empleado['ap_paterno'] }}"
+                  data-ap_materno="{{ $empleado['ap_materno'] }}"
+                  {{ isset($datos_vista['detalles_receta']['paciente_gafete']) && $datos_vista['detalles_receta']['paciente_gafete'] == $empleado['codigo'] ? 'selected' : '' }}>
+                  {{ $empleado['nombre'].' '.$empleado['ap_paterno'].' '.$empleado['ap_materno'] }}
                 </option>
               @endforeach
             </select>
-            <label for="receta-paciente_id">Paciente <i class="text-danger">*</i></label>
+            <label for="empleado-gafete">Paciente <i class="text-danger">*</i></label>
           </div>
         </div>
 

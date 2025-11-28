@@ -8,7 +8,7 @@ $(document).ready(function () {
   const formReceta = document.getElementById('form-receta');
   const validacionesReceta = FormValidation.formValidation(formReceta, {
     fields: {
-      'receta[paciente_id]': {
+      'empleado[gafete]': {
         validators: {
           notEmpty: {
             message: 'Este campo es obligatorio'
@@ -66,7 +66,7 @@ $(document).ready(function () {
     if (!campoInvalidoEncontrado) {
       // Pregunta si se desea guardar el registro del paciente
       alertify.confirm(
-        '¿Desea guardar e imprimir la receta?',
+        '¿Desea guardar e imprimir la receta? Una vez guardada la receta se generará un consumo del medicamento seleccionado.',
         function (e, ui) {
           document.querySelector('.alertify')?.style.setProperty('display', 'none', 'important');
           guardarReceta();
@@ -87,27 +87,33 @@ $(document).ready(function () {
 });
 
 function colocarPacienteEnReceta(elm) {
-  const pacienteId = elm.value;
-  // Busca el paciente con ese ID
-  const paciente = datos_vista.pacientes.find(p => p.id == pacienteId);
-
-  if (paciente) {
-    $('#paciente_receta-nombre').text(
-      paciente.nombre + ' ' + paciente.apellido_paterno + ' ' + paciente.apellido_materno
-    );
-    $('#paciente_receta-edad').text(paciente.edad);
-  } else {
-    // alertify.error('Ocurrio un error, intenta de nuevo. Si el problema continua contacta con el equipo de desarrollo');
+  const pacienteGafete = elm.value;
+  const empleado = datos_vista.todos_empleados_apsi.find(emp => emp.codigo == pacienteGafete);
+  if (empleado) {
+    $('#paciente_receta-nombre').text(`${empleado.nombre} ${empleado.ap_paterno} ${empleado.ap_materno}`);
+    const curp = empleado.curp || '';
+    const edad = obtenerEdadDesdeCURP(curp);
+    $('#paciente_receta-edad').text(edad !== null ? edad : 'N/A');
   }
 }
 
 function guardarReceta() {
-  // Obtenemos el formulario de registro de paciente
   var formElement = document.getElementById('form-receta');
   var formData = new FormData(formElement);
-  // Agregamos el array de medicamentos al formData
+
   formData.append('medicamentos', JSON.stringify(arrayMedicamentosReceta));
-  // CSRF Token al encabezado de la solicitud
+
+  var selectPaciente = document.getElementById('empleado-gafete');
+  var option = selectPaciente.options[selectPaciente.selectedIndex];
+  if (option) {
+    formData.append('empleado[genero]', option.getAttribute('data-genero'));
+    formData.append('empleado[curp]', option.getAttribute('data-curp'));
+    formData.append('empleado[nombre]', option.getAttribute('data-nombre'));
+    formData.append('empleado[apellido_paterno]', option.getAttribute('data-ap_paterno'));
+    formData.append('empleado[apellido_materno]', option.getAttribute('data-ap_materno'));
+    formData.append('empleado[edad]', obtenerEdadDesdeCURP(option.getAttribute('data-curp')));
+  }
+
   var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
   pantallaCarga('on');
@@ -116,34 +122,33 @@ function guardarReceta() {
     url: '/receta/api/registrar-receta',
     method: 'POST',
     data: formData,
-    headers: {
-      'X-CSRF-TOKEN': csrfToken
-    },
+    headers: { 'X-CSRF-TOKEN': csrfToken },
     processData: false,
     contentType: false,
     success: function (response) {
       pantallaCarga('off');
       if (response.error == false) {
         window.print();
-        $('#receta-paciente_id').val('').trigger('change'); // Limpiamos el campo de paciente
-        $('#paciente_receta-nombre').text(''); // Limpiamos el label del paciente en la receta
-        $('#paciente_receta-edad').text(''); // Limpiamos el label de la edad del paciente
-        $('#receta-medicamento_indicaciones').val(''); // Limpiamos el campo de las indicaciones de la receta
-        $('#receta-recomendaciones').val(''); // Limpiamos el campo de las recomendaciones de la receta
-        $('#receta-folio').text('#F-' + (response.receta_id + 1)); // Actualizamos el folio al siguiente
-        arrayMedicamentosReceta = []; // Limpiamos el array de medicamentos
-        document.querySelector('#contenedor-medicamentos .container').innerHTML = ''; // Limpiamos la vista de medicamentos
+        $('#empleado-gafete').val('').trigger('change');
+        $('#paciente_receta-nombre').text('');
+        $('#paciente_receta-edad').text('');
+        $('#receta-medicamento_indicaciones').val('');
+        $('#receta-recomendaciones').val('');
+        $('#receta-folio').text('#F-' + (response.receta_id + 1));
+        arrayMedicamentosReceta = [];
+        document.querySelector('#contenedor-medicamentos .container').innerHTML = '';
         alertify.success('Receta guardada correctamente');
+        document.getElementById('almacen_medicamentos').value = '';
+        document.getElementById('listado-medicamentos-receta').innerHTML = '';
+        pantallaCarga('on');
+        location.reload(true);
       } else {
         alertify.error(response.msg);
       }
     },
     error: function () {
-      // Si ocurre un error en la solicitud
       console.log('Error en la solicitud');
-      alertify.error(
-        '¡Lo sentimos! No fue posible guardar la nota. Inténtalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.'
-      );
+      alertify.error('No fue posible guardar la nota. Inténtalo de nuevo.');
     }
   });
 }

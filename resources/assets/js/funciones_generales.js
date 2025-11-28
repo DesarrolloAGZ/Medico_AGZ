@@ -7,6 +7,27 @@ function pantallaCarga(accion) {
   }
 }
 
+function obtenerEdadDesdeCURP(curp) {
+  if (!curp || curp.length < 10) return null;
+  // Extraer fecha del CURP
+  const anio = curp.substring(4, 6);
+  const mes = curp.substring(6, 8);
+  const dia = curp.substring(8, 10);
+  // Determinar siglo (CURP mayores al 2000 comienzan con 0–2)
+  const anioNum = parseInt(anio);
+  const siglo = anioNum <= 24 ? 2000 : 1900; // Ajusta si lo necesitas
+  const fechaNacimiento = new Date(siglo + anioNum, mes - 1, dia);
+  // Calcular edad
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+  const mesDiferencia = hoy.getMonth() - fechaNacimiento.getMonth();
+  // Ajustar si aún no cumple años este año
+  if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+    edad--;
+  }
+  return edad;
+}
+
 // Funcion para mostrar el grafico de total de consultas por ultimos 8 dias
 function verGraficoConsultasPorDia(datos_vista) {
   // Configuración de colores
