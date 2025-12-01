@@ -169,6 +169,7 @@ class RecetaController extends Controller
   }
 
   private function crearJsonVale($grupo, $paciente){
+    /*
     # Descomentar para obtener centro de costos dinámico del APSI
     $gafete = $paciente->gafete;
     $urlDatosEmpleadoApsi =  env('API_URL_KUDE') . '/buscaEmpleadoAPSI.php';
@@ -178,14 +179,13 @@ class RecetaController extends Controller
     $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
     $response = json_decode($response, true);
 
-    $centroCostos = trim($response['response']['centro']);
-
-
-
-    /*
-    #centro de costos fijo por el momento por usuario logueado
-    $centroCostos = CatalogoRanchosAgrizarModel::where('id', Auth::user()->catalogo_ranchos_agrizar_id)->where('borrado', 0)->first()->centro_costo;
+    $centroCostosIdApsi = trim($response['response']['centro']);
     */
+    $centroCostosIdApsi = '';
+
+    #centro de costos fijo por el momento por usuario logueado
+    $centroCostosCatalogo = CatalogoRanchosAgrizarModel::where('id', Auth::user()->catalogo_ranchos_agrizar_id)->where('borrado', 0)->first()->centro_costo;
+
 
     return [
       "fecha" => date('Y-m-d'),
@@ -197,7 +197,8 @@ class RecetaController extends Controller
       "prioridadid" => 1,
       "tipoid" => 1,
       "almacenaltaid" => 1,
-      "centrocostoid" => $centroCostos,
+      "centrocostoid" => $centroCostosIdApsi,
+      "centrocostocodigo" => $centroCostosCatalogo,
       "ordencompraid" => "",
       "nombreentregado" => $this->nombreCompleto($paciente),
       "fechaaplicacion" => date('Y-m-d'),
@@ -205,7 +206,7 @@ class RecetaController extends Controller
     ];
   }
 
-  private function crearJsonConsumo($valeId, $paciente, $centroCostosId){
+  private function crearJsonConsumo($valeId, $paciente, $centroCostos){
     return [
       "moveuserid" => 59,
       "passhispatec" => "MarJim2024",
@@ -213,7 +214,7 @@ class RecetaController extends Controller
       "aplicationdate" => date('Y-m-d'),
       "receptionname" => $this->nombreCompleto($paciente),
       "signature" => "",
-      "observations" => "Consumo generado desde: Sistema del Servicio Medico -> Centro de costos: ".$centroCostosId." -> Vale id: ".$valeId
+      "observations" => "Consumo generado desde: Sistema del Servicio Medico -> Centro de costos: ".$centroCostos." -> Vale id: ".$valeId
     ];
   }
 
@@ -301,7 +302,7 @@ class RecetaController extends Controller
       ]);
 
       # Generar consumo en Hispatec
-      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente, $jsonVale['centrocostoid']);
+      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente, $jsonVale['centrocostocodigo']);
       $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
 
       if ($respuestaConsumo['error']) {
