@@ -26,7 +26,7 @@ class RecetaController extends Controller
 
     # Obtener todos los empleados APSI
     $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
-    $response = Http::get($urlTodosLosEmpleadosApsi,[]);
+    $response = Http::timeout(1000)->get($urlTodosLosEmpleadosApsi);
     $response = $response->body();
     $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
     $response = json_decode($response, true);
