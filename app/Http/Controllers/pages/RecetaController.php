@@ -24,16 +24,6 @@ class RecetaController extends Controller
   {
     $post = $request->all();
 
-    # Obtener todos los empleados APSI
-    $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
-    $response = Http::timeout(1000)->get($urlTodosLosEmpleadosApsi);
-    $response = $response->body();
-    $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
-    $response = json_decode($response, true);
-
-    # guardamos los empleados en la variable de vista
-    $view_data['todos_empleados_apsi'] = $response['response'];
-
     if(count($post) == 1){
       # Obtiene el ID desde la URL
       $detalle_receta_id = Crypt::decryptString($request->query('detalle_receta_id'));
@@ -80,6 +70,18 @@ class RecetaController extends Controller
       )->get()->toArray();
 
       $view_data['detalles_receta'] = $detalle_receta;
+      # Mandamos un array vacío para que no falle la vista
+      $view_data['todos_empleados_apsi'] = [];
+    } else {
+      # Obtener todos los empleados APSI
+      $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
+      $response = Http::timeout(1000)->get($urlTodosLosEmpleadosApsi);
+      $response = $response->body();
+      $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
+      $response = json_decode($response, true);
+
+      # guardamos los empleados en la variable de vista
+      $view_data['todos_empleados_apsi'] = $response['response'];
     }
 
     $usuario_almacenes = UsuarioAlmacenModel::select('empresa_id', 'empresa_nombre', 'almacen_id', 'almacen_nombre', 'almacen_codigo')->where('usuario_id', Auth::user()->id)->where('borrado', 0)->get()->toArray();

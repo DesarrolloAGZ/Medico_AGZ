@@ -90,7 +90,7 @@ $configData = Helper::appClasses();
 
     <form id="form-receta" method="POST" enctype="multipart/form-data" onSubmit="return false">
       @csrf
-      <div class="row no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ?'d-none':'' }}" style="justify-content: center; align-items: center;">
+      <div class="row no-imprimir {{ (!empty($datos_vista['detalles_receta']) && isset($datos_vista['detalles_receta'][0]['receta_id'])) ? 'd-none' : '' }}" style="justify-content: center; align-items: center;">
         <div class="col-md-6 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <select class="form-select select2 form-select-sm" id="empleado-gafete" name="empleado[gafete]" onchange="colocarPacienteEnReceta(this)">
