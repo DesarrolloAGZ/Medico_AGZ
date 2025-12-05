@@ -4,7 +4,14 @@ namespace App\Helpers;
 
 use Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+# uses para generar excel
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Illuminate\Support\Facades\DB;
 
 class Helpers
 {
@@ -200,5 +207,195 @@ class Helpers
     $json = $response->json();
 
     return $json['token'] ?? null;
+  }
+
+  /**
+   * Genera el array de selects (DB::raw) a partir del mapa de columnas.
+   * Devuelve un array listo para ->select().
+   */
+  public static function buildSelect(array $columnas, array $mapaColumnas): array
+  {
+      $select = [];
+      foreach ($columnas as $col) {
+          if (isset($mapaColumnas[$col])) {
+              $select[] = DB::raw($mapaColumnas[$col]);
+          }
+      }
+      return $select;
+  }
+
+  /**
+   * Inserta logo y la información del reporte en las filas 1-3.
+   *
+   * @param Worksheet $sheet
+   * @param array $columnas
+   * @param array $registros
+   * @param string|null $logoPath
+  */
+  public static function insertLogoAndInfo(Worksheet $sheet, array $columnas, array $registros, ?string $logoPath = null)
+  {
+    $totalColumnas = count($columnas);
+    $ultimaColumna = Coordinate::stringFromColumnIndex($totalColumnas);
+
+    # Alturas del encabezado
+    $sheet->getRowDimension(1)->setRowHeight(30);
+    $sheet->getRowDimension(2)->setRowHeight(30);
+
+    # Merge celda del logo para A1:A2
+    $sheet->mergeCells("A1:A2");
+
+    # Insertar logo si existe
+    if ($logoPath && file_exists($logoPath)) {
+      $drawing = new Drawing();
+      $drawing->setName('Logo AGZ');
+      $drawing->setPath($logoPath);
+
+      # Tamaño cm -> px aproximado
+      $drawing->setHeight(2.23 * 37.795);  # alto
+      $drawing->setWidth(2.88 * 37.795);   # ancho
+
+      $drawing->setCoordinates('A1');
+      $drawing->setOffsetX(5);
+      $drawing->setOffsetY(5);
+      $drawing->setWorksheet($sheet);
+    }
+
+    # Datos del reporte (usuario y hora)
+    $usuario   = auth()->user()->nombre . ' ' . auth()->user()->apellido_paterno . ' ' . auth()->user()->apellido_materno;
+    $fechaHora = date('Y-m-d H:i:s');
+
+    # Renglón 1 y 2 (merge de B1:ultimaColumna1 y B2:ultimaColumna2)
+    $sheet->mergeCells("B1:{$ultimaColumna}1");
+    $sheet->setCellValue("B1", "Reporte generado por: $usuario");
+
+    $sheet->mergeCells("B2:{$ultimaColumna}2");
+    $sheet->setCellValue("B2", "Hora de generación: $fechaHora");
+
+    # Estilos de los primeros 3 renglones
+    $sheet->getStyle("B1:{$ultimaColumna}3")->applyFromArray([
+      'font' => [
+        'bold' => true,
+        'size' => 11,
+        'color' => ['rgb' => '000000']
+      ],
+      'alignment' => [
+        'horizontal' => Alignment::HORIZONTAL_LEFT,
+        'vertical'   => Alignment::VERTICAL_CENTER,
+        'wrapText'   => true
+      ]
+    ]);
+  }
+
+  /**
+   * Escribe los encabezados (fila específica).
+   *
+   * @param Worksheet $sheet
+   * @param array $columnas
+   * @param int $row (por defecto 3)
+   */
+  public static function writeHeaders(Worksheet $sheet, array $columnas, int $row = 3)
+  {
+    $styleHeader = [
+      'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+      'alignment' => [
+        'horizontal' => Alignment::HORIZONTAL_CENTER,
+        'vertical' => Alignment::VERTICAL_CENTER,
+      ],
+      'borders' => [
+        'allBorders' => [
+          'borderStyle' => Border::BORDER_THIN,
+          'color' => ['rgb' => '000000']
+        ]
+      ],
+      'fill' => [
+        'fillType' => Fill::FILL_SOLID,
+        'startColor' => ['rgb' => '005F32']
+      ]
+    ];
+
+    foreach ($columnas as $i => $titulo) {
+      $col = Coordinate::stringFromColumnIndex($i + 1) . $row;
+      $sheet->setCellValue($col, strtoupper($titulo));
+      $sheet->getStyle($col)->applyFromArray($styleHeader);
+      $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($i + 1))->setAutoSize(true);
+    }
+  }
+
+  /**
+   * Escribe los datos en las filas, empezando en $startRow (por defecto 4).
+   * Aplica bordes y alineación por celda.
+   *
+   * @param Worksheet $sheet
+   * @param array $columnas
+   * @param array $registros
+   * @param int $startRow
+   * @return int Última fila escrita + 1 (útil para calcular ultFila externamente)
+   */
+  public static function writeData(Worksheet $sheet, array $columnas, array $registros, int $startRow = 4): int
+  {
+    $fila = $startRow;
+    foreach ($registros as $reg) {
+      $colIndex = 1;
+      foreach ($columnas as $campo) {
+        $valor = $reg->$campo ?? '';
+        $col = Coordinate::stringFromColumnIndex($colIndex);
+        $sheet->setCellValue("{$col}{$fila}", $valor);
+
+        # Bordes y alineación.
+        $sheet->getStyle("{$col}{$fila}")->applyFromArray([
+          'borders' => [
+            'allBorders' => [
+              'borderStyle' => Border::BORDER_THIN,
+              'color' => ['rgb' => '000000']
+            ]
+          ],
+          'alignment' => ['vertical' => Alignment::VERTICAL_CENTER]
+        ]);
+        $colIndex++;
+      }
+      $fila++;
+    }
+    # devuelve la fila siguiente a la última escrita.
+    return $fila;
+  }
+
+  /**
+   * Realiza el merge vertical de celdas que tengan el mismo valor consecutivo por columna.
+   *
+   * @param Worksheet $sheet
+   * @param array $columnas
+   * @param int $startRow
+   */
+  public static function mergeIdenticalColumns(Worksheet $sheet, array $columnas, int $startRow = 2)
+  {
+    $ultimaFila = $sheet->getHighestRow();
+    $totalColumnas = count($columnas);
+
+    for ($colIndex = 1; $colIndex <= $totalColumnas; $colIndex++) {
+      $col = Coordinate::stringFromColumnIndex($colIndex);
+
+      $inicio = $startRow;
+      $valorAnterior = $sheet->getCell("{$col}{$startRow}")->getValue();
+
+      for ($filaActual = $startRow + 1; $filaActual <= $ultimaFila; $filaActual++) {
+        $valorActual = $sheet->getCell("{$col}{$filaActual}")->getValue();
+        if ($valorActual !== $valorAnterior) {
+          if ($filaActual - 1 > $inicio) {
+            $sheet->mergeCells("{$col}{$inicio}:{$col}" . ($filaActual - 1));
+            $sheet->getStyle("{$col}{$inicio}")
+              ->getAlignment()
+              ->setVertical(Alignment::VERTICAL_CENTER);
+          }
+          $inicio = $filaActual;
+          $valorAnterior = $valorActual;
+        }
+      }
+      if ($ultimaFila > $inicio) {
+        $sheet->mergeCells("{$col}{$inicio}:{$col}{$ultimaFila}");
+        $sheet->getStyle("{$col}{$inicio}")
+          ->getAlignment()
+          ->setVertical(Alignment::VERTICAL_CENTER);
+      }
+    }
   }
 }

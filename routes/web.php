@@ -119,6 +119,14 @@ Route::middleware(['auth'])->group(function () {
     });
   });
 
+  Route::prefix('reportes')->group(function () {
+    Route::get('/recetas', 'App\Http\Controllers\pages\reportes\ReportesController@index')->name('reporte-recetas');
+
+
+    Route::prefix('api')->group(function () {
+      Route::post('/recetas/exportar', 'App\Http\Controllers\pages\reportes\ReportesController@exportarRecetas');
+    });
+  });
 });
 
 Route::middleware([

@@ -252,6 +252,8 @@ class RecetaController extends Controller
     return ['error' => false, 'data' => $data];
   }
 
+  private $historicoConsumoId = null;
+
   private function guardarRecetaBD($post, $result)  {
     DB::connection('pgsql')->beginTransaction();
     try {
@@ -274,6 +276,14 @@ class RecetaController extends Controller
           }
         }
       }
+
+      if ($this->historicoConsumoId) {
+        RecetaConsumoHistoricoModel::where('id', $this->historicoConsumoId)->update(['receta_id' => $result["receta_id"]]);
+      } else {
+        DB::connection('pgsql')->rollback();
+        return ['error' => true, 'msg' => "Error al registrar receta en BD. No se pudo asociar la receta con el historico"];
+      }
+
       DB::connection('pgsql')->commit();
       return [
         "error" => false,
@@ -312,10 +322,12 @@ class RecetaController extends Controller
       }
 
       # Guardar histórico consumo
-      RecetaConsumoHistoricoModel::insert([
+      $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
           'json_data' => json_encode($jsonConsumo),
           'respuesta_api' => json_encode($respuestaConsumo['data']),
-          'created_at' => now()
+          'created_at' => now(),
+          'centro_costos' => $jsonVale['centrocostocodigo'],
+          'vale_id' => $respuestaVale['data']['valeid']
       ]);
 
       return ['error' => false];

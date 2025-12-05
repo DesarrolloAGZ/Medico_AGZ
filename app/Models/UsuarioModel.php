@@ -10,24 +10,28 @@ use Illuminate\Auth\Authenticatable as LaravelAuthenticatable;
 
 class UsuarioModel extends Model implements Authenticatable
 {
-    use HasFactory, LaravelAuthenticatable, Notifiable;
+  use HasFactory, LaravelAuthenticatable, Notifiable;
 
-    protected $connection = 'pgsql';
-    protected $fillable = [
-        'id',
-        'nombre',
-        'apellido_paterno',
-        'apellido_materno',
-        'correo',
-        'password',
-    ];
+  protected $connection = 'pgsql';
+  protected $fillable = [
+      'id',
+      'nombre',
+      'apellido_paterno',
+      'apellido_materno',
+      'correo',
+      'password',
+  ];
 
-    protected $hidden = ['password', 'remember_token', 'created_at', 'updated_at', 'borrado'];
-    protected $table = 'usuario';
-    public $timestamps = true;
+  protected $hidden = ['password', 'remember_token', 'created_at', 'updated_at', 'borrado'];
+  protected $table = 'usuario';
+  public $timestamps = true;
 
-    public function usuario()
-    {
-      return $this->belongsTo(User::class, 'elaborado_por_usuario_id');
-    }
+  public function usuario()
+  {
+    return $this->belongsTo(User::class, 'elaborado_por_usuario_id');
+  }
+  public function medicoTratanteReceta()
+  {
+    return $this->hasMany(RecetaModel::class, 'usuario_id', 'id');
+  }
 }
