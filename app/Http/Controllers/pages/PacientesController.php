@@ -118,6 +118,7 @@ class PacientesController extends Controller
           case "paciente":
             # Asignamos la fecha de registro
             $value['created_at'] = 'now()';
+            $value['usuario_id'] = Auth::user()->id;
 
             #insertamos los valores en la tabla del paciente
             $paciente = PacienteModel::insertGetId($value);
@@ -227,6 +228,7 @@ class PacientesController extends Controller
             $value['created_at'] = 'now()';
 
             $value['paciente_id'] = Crypt::decryptString($value['paciente_id']);
+            $value['usuario_id'] = Auth::user()->id;
 
             #insertamos los valores en la tabla del paciente
             $pacienteDatos = PacienteDatosConsultaModel::insertGetId($value);

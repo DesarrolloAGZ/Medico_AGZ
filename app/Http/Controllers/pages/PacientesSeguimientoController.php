@@ -184,8 +184,8 @@ class PacientesSeguimientoController extends Controller
     ->where('paciente.borrado', 0)
     ->get()->toArray();
 
-    // dd($view_data);
-    $view_data['paciente']['detalles_consulta'] = PacienteDatosConsultaModel::where('id', $detalle_consultaId)->where('borrado', 0)->first();
+    $view_data['paciente']['detalles_consulta'] = PacienteDatosConsultaModel::leftjoin('usuario', 'usuario.id', '=', 'paciente_datos_consulta.usuario_id')
+    ->where('paciente_datos_consulta.id', $detalle_consultaId)->where('paciente_datos_consulta.borrado', 0)->first();
     $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
     $view_data['notas'] = PacienteDatosConsultaNotaModel::where('paciente_datos_consulta_id',$detalle_consultaId)->where('borrado', 0)->get()->toArray();
     # Mandamos a la  vista

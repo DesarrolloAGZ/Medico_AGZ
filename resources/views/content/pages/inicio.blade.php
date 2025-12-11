@@ -36,17 +36,17 @@ $configData = Helper::appClasses();
   <div class="container mt-4">
     <div class="row">
 
-      <div class="col-md-8">
+      <div class="col-lg-8 col-md-12 col-sm-12">
 
         <!-- Columna del card de total de numero de pacientes -->
         <div class="row mb-3">
-          <div class="col-12">
+          <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="card position-relative overflow-hidden">
               <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de pacientes</h5>
                 <p class="mb-5">Número total de pacientes atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
-                    {{ $datos_vista['estadisticas']['pacientesHombres'] + $datos_vista['estadisticas']['pacientesMujeres'] }} Pacientes.
+                <h4 class="text-primary mb-5 text-center" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                    {{ $datos_vista['estadisticas']['pacientesHombres'] + $datos_vista['estadisticas']['pacientesMujeres'] }} <br>Pacientes.
                 </h4>
                 <div class="row">
                   <div class="col-md-4">
@@ -66,13 +66,13 @@ $configData = Helper::appClasses();
         <div class="row">
 
           <!-- Columna de total de mujeres atendidas -->
-          <div class="col-md-6 mb-3">
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
             <div class="card position-relative overflow-hidden">
               <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de mujeres</h5>
-                <p class="mb-5">Número total de pacientes mujeres atendidas.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
-                  {{ $datos_vista['estadisticas']['pacientesMujeres'] }} Mujeres.
+                <p class="mb-5" style="text-align: justify;">Número total de pacientes mujeres atendidas.</p>
+                <h4 class="text-primary mb-5 text-center" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                  {{ $datos_vista['estadisticas']['pacientesMujeres'] }} <br>Mujeres.
                 </h4>
               </div>
               <!-- Icono grande -->
@@ -81,13 +81,13 @@ $configData = Helper::appClasses();
           </div>
 
           <!-- Columna de total de hombres atendidos -->
-          <div class="col-md-6 mb-3">
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
             <div class="card position-relative overflow-hidden">
               <div class="card-body position-relative z-1">
                 <h5 class="card-title mb-0 flex-wrap">Total de hombres</h5>
-                <p class="mb-5">Número total de pacientes hombres atendidos.</p>
-                <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
-                  {{ $datos_vista['estadisticas']['pacientesHombres'] }} Hombres.
+                <p class="mb-5" style="text-align: justify;">Número total de pacientes hombres atendidos.</p>
+                <h4 class="text-primary mb-5 text-center" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+                  {{ $datos_vista['estadisticas']['pacientesHombres'] }} <br>Hombres.
                 </h4>
               </div>
               <!-- Icono grande -->
@@ -100,8 +100,8 @@ $configData = Helper::appClasses();
       </div>
 
       <!-- Columna que muestra el numero de consultas por dias de la semana -->
-      <div class="col-md-4">
-        <div class="card position-relative overflow-hidden">
+      <div class="col-lg-4 col-md-12 col-sm-12">
+        <div class="card position-relative overflow-hidden" style="height: 97%;">
           <div class="card-body position-relative z-1">
             <h5 class="card-title mb-0 flex-wrap">Número de consultas por día</h5>
             <p class="mb-5">Distribución de consultas médicas - últimos 8 días.</p>
@@ -117,13 +117,13 @@ $configData = Helper::appClasses();
     <div class="row mt-3">
 
       <!-- Columna para saber el tipo de consulta por enfermedad general -->
-      <div class="col-md-6 mb-3">
+      <div class="col-lg-6 col-md-12 col-sm-12 mb-3">
         <div class="card position-relative overflow-hidden">
           <div class="card-body position-relative z-1">
             <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}</h5>
-            <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][0]['descripcion'] }}</p>
-            <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
-              {{ $datos_vista['estadisticas']['enfermedadGeneral'] }} {{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}
+            <p class="mb-5" style="text-align: justify;">{{ $datos_vista['catalogos']['tipo_visita'][0]['descripcion'] }}</p>
+            <h4 class="text-primary mb-5 text-center" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+              {{ $datos_vista['estadisticas']['enfermedadGeneral'] }} <br>{{ $datos_vista['catalogos']['tipo_visita'][0]['nombre'] }}
             </h4>
             <div class="row">
               <div class="col-md-12">
@@ -137,13 +137,13 @@ $configData = Helper::appClasses();
       </div>
 
       <!-- Columna para saber el tipo de consulta por rieso de trabajo -->
-      <div class="col-md-6 mb-3">
+      <div class="col-lg-6 col-md-12 col-sm-12 mb-3">
         <div class="card position-relative overflow-hidden">
           <div class="card-body position-relative z-1">
             <h5 class="card-title mb-0 flex-wrap">Total de consultas por {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}</h5>
-            <p class="mb-5">{{ $datos_vista['catalogos']['tipo_visita'][1]['descripcion'] }}</p>
-            <h4 class="text-primary mb-5" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
-              {{ $datos_vista['estadisticas']['riesgoTrabajo'] }} {{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}
+            <p class="mb-5" style="text-align: justify;">{{ $datos_vista['catalogos']['tipo_visita'][1]['descripcion'] }}</p>
+            <h4 class="text-primary mb-5 text-center" style="font-size: calc(2rem + .3vw); word-wrap: break-word;">
+              {{ $datos_vista['estadisticas']['riesgoTrabajo'] }} <br>{{ $datos_vista['catalogos']['tipo_visita'][1]['nombre'] }}
             </h4>
             <div class="row">
               <div class="col-md-12">
