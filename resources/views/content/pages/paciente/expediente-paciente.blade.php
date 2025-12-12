@@ -53,9 +53,9 @@
         Detalle de la consulta
       </div>
     </div>
-    <div class="divider divider-dashed {{ $datos_vista['paciente']['detalles_consulta']->nombre ?? ''?'':'d-none' }}">
+    <div class="divider divider-dashed {{ $datos_vista['paciente']['detalles_consulta']->usuario_nombre ?? ''?'':'d-none' }}">
       <div class="divider-text texto-subtitulo">
-        Consulta realizada por: Dr. {{ trim(($datos_vista['paciente']['detalles_consulta']->nombre ?? '') . ' ' .($datos_vista['paciente']['detalles_consulta']->apellido_paterno ?? '') . ' ' .($datos_vista['paciente']['detalles_consulta']->apellido_materno ?? '')) }}
+        Consulta realizada por: Dr. {{ trim(($datos_vista['paciente']['detalles_consulta']->usuario_nombre ?? '') . ' ' .($datos_vista['paciente']['detalles_consulta']->usuario_apellido_paterno ?? '') . ' ' .($datos_vista['paciente']['detalles_consulta']->usuario_apellido_materno ?? '')) }}
       </div>
     </div>
 
