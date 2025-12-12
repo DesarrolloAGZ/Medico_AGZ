@@ -50,35 +50,7 @@ function generarTabla() {
   }
 
   let table = $('.datatables-basic-filas').DataTable({
-    buttons: [
-      {
-        extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i>',
-        title: 'Listado de consultas',
-        filename: 'consultas_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        },
-        footer: true
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i>',
-        title: 'Listado de consultas',
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        },
-        customize: function (win) {
-          $(win.document.body).css('font-size', '12pt');
-        }
-      }
-    ],
+    buttons: [],
     processing: true,
     serverSide: true,
     ajax: {
@@ -160,7 +132,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.paciente_nombre != null ? full.paciente_nombre : ''}</small>
+                              <h6 class="mb-0">${full.paciente_nombre != null ? full.paciente_nombre : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -175,7 +147,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.paciente_edad != null ? full.paciente_edad : ''}</small>
+                              <h6 class="mb-0">${full.paciente_edad != null ? full.paciente_edad : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -190,7 +162,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.tipo_visita != null ? full.tipo_visita : ''}</small>
+                              <h6 class="mb-0">${full.tipo_visita != null ? full.tipo_visita : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -206,7 +178,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.motivo_consulta != null ? full.motivo_consulta : ''}</small>
+                              <h6 class="mb-0">${full.motivo_consulta != null ? full.motivo_consulta : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -222,9 +194,9 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                            <small class="mb-0">${
+                            <h6 class="mb-0">${
                               full.consulta_observaciones != null ? full.consulta_observaciones : ''
-                            }</small>
+                            }</h6>
                           </div>
                       </div>
                   </div>`;
@@ -240,7 +212,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                            <small class="mb-0">${full.paciente_empresa != null ? full.paciente_empresa : ''}</small>
+                            <h6 class="mb-0">${full.paciente_empresa != null ? full.paciente_empresa : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -256,9 +228,9 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${
+                              <h6 class="mb-0">${
                                 full.paciente_unidad_negocio != null ? full.paciente_unidad_negocio : ''
-                              }</small>
+                              }</h6>
                           </div>
                       </div>
                   </div>`;
@@ -274,7 +246,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.paciente_area != null ? full.paciente_area : ''}</small>
+                              <h6 class="mb-0">${full.paciente_area != null ? full.paciente_area : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -290,7 +262,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12">
                           <div class="card-info ">
-                              <small class="mb-0">${full.paciente_subarea != null ? full.paciente_subarea : ''}</small>
+                              <h6 class="mb-0">${full.paciente_subarea != null ? full.paciente_subarea : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -312,7 +284,7 @@ function generarTabla() {
                   <div class="row">
                     <div class="d-flex gap-2 align-items-center col-12">
                       <div class="card-info">
-                          <small class="mb-0">${fecha_creacion}</small><br>
+                          <h6 class="mb-0">${fecha_creacion}</h6><br>
                       </div>
                     </div>
                   </div>`;

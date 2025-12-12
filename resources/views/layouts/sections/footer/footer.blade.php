@@ -9,7 +9,7 @@
         </span>
         .
       </div>
-      <div>V1.4</div>
+      <div>V1.5</div>
     </div>
   </div>
 </footer>

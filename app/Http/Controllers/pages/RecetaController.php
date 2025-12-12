@@ -339,16 +339,19 @@ class RecetaController extends Controller
 
 
   public function recetasPaciente(Request $request){
-    $paciente_id = Crypt::decryptString($request->query('paciente_id'));
 
-    # Verifica si el ID existe
-    if (!$paciente_id) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+    if(count($request->all()) == 0){
+      $view_data['paciente']['recetas'] = RecetaModel::where('borrado', 0)->get()->toArray();
+    } else {
+      $paciente_id = Crypt::decryptString($request->query('paciente_id'));
+      # Verifica si el ID existe
+      if (!$paciente_id) {
+        return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      }
+      $view_data['paciente_id'] = $paciente_id;
+      $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
+      $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
     }
-
-    $view_data['paciente_id'] = $paciente_id;
-    $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
-    $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
 
     # Mandamos a la  vista
     return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
@@ -367,6 +370,7 @@ class RecetaController extends Controller
       'usuario.registro_ssa as registro_ssa',
       'usuario.cedula_profesional as cedula_profesional',
       'usuario.usuario_perfil_id as usuario_perfil_id',
+      'paciente.gafete as paciente_gafete',
       'paciente.nombre as paciente_nombre',
       'paciente.apellido_paterno as paciente_apellido_p',
       'paciente.apellido_materno as paciente_apellido_m',
@@ -376,21 +380,26 @@ class RecetaController extends Controller
       'receta.created_at as fecha_creacion'
     )
     ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
-    ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
-    ->where('receta.paciente_id', $pacienteId)
-    ->where('usuario.borrado', 0)
+    ->join('paciente', 'paciente.id', '=', 'receta.paciente_id');
+    if ($pacienteId) {
+      $detalle_receta->where('receta.paciente_id', $pacienteId);
+    }
+    $detalle_receta = $detalle_receta->where('usuario.borrado', 0)
     ->where('receta.borrado', 0)
-    ->orderBy('receta.created_at', 'desc');
+    ->orderBy('paciente.gafete', 'asc');
 
     return DataTables::eloquent($detalle_receta)
     # filtrar por nombre sin importar mayusculas y minusculas
-    ->filter(function ($query) use ($request) {
-      # buscar search[value]
-      if (request()->has('search')) {
-        if (request()->input('search.value')) {
-          $search = strtolower($request->input('search.value'));
-          $query->whereRaw('LOWER(receta.medicamento_indicaciones) LIKE LOWER(\'%' . $search . '%\')');
-        }
+   ->filter(function ($query) use ($request) {
+      $search = $request->input('search.value');
+      if (!empty($search)) {
+        $search = strtolower($search);
+        $query->where(function ($q) use ($search) {
+          $q->whereRaw('CAST(paciente.gafete AS TEXT) LIKE ?', ["%{$search}%"])
+          ->orWhereRaw('LOWER(paciente.nombre) LIKE ?', ["%{$search}%"])
+          ->orWhereRaw('LOWER(paciente.apellido_paterno) LIKE ?', ["%{$search}%"])
+          ->orWhereRaw('LOWER(paciente.apellido_materno) LIKE ?', ["%{$search}%"]);
+        });
       }
     })
     ->addColumn('acciones', function ($detalle_receta) {

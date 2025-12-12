@@ -23,35 +23,7 @@ function generarTabla() {
   }
 
   let table = $('.datatables-basic-filas').DataTable({
-    buttons: [
-      {
-        extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i>',
-        title: 'Listado de historicos clinicos',
-        filename: 'historicos_clinicos_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        },
-        footer: true
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i>',
-        title: 'Listado de historicos clinicos',
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        },
-        customize: function (win) {
-          $(win.document.body).css('font-size', '12pt');
-        }
-      }
-    ],
+    buttons: [],
     processing: true,
     serverSide: true,
     ajax: {
@@ -258,7 +230,7 @@ function generarTabla() {
                   <div class="row">
                     <div class="d-flex gap-2 align-items-center col-12">
                       <div class="card-info">
-                          <small class="mb-0">${fecha_creacion}</small><br>
+                          <h6 class="mb-0">${fecha_creacion}</h6><br>
                       </div>
                     </div>
                   </div>`;

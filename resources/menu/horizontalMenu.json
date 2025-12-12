@@ -44,6 +44,12 @@
           "name": "Crear receta",
           "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-plus-outline",
           "slug": "receta-nueva"
+        },
+        {
+          "url": "/receta/listado",
+          "name": "Ver recetas",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-format-list-text",
+          "slug": "receta-listado"
         }
       ]
     },
@@ -63,6 +69,31 @@
           "name": "Ver historias",
           "icon": "menu-icon me-1 tf-icons mdi mdi-format-list-text",
           "slug": "historia-clinica-listado"
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "icon": "menu-icon tf-icons mdi mdi-file-chart",
+      "slug": "reportes",
+      "submenu": [
+        {
+          "url": "/reportes/recetas",
+          "name": "Rep. recetas",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-multiple",
+          "slug": "reporte-recetas"
+        },
+        {
+          "url": "/reportes/pacientes",
+          "name": "Rep. pacientes",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-account-injury-outline",
+          "slug": "reporte-pacientes"
+        },
+        {
+          "url": "/reportes/consultas",
+          "name": "Rep. consultas",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-medical-cotton-swab",
+          "slug": "reporte-consultas"
         }
       ]
     }

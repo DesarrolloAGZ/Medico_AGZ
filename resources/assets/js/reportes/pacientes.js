@@ -14,7 +14,7 @@ $(document).on('change', '#filtro-fecha_inicio, #filtro-fecha_fin', function () 
   }
 });
 
-$('#boton-seleccionar_todas_columnas_reporte_recetas').on('click', function () {
+$('#boton-seleccionar_todas_columnas_reporte_pacientes').on('click', function () {
   let checkboxes = $('input.form-check-input[type="checkbox"]');
   let todosSeleccionados = checkboxes.length === checkboxes.filter(':checked').length;
 
@@ -30,23 +30,33 @@ $('#boton-seleccionar_todas_columnas_reporte_recetas').on('click', function () {
 });
 
 // LIMPIAR FILTROS DEL REPORTE
-$(document).on('click', '#boton-limpiar_filtros_reporte_recetas', function () {
+$(document).on('click', '#boton-limpiar_filtros_reporte_pacientes', function () {
   $('#filtro-fecha_inicio').val('');
   $('#filtro-fecha_fin').val('');
   $('#filtro-nombre_paciente').val('').trigger('change');
-  $('#filtro-medico').val('').trigger('change');
+  $('#filtro-edad').val('').trigger('change');
+  $('#filtro-genero').val('').trigger('change');
+  $('#filtro-empresa').val('').trigger('change');
+  $('#filtro-unidad_negocio').val('').trigger('change');
+  $('#filtro-area').val('').trigger('change');
+  $('#filtro-subarea').val('').trigger('change');
 });
 
-$('#boton-generar_reporte_recetas').click(function (e) {
+$('#boton-generar_reporte_pacientes').click(function (e) {
   e.preventDefault();
   pantallaCarga('on');
 
   let fechaInicio = $('#filtro-fecha_inicio').val();
   let fechaFin = $('#filtro-fecha_fin').val();
   let paciente = $('#filtro-nombre_paciente').val();
-  let medico = $('#filtro-medico').val();
+  let edad = $('#filtro-edad').val();
+  let genero = $('#filtro-genero').val();
+  let empresa = $('#filtro-empresa').val();
+  let unidad = $('#filtro-unidad_negocio').val();
+  let area = $('#filtro-area').val();
+  let subarea = $('#filtro-subarea').val();
 
-  if (!fechaInicio && !fechaFin && !paciente && !medico) {
+  if (!fechaInicio && !fechaFin && !paciente && !edad && !genero && !empresa && !unidad && !area && !subarea) {
     pantallaCarga('off');
     alertify.error(
       '<b>Selecciona al menos un filtro.</b><br>Debes elegir mínimo una opción antes de generar el reporte.'
@@ -58,11 +68,16 @@ $('#boton-generar_reporte_recetas').click(function (e) {
     fecha_inicio: fechaInicio,
     fecha_fin: fechaFin,
     paciente: paciente,
-    medico: medico
+    edad: edad,
+    genero: genero,
+    empresa_id: empresa,
+    unidad_negocio: unidad,
+    area: area,
+    subarea: subarea
   };
 
   // Obtiene SOLO los checkboxes marcados dentro del form
-  let columnas = $('#form-reporte_recetas input[type=checkbox]:checked')
+  let columnas = $('#form-reporte_pacientes input[type=checkbox]:checked')
     .map(function () {
       return $(this).val();
     })
@@ -76,7 +91,7 @@ $('#boton-generar_reporte_recetas').click(function (e) {
 
   let csrfToken = $('meta[name="csrf-token"]').attr('content');
   $.ajax({
-    url: '/reportes/api/recetas/exportar',
+    url: '/reportes/api/pacientes/exportar',
     method: 'POST',
     xhrFields: { responseType: 'blob' },
     headers: { 'X-CSRF-TOKEN': csrfToken },
@@ -90,7 +105,7 @@ $('#boton-generar_reporte_recetas').click(function (e) {
       let url = window.URL.createObjectURL(blob);
       let a = document.createElement('a');
       a.href = url;
-      a.download = 'reporte_recetas.xlsx';
+      a.download = 'reporte_pacientes.xlsx';
       document.body.appendChild(a);
       a.click();
       a.remove();
