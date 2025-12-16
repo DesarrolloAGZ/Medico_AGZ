@@ -3,7 +3,11 @@
 @section('title', 'Listado Historicos clinicos')
 
 @section('page-style')
-  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css')}}">
+  <style>
+    table{
+      zoom: 0.8 !important;
+    }
+  </style>
 @endsection
 
 @section('page-script')
@@ -11,6 +15,7 @@
 @endsection
 
 @section('vendor-style')
+  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css')}}">
   <link href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}">

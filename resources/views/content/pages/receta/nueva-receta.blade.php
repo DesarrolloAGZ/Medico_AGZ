@@ -201,6 +201,14 @@ $configData = Helper::appClasses();
       </div>
     </form>
 
+    <div class="row mt-5 no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? '' : 'd-none' }}">
+      <div class="col-md-12 mb-4 text-end">
+        <button id="boton-imprimir_receta_de_nuevo" type="button" class="btn btn-warning me-2" onclick="window.print();">
+          <span class="mdi mdi-printer" style="margin-right: 10px;"></span>imprimir de nuevo
+        </button>
+      </div>
+    </div>
+
     <div class="row mt-5 no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
       <div class="col-md-12 mb-4 text-end">
         <button id="boton-imprimir_receta" type="button" class="btn btn-warning me-2">

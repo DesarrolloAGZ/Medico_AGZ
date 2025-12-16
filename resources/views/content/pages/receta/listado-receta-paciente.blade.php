@@ -1,9 +1,13 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Listado Consultas Paciente')
+@section('title', 'Listado Recetas Paciente')
 
 @section('page-style')
-  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css')}}">
+  <style>
+    table{
+      zoom: 0.8 !important;
+    }
+  </style>
 @endsection
 
 @section('page-script')
@@ -14,6 +18,7 @@
 @endsection
 
 @section('vendor-style')
+  <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-misc.css')}}">
   <link href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}">
@@ -47,12 +52,15 @@
 
   <div class="card p-5">
 
-    <input id="paciente_id_hidden" value="{{ $datos_vista['paciente_id'] }}" style="display: none;">
+    <input id="paciente_id_hidden" value="{{ $datos_vista['paciente_id'] ?? '' }}" style="display: none;">
 
     <div class="divider">
-      <div class="divider-text texto-titulo">
-        Listado de consultas del paciente </br>
+      <div class="divider-text texto-titulo {{ $datos_vista['paciente_id'] ?? 'd-none' }}">
+        Listado de recetas del paciente </br>
         {{ (isset($datos_vista['paciente']['datos_generales'])) ? $datos_vista['paciente']['datos_generales'][0]['nombre'].' '.$datos_vista['paciente']['datos_generales'][0]['apellido_paterno'].' '. $datos_vista['paciente']['datos_generales'][0]['apellido_materno'] : '' }}
+      </div>
+      <div class="divider-text texto-titulo {{ empty($datos_vista['paciente_id']) ? '' : 'd-none' }}">
+        Listado de todas las recetas de pacientes
       </div>
     </div>
     <div class="card-datatable table-responsive pt-0">
@@ -68,6 +76,8 @@
               <thead class="table-dark">
                 <tr style="height: 50px;">
                   <th>#</th>
+                  <th class="text-center">Gafete</th>
+                  <th class="text-center">Nombre paciente</th>
                   <th class="text-center">Recetó</th>
                   <th class="text-center">Indicaciones del medicamento</th>
                   <th class="text-center">Recomendaciones</th>

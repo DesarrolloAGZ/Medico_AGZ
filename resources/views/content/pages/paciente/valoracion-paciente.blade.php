@@ -74,7 +74,7 @@ $configData = Helper::appClasses();
       </div>
 
       <div class="row">
-        <div class="col-md-12 mb-4">
+        <div class="col-lg-12 col-md-12 col-sm-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <textarea class="form-control h-px-100" id="paciente_datos_consulta-motivo_consulta" name="paciente_datos_consulta[motivo_consulta]" placeholder="Escribe el motivo inicial de la consulta..."></textarea>
             <label for="paciente_datos_consulta-motivo_consulta">Descripción del motivo principal de la consulta <i class="text-danger">*</i></label>
@@ -83,7 +83,7 @@ $configData = Helper::appClasses();
       </div>
 
       <div class="row">
-        <div class="col-md-12 mb-4">
+        <div class="col-lg-12 col-md-12 col-sm-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <input type="text" class="form-control" id="cie-search" name="paciente_datos_consulta[cie_id]" autocomplete="off" placeholder="Buscar CIE-10">
             <label for="cie-search">CIE 10 <i class="text-danger">*</i></label>
@@ -93,14 +93,14 @@ $configData = Helper::appClasses();
         </div>
       </div>
 
-      <div class="{{ isset($datos_vista['paciente']['datos_ultima_consulta']) ? '' : 'd-none' }} }}">
+      <div class="{{ isset($datos_vista['paciente']['datos_ultima_consulta']) ? '' : 'd-none' }}">
         <div class="divider divider-dashed">
           <div class="divider-text texto-subtitulo">Parametros de la ultima consulta</div>
         </div>
 
         <div class="row justify-content-center">
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="temperatura_anterior" type="text" placeholder="Temperatura de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->temperatura) ? $datos_vista['paciente']['datos_ultima_consulta']->temperatura : '' }}" disabled />
@@ -123,7 +123,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="peso_anterior" type="text" placeholder="Peso de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->peso) ? $datos_vista['paciente']['datos_ultima_consulta']->peso : '' }}" disabled />
@@ -144,7 +144,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="altura_anterior" type="text" placeholder="Altura de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->altura) ? $datos_vista['paciente']['datos_ultima_consulta']->altura : '' }}" disabled />
@@ -173,7 +173,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="imc_anterior" type="text" placeholder="I.M.C de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->imc) ? $datos_vista['paciente']['datos_ultima_consulta']->imc : '' }}" disabled />
@@ -196,7 +196,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="frecuencia_cardiaca_anterior" type="text" placeholder="Frecuencia cardiaca de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->frecuencia_cardiaca) ? $datos_vista['paciente']['datos_ultima_consulta']->frecuencia_cardiaca : '' }}" disabled />
@@ -217,7 +217,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="saturacion_oxigeno_anterior" type="text" placeholder="Saturacion de oxigeno de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->saturacion_oxigeno) ? $datos_vista['paciente']['datos_ultima_consulta']->saturacion_oxigeno : '' }}" disabled />
@@ -237,7 +237,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <div style="display: flex;align-items: center;">
               <div class="form-floating form-floating-outline">
                 <input class="form-control" id="presion_arterial_anterior" type="text" placeholder="Presion arterial de la ultima consulta" value="{{ isset($datos_vista['paciente']['datos_ultima_consulta']->presion_arterial) ? $datos_vista['paciente']['datos_ultima_consulta']->presion_arterial : '' }}" disabled />
@@ -259,7 +259,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
 
-          <div class="col-md-3 mb-4">
+          <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-center mb-4">
             <button class="btn btn-secondary waves-effect waves-light me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasConsultaAnterior" aria-controls="canvasConsultaAnterior">
               <span class="mdi mdi-page-next-outline" style="margin-right: 10px;"></span>Ver completos
             </button>
@@ -268,13 +268,13 @@ $configData = Helper::appClasses();
         </div>
       </div>
 
-      <div class="divider divider-dashed {{ isset($datos_vista['paciente']['datos_ultima_consulta']) ? '' : 'd-none' }} }}">
+      <div class="divider divider-dashed {{ isset($datos_vista['paciente']['datos_ultima_consulta']) ? '' : 'd-none' }}">
         <div class="divider-text texto-subtitulo">Registro de parametros actuales</div>
       </div>
 
       <div class="row justify-content-center">
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-temperatura" name="paciente_datos_consulta[temperatura]" type="text" placeholder="Ingresa la temperatura" />
@@ -297,7 +297,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-peso" name="paciente_datos_consulta[peso]" type="text" placeholder="Ingresa el peso" onkeyup="calculaIMC()" />
@@ -318,7 +318,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-altura" name="paciente_datos_consulta[altura]" type="text" placeholder="Ingresa la altura" onkeyup="calculaIMC()" />
@@ -347,7 +347,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control solo_visualizar" id="paciente_datos_consulta-imc" name="paciente_datos_consulta[imc]" type="text" placeholder="Ingresa el I.M.C" readonly />
@@ -370,7 +370,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-frecuencia_cardiaca" name="paciente_datos_consulta[frecuencia_cardiaca]" type="text" placeholder="Ingresa la frecuencia cardiaca" />
@@ -391,7 +391,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-saturacion_oxigeno" name="paciente_datos_consulta[saturacion_oxigeno]" type="text" placeholder="Ingresa la saturacion de oxigeno" />
@@ -411,7 +411,7 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-12 justify-content-center mb-4" style="display: grid;">
           <div style="display: flex;align-items: center;">
             <div class="form-floating form-floating-outline">
               <input class="form-control" id="paciente_datos_consulta-presion_arterial" name="paciente_datos_consulta[presion_arterial]" type="text" placeholder="Ingresa la presion arterial" />
@@ -436,7 +436,7 @@ $configData = Helper::appClasses();
       </div>
 
       <div class="row">
-        <div class="col-md-12 mb-4">
+        <div class="col-lg-12 col-md-12 col-sm-12 mb-4">
           <div class="form-floating form-floating-outline mb-6">
             <textarea class="form-control h-px-100" id="paciente_datos_consulta-observaciones" name="paciente_datos_consulta[observaciones]" placeholder="Escribe las observaciones de la consulta..."></textarea>
             <label for="paciente_datos_consulta-observaciones">Observaciones</label>
@@ -446,7 +446,7 @@ $configData = Helper::appClasses();
 
     </form>
 
-    <div class="col-md-12">
+    <div class="col-lg-12 col-md-12 col-sm-12">
       <div class="btn-flex-group" style="position: fixed; bottom: 2rem; right: 0.8rem; z-index: 1080;">
         <a href="/" class="btn btn-principal waves-effect waves-light me-2" type="button" >
           <span class="mdi mdi-home me-2"></span>Inicio

@@ -25,35 +25,7 @@ function generarTabla() {
   }
 
   let table = $('.datatables-basic-filas').DataTable({
-    buttons: [
-      {
-        extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i>',
-        title: 'Listado de consultas del paciente',
-        filename: 'consultas_paciente_' + new Date().toISOString().slice(0, 10), // Nombre del archivo con fecha
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        },
-        footer: true
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i>',
-        title: 'Listado de Expedientes',
-        exportOptions: {
-          modifier: {
-            page: 'all'
-          },
-          columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        },
-        customize: function (win) {
-          $(win.document.body).css('font-size', '12pt');
-        }
-      }
-    ],
+    buttons: [],
     processing: true,
     serverSide: true,
     ajax: {
@@ -128,7 +100,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.codigo != null ? full.codigo : ''}</small>
+                              <h6 class="mb-0">${full.codigo != null ? full.codigo : ''}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -144,7 +116,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.temperatura}</small>
+                              <h6 class="mb-0">${full.temperatura}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -160,7 +132,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.peso}</small>
+                              <h6 class="mb-0">${full.peso}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -176,7 +148,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.altura}</small>
+                              <h6 class="mb-0">${full.altura}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -192,7 +164,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.imc}</small>
+                              <h6 class="mb-0">${full.imc}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -208,7 +180,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.frecuencia_cardiaca}</small>
+                              <h6 class="mb-0">${full.frecuencia_cardiaca}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -224,7 +196,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.saturacion_oxigeno}</small>
+                              <h6 class="mb-0">${full.saturacion_oxigeno}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -240,7 +212,7 @@ function generarTabla() {
                   <div class="row">
                       <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                           <div class="card-info ">
-                              <small class="mb-0">${full.presion_arterial}</small>
+                              <h6 class="mb-0">${full.presion_arterial}</h6>
                           </div>
                       </div>
                   </div>`;
@@ -262,7 +234,7 @@ function generarTabla() {
                   <div class="row">
                     <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
                       <div class="card-info">
-                          <small class="mb-0">${fecha_creacion}</small><br>
+                        <h6 class="mb-0">${fecha_creacion}</h6>
                       </div>
                     </div>
                   </div>`;
@@ -273,8 +245,8 @@ function generarTabla() {
     displayLength: 30,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     lengthMenu: [
-        [30, 50, 75, 100, 150, 200, -1],
-        [30, 50, 75, 100, 150, 200, "Todos"]
+      [30, 50, 75, 100, 150, 200, -1],
+      [30, 50, 75, 100, 150, 200, 'Todos']
     ],
     language: {
       paginate: {

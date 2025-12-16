@@ -54,8 +54,6 @@ function generarTabla() {
     },
     columns: [
       { data: 'id' },
-      { data: 'paciente_gafete' },
-      { data: 'paciente_nombre' },
       { data: 'nombre' },
       { data: 'indicaciones_medicamento' },
       { data: 'recomendaciones' },
@@ -74,48 +72,6 @@ function generarTabla() {
       /* Acciones a realizar para cada fila */
       {
         targets: 1,
-        title: 'Gafete',
-        className: 'text-center',
-        width: '300px',
-        render: function (data, type, full, meta) {
-          return `
-            <div class="row">
-              <div class="d-flex gap-2 align-items-center col-12">
-                <div class="card-info">
-                  <h6 class="mb-0">
-                    ${full.paciente_gafete != null ? full.paciente_gafete : ''}
-                  </h6>
-                </div>
-              </div>
-            </div>`;
-        }
-      },
-      {
-        targets: 2,
-        title: 'Nombre paciente',
-        className: 'text-center',
-        width: '300px',
-        render: function (data, type, full, meta) {
-          return `
-            <div class="row">
-              <div class="d-flex gap-2 align-items-center col-12">
-                <div class="card-info">
-                  <h6 class="mb-0">
-                    ${
-                      full.paciente_nombre
-                        ? `${full.paciente_nombre} ${full.paciente_apellido_p ?? ''} ${
-                            full.paciente_apellido_m ?? ''
-                          }`.trim()
-                        : ''
-                    }
-                  </h6>
-                </div>
-              </div>
-            </div>`;
-        }
-      },
-      {
-        targets: 3,
         title: 'Recetó',
         className: 'text-center',
         width: '300px',
@@ -133,7 +89,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 4,
+        targets: 2,
         className: 'text-center',
         title: 'Indicaciones del medicamento',
         render: function (data, type, full, meta) {
@@ -150,7 +106,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 5,
+        targets: 3,
         className: 'text-center',
         title: 'Recomendaciones',
         orderable: false,
@@ -166,7 +122,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 6,
+        targets: 4,
         className: 'text-center',
         title: 'Folio',
         orderable: false,
@@ -182,7 +138,7 @@ function generarTabla() {
         }
       },
       {
-        targets: 7,
+        targets: 5,
         className: 'text-center',
         title: 'Fecha de creación',
         orderable: false,
