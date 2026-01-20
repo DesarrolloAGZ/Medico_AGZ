@@ -25,12 +25,12 @@ class HistoricoClinicoController extends Controller
   # Retorna la vista de crear una receta nueva
   public function crearHistorico(Request $request)
   {
-    # Perfiles => 5=PSICOLOGO
-    # Si el usuario logueado tiene el id de perfil 5 (psicologo) entra
-    if(Auth::user()->usuario_perfil_id != 5){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4){
+
       $view_data = [];
       # Mandamos a la  vista
       return view('content.pages.historicoClinico.crear-historico', ['datos_vista' => $view_data]);
+      
     } else {
       return view('content.pages.pages-misc-error');
     }

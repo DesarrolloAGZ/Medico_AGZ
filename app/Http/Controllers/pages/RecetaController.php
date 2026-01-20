@@ -22,81 +22,86 @@ class RecetaController extends Controller
   # Retorna la vista de crear una receta nueva
   public function nuevaReceta(Request $request)
   {
-    $post = $request->all();
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+      $post = $request->all();
 
-    if(count($post) == 1){
-      # Obtiene el ID desde la URL
-      $detalle_receta_id = Crypt::decryptString($request->query('detalle_receta_id'));
+      if(count($post) == 1){
+        # Obtiene el ID desde la URL
+        $detalle_receta_id = Crypt::decryptString($request->query('detalle_receta_id'));
 
-      $detalle_receta = RecetaModel::select(
-        'receta.id as receta_id',
-        'usuario.nombre as usuario_creados_nombre',
-        'usuario.apellido_paterno as usuario_creador_apellido_p',
-        'usuario.apellido_materno as usuario_creador_apellido_m',
-        'usuario.registro_ssa',
-        'usuario.cedula_profesional',
-        'usuario.usuario_perfil_id',
-        'paciente.nombre as paciente_nombre',
-        'paciente.apellido_paterno as paciente_apellido_p',
-        'paciente.apellido_materno as paciente_apellido_m',
-        'paciente.edad as paciente_edad',
-        'receta.medicamento_indicaciones as medicamento',
-        'receta.recomendaciones',
-        'receta.created_at as fecha_creacion',
-        DB::raw("string_agg(receta_medicamento.medicamento_nombre || ' -> Cantidad: ' || receta_medicamento.cantidad_solicitada || '', ' || ') as medicamentos_txt")
-      )
-      ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
-      ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
-      ->join('receta_medicamento', 'receta_medicamento.receta_id', '=', 'receta.id')
-      ->where('receta.id', $detalle_receta_id)
-      ->where('usuario.borrado', 0)
-      ->where('receta_medicamento.borrado', 0)
-      ->where('receta.borrado', 0)
-      ->groupBy(
-        'receta.id',
-        'usuario.nombre',
-        'usuario.apellido_paterno',
-        'usuario.apellido_materno',
-        'usuario.registro_ssa',
-        'usuario.cedula_profesional',
-        'usuario.usuario_perfil_id',
-        'paciente.nombre',
-        'paciente.apellido_paterno',
-        'paciente.apellido_materno',
-        'paciente.edad',
-        'receta.medicamento_indicaciones',
-        'receta.recomendaciones',
-        'receta.created_at'
-      )->get()->toArray();
+        $detalle_receta = RecetaModel::select(
+          'receta.id as receta_id',
+          'usuario.nombre as usuario_creados_nombre',
+          'usuario.apellido_paterno as usuario_creador_apellido_p',
+          'usuario.apellido_materno as usuario_creador_apellido_m',
+          'usuario.registro_ssa',
+          'usuario.cedula_profesional',
+          'usuario.usuario_perfil_id',
+          'paciente.nombre as paciente_nombre',
+          'paciente.apellido_paterno as paciente_apellido_p',
+          'paciente.apellido_materno as paciente_apellido_m',
+          'paciente.edad as paciente_edad',
+          'receta.medicamento_indicaciones as medicamento',
+          'receta.recomendaciones',
+          'receta.created_at as fecha_creacion',
+          DB::raw("string_agg(receta_medicamento.medicamento_nombre || ' -> Cantidad: ' || receta_medicamento.cantidad_solicitada || '', ' || ') as medicamentos_txt")
+        )
+        ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+        ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+        ->join('receta_medicamento', 'receta_medicamento.receta_id', '=', 'receta.id')
+        ->where('receta.id', $detalle_receta_id)
+        ->where('usuario.borrado', 0)
+        ->where('receta_medicamento.borrado', 0)
+        ->where('receta.borrado', 0)
+        ->groupBy(
+          'receta.id',
+          'usuario.nombre',
+          'usuario.apellido_paterno',
+          'usuario.apellido_materno',
+          'usuario.registro_ssa',
+          'usuario.cedula_profesional',
+          'usuario.usuario_perfil_id',
+          'paciente.nombre',
+          'paciente.apellido_paterno',
+          'paciente.apellido_materno',
+          'paciente.edad',
+          'receta.medicamento_indicaciones',
+          'receta.recomendaciones',
+          'receta.created_at'
+        )->get()->toArray();
 
-      $view_data['detalles_receta'] = $detalle_receta;
-      # Mandamos un array vacío para que no falle la vista
-      $view_data['todos_empleados_apsi'] = [];
-    } else {
-      # Obtener todos los empleados APSI
-      $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
-      $response = Http::timeout(1000)->get($urlTodosLosEmpleadosApsi);
-      $response = $response->body();
-      $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
-      $response = json_decode($response, true);
+        $view_data['detalles_receta'] = $detalle_receta;
+        # Mandamos un array vacío para que no falle la vista
+        $view_data['todos_empleados_apsi'] = [];
+      } else {
+        # Obtener todos los empleados APSI
+        $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
+        $response = Http::timeout(1000)->get($urlTodosLosEmpleadosApsi);
+        $response = $response->body();
+        $response = preg_replace('/^\xEF\xBB\xBF/', '', $response);
+        $response = json_decode($response, true);
 
-      # guardamos los empleados en la variable de vista
-      $view_data['todos_empleados_apsi'] = $response['response'];
-    }
+        # guardamos los empleados en la variable de vista
+        $view_data['todos_empleados_apsi'] = $response['response'];
+      }
 
-    $usuario_almacenes = UsuarioAlmacenModel::select('empresa_id', 'empresa_nombre', 'almacen_id', 'almacen_nombre', 'almacen_codigo')->where('usuario_id', Auth::user()->id)->where('borrado', 0)->get()->toArray();
-    $view_data['usuario_almacenes'] = $usuario_almacenes;
+      $usuario_almacenes = UsuarioAlmacenModel::select('empresa_id', 'empresa_nombre', 'almacen_id', 'almacen_nombre', 'almacen_codigo')->where('usuario_id', Auth::user()->id)->where('borrado', 0)->get()->toArray();
+      $view_data['usuario_almacenes'] = $usuario_almacenes;
 
-    # Perfiles => 1=MEDICO GENERAL ; 2=MEDICO ESPECIALISTA
-    # Validamos si el usuario tiene permiso para acceder a esta seccion
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2){
-      $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
+      # Perfiles => 1=MEDICO GENERAL ; 2=MEDICO ESPECIALISTA
+      # Validamos si el usuario tiene permiso para acceder a esta seccion
+      if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2){
+        $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
 
-      $lastFolio = RecetaModel::max('id');
-      $view_data['folio'] = $lastFolio ? $lastFolio + 1 : 1;
+        $lastFolio = RecetaModel::max('id');
+        $view_data['folio'] = $lastFolio ? $lastFolio + 1 : 1;
 
-      # Mandamos a la  vista
-      return view('content.pages.receta.nueva-receta',['datos_vista' => $view_data]);
+        # Mandamos a la  vista
+        return view('content.pages.receta.nueva-receta',['datos_vista' => $view_data]);
+      } else {
+        return view('content.pages.pages-misc-error');
+      }
+
     } else {
       return view('content.pages.pages-misc-error');
     }
@@ -339,22 +344,27 @@ class RecetaController extends Controller
 
 
   public function recetasPaciente(Request $request){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
 
-    if(count($request->all()) == 0){
-      $view_data['paciente']['recetas'] = RecetaModel::where('borrado', 0)->get()->toArray();
-    } else {
-      $paciente_id = Crypt::decryptString($request->query('paciente_id'));
-      # Verifica si el ID existe
-      if (!$paciente_id) {
-        return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      if(count($request->all()) == 0){
+        $view_data['paciente']['recetas'] = RecetaModel::where('borrado', 0)->get()->toArray();
+      } else {
+        $paciente_id = Crypt::decryptString($request->query('paciente_id'));
+        # Verifica si el ID existe
+        if (!$paciente_id) {
+          return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+        }
+        $view_data['paciente_id'] = $paciente_id;
+        $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
+        $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
       }
-      $view_data['paciente_id'] = $paciente_id;
-      $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
-      $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
-    }
 
-    # Mandamos a la  vista
-    return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
+      # Mandamos a la  vista
+      return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
+
+    } else {
+      return view('content.pages.pages-misc-error'); 
+    }
   }
 
   public function obtenerListadoRecetasPaciente(Request $request){

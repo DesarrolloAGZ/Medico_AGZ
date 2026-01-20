@@ -13,11 +13,16 @@ use App\Models\PacienteTipoVisitaModel;
 use App\Models\PacienteDatosConsultaNotaModel;
 use App\Models\RecetaModel;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class PacientesSeguimientoController extends Controller
 {
   public function listadoPacientes(){
-    return view('content.pages.paciente.listado-pacientes');
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+      return view('content.pages.paciente.listado-pacientes');
+    } else {
+      return view('content.pages.pages-misc-error');
+    }
   }
 
   public function obtenerListadoPacientes(Request $request){
@@ -88,19 +93,25 @@ class PacientesSeguimientoController extends Controller
   }
 
   public function expedientePacientes(Request $request){
-    # Obtiene el ID desde la URL
-    $pacienteId = Crypt::decryptString($request->query('paciente_id'));
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
 
-    # Verifica si el ID existe
-    if (!$pacienteId) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      # Obtiene el ID desde la URL
+      $pacienteId = Crypt::decryptString($request->query('paciente_id'));
+
+      # Verifica si el ID existe
+      if (!$pacienteId) {
+        return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      }
+
+      $view_data['paciente_id'] = $pacienteId;
+      $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$pacienteId)->where('borrado', 0)->get()->toArray();
+
+      # Mandamos a la  vista
+      return view('content.pages.paciente.listado-expediente-paciente',['datos_vista' => $view_data]);
+
+    } else {
+      return view('content.pages.pages-misc-error');
     }
-
-    $view_data['paciente_id'] = $pacienteId;
-    $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$pacienteId)->where('borrado', 0)->get()->toArray();
-
-    # Mandamos a la  vista
-    return view('content.pages.paciente.listado-expediente-paciente',['datos_vista' => $view_data]);
   }
 
   public function obtenerListadoConsultasPaciente(Request $request){
@@ -151,61 +162,73 @@ class PacientesSeguimientoController extends Controller
   }
 
   public function detalleConsultaPaciente(Request $request){
-    # Obtiene el ID desde la URL
-    $detalle_consultaId = Crypt::decryptString($request->query('detalle_consulta_id'));
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
 
-    # Verifica si el ID existe
-    if (!$detalle_consultaId) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      # Obtiene el ID desde la URL
+      $detalle_consultaId = Crypt::decryptString($request->query('detalle_consulta_id'));
+
+      # Verifica si el ID existe
+      if (!$detalle_consultaId) {
+        return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      }
+
+      $view_data['paciente']['datos_generales'] = PacienteModel::select(
+        'paciente.id',
+        'paciente.gafete',
+        'paciente.nombre',
+        'paciente.apellido_paterno',
+        'paciente.apellido_materno',
+        'paciente.genero',
+        'paciente.celular',
+        'paciente.edad',
+        'paciente.curp',
+        'paciente_empresa.nombre as empresa_nombre',
+        'paciente_unidad_negocio.nombre as unidad_negocio_nombre',
+        'paciente_area.nombre as area_nombre',
+        'paciente_subarea.nombre as subarea_nombre',
+      )
+      ->leftjoin('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
+      ->leftjoin('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
+      ->leftjoin('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
+      ->leftjoin('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
+      ->where('paciente.id', function($query) use ($detalle_consultaId) {
+        $query->select('paciente_id')->from('paciente_datos_consulta')->where('id', $detalle_consultaId)->where('borrado', 0)->limit(1);
+      })
+      ->where('paciente.borrado', 0)
+      ->get()->toArray();
+
+      $view_data['paciente']['detalles_consulta'] = PacienteDatosConsultaModel::select(
+        'paciente_datos_consulta.*',
+        'usuario.nombre as usuario_nombre',
+        'usuario.apellido_paterno as usuario_apellido_paterno',
+        'usuario.apellido_materno as usuario_apellido_materno'
+      )
+      ->leftjoin('usuario', 'usuario.id', '=', 'paciente_datos_consulta.usuario_id')
+      ->where('paciente_datos_consulta.id', $detalle_consultaId)->where('paciente_datos_consulta.borrado', 0)->first();
+
+      $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
+      $view_data['notas'] = PacienteDatosConsultaNotaModel::where('paciente_datos_consulta_id',$detalle_consultaId)->where('borrado', 0)->get()->toArray();
+      # Mandamos a la  vista
+      return view('content.pages.paciente.expediente-paciente',['datos_vista' => $view_data]);
+    
+    } else {
+      return view('content.pages.pages-misc-error');
     }
-
-    $view_data['paciente']['datos_generales'] = PacienteModel::select(
-      'paciente.id',
-      'paciente.gafete',
-      'paciente.nombre',
-      'paciente.apellido_paterno',
-      'paciente.apellido_materno',
-      'paciente.genero',
-      'paciente.celular',
-      'paciente.edad',
-      'paciente.curp',
-      'paciente_empresa.nombre as empresa_nombre',
-      'paciente_unidad_negocio.nombre as unidad_negocio_nombre',
-      'paciente_area.nombre as area_nombre',
-      'paciente_subarea.nombre as subarea_nombre',
-    )
-    ->leftjoin('paciente_empresa', 'paciente_empresa.id', '=', 'paciente.paciente_empresa_id')
-    ->leftjoin('paciente_unidad_negocio', 'paciente_unidad_negocio.id', '=', 'paciente.paciente_unidad_negocio_id')
-    ->leftjoin('paciente_area', 'paciente_area.id', '=', 'paciente.paciente_area_id')
-    ->leftjoin('paciente_subarea', 'paciente_subarea.id', '=', 'paciente.paciente_subarea_id')
-    ->where('paciente.id', function($query) use ($detalle_consultaId) {
-      $query->select('paciente_id')->from('paciente_datos_consulta')->where('id', $detalle_consultaId)->where('borrado', 0)->limit(1);
-    })
-    ->where('paciente.borrado', 0)
-    ->get()->toArray();
-
-    $view_data['paciente']['detalles_consulta'] = PacienteDatosConsultaModel::select(
-      'paciente_datos_consulta.*',
-      'usuario.nombre as usuario_nombre',
-      'usuario.apellido_paterno as usuario_apellido_paterno',
-      'usuario.apellido_materno as usuario_apellido_materno'
-    )
-    ->leftjoin('usuario', 'usuario.id', '=', 'paciente_datos_consulta.usuario_id')
-    ->where('paciente_datos_consulta.id', $detalle_consultaId)->where('paciente_datos_consulta.borrado', 0)->first();
-
-    $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
-    $view_data['notas'] = PacienteDatosConsultaNotaModel::where('paciente_datos_consulta_id',$detalle_consultaId)->where('borrado', 0)->get()->toArray();
-    # Mandamos a la  vista
-    return view('content.pages.paciente.expediente-paciente',['datos_vista' => $view_data]);
   }
 
   public function todasLasConsultas(Request $request){
-    $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+      
+      $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
 
-    $view_data['tipo_visita_seleccionado'] = $request->input('tipo_visita_seleccionado');
+      $view_data['tipo_visita_seleccionado'] = $request->input('tipo_visita_seleccionado');
 
-    # Mandamos a la  vista
-    return view('content.pages.paciente.listado-consultas',['datos_vista' => $view_data]);
+      # Mandamos a la  vista
+      return view('content.pages.paciente.listado-consultas',['datos_vista' => $view_data]);
+
+    } else {
+      return view('content.pages.pages-misc-error');
+    }
   }
 
   public function obtenerListadoTodasConsultas(Request $request) {

@@ -25,13 +25,19 @@ class PacientesController extends Controller
   # Retorna la vista de registrar nuevo paciente
   public function nuevoPaciente()
   {
-    # Obtenemos las ocupaciones para mandarlas a la vista
-    $view_data['catalogos']['empresas'] = PacienteEmpresaModel::where('borrado', 0)->get()->toArray();
-    $view_data['catalogos']['unidad_negocio'] = PacienteUnidadNegocioModel::where('borrado', 0)->get()->toArray();
-    $view_data['catalogos']['area'] = PacienteAreaModel::where('borrado', 0)->get()->toArray();
-    $view_data['catalogos']['subarea'] = PacienteSubareaModel::where('borrado', 0)->get()->toArray();
-    # Mandamos a la  vista
-    return view('content.pages.paciente.nuevo-paciente',['datos_vista' => $view_data]);
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+
+      # Obtenemos las ocupaciones para mandarlas a la vista
+      $view_data['catalogos']['empresas'] = PacienteEmpresaModel::where('borrado', 0)->get()->toArray();
+      $view_data['catalogos']['unidad_negocio'] = PacienteUnidadNegocioModel::where('borrado', 0)->get()->toArray();
+      $view_data['catalogos']['area'] = PacienteAreaModel::where('borrado', 0)->get()->toArray();
+      $view_data['catalogos']['subarea'] = PacienteSubareaModel::where('borrado', 0)->get()->toArray();
+      # Mandamos a la  vista
+      return view('content.pages.paciente.nuevo-paciente',['datos_vista' => $view_data]);
+
+    } else {
+      return view('content.pages.pages-misc-error');
+    }
   }
 
   public function consultarPacienteApsi(Request $request)
@@ -180,21 +186,27 @@ class PacientesController extends Controller
 
   public function registrarValoracionPaciente(Request $request)
   {
-    # Obtiene el ID desde la URL
-    $pacienteId = Crypt::decryptString($request->query('paciente_id'));
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+      
+      # Obtiene el ID desde la URL
+      $pacienteId = Crypt::decryptString($request->query('paciente_id'));
 
-    # Verifica si el ID existe
-    if (!$pacienteId) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      # Verifica si el ID existe
+      if (!$pacienteId) {
+        return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
+      }
+
+      $view_data['paciente_id'] = Crypt::encryptString($pacienteId);
+      $view_data['paciente']['datos_paciente'] = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->where('borrado', 0)->first();
+      $view_data['paciente']['datos_ultima_consulta'] = PacienteDatosConsultaModel::where('paciente_id', $pacienteId)->where('borrado', 0)->latest('created_at')->first();
+      $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
+
+      # Mandamos a la vista
+      return view('content.pages.paciente.valoracion-paciente',['datos_vista' => $view_data]);
+      
+    } else {
+      return view('content.pages.pages-misc-error');
     }
-
-    $view_data['paciente_id'] = Crypt::encryptString($pacienteId);
-    $view_data['paciente']['datos_paciente'] = PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno')->where('id', $pacienteId)->where('borrado', 0)->first();
-    $view_data['paciente']['datos_ultima_consulta'] = PacienteDatosConsultaModel::where('paciente_id', $pacienteId)->where('borrado', 0)->latest('created_at')->first();
-    $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
-
-    # Mandamos a la vista
-    return view('content.pages.paciente.valoracion-paciente',['datos_vista' => $view_data]);
   }
 
   public function guardarValoracionPaciente(Request $request){

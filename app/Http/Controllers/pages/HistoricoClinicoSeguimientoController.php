@@ -9,11 +9,18 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Models\HistoricoClinicoModel;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class HistoricoClinicoSeguimientoController extends Controller
 {
   public function listadoHistoricos(){
-    return view('content.pages.historicoClinico.listado-historico');
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 6){
+   
+      return view('content.pages.historicoClinico.listado-historico');
+
+    } else {
+      return view('content.pages.pages-misc-error');
+    }
   }
 
   public function obtenerListadoHistoricosClinicos(Request $request){
@@ -63,39 +70,45 @@ class HistoricoClinicoSeguimientoController extends Controller
   }
 
   public function consultarHistoricoClinico(Request $request){
-    # Obtiene el ID desde la URL
-    $historico_clinico_id = Crypt::decryptString($request->query('historico_clinico_id'));
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 6){
 
-    if (!$historico_clinico_id) {
-      return redirect()->back()->with('error', 'No se proporcionó un ID de histórico clínico.');
+      # Obtiene el ID desde la URL
+      $historico_clinico_id = Crypt::decryptString($request->query('historico_clinico_id'));
+
+      if (!$historico_clinico_id) {
+        return redirect()->back()->with('error', 'No se proporcionó un ID de histórico clínico.');
+      }
+
+      $view_data['historico_clinico'] = HistoricoClinicoModel::with(
+        'historicoClinicoGinecoObstetricos',
+        'historicoClinicoContactoEmergencia',
+        'historicoClinicoHeredofamiliares',
+        'historicoClinicoPersonalesNoPatologicos',
+        'historicoClinicoPersonalesPatologicos',
+        'historicoClinicoLaborales',
+        'historicoClinicoEmpleo',
+        'historicoClinicoAparatosSistemas',
+        'historicoClinicoExploracionFisica',
+        'historicoClinicoDrogas'
+      )
+      ->where('borrado', 0)->where('id', $historico_clinico_id)
+      ->get()->toArray();
+
+      $view_data['usuario_creador_historico_clinico'] = HistoricoClinicoModel::select(
+        DB::raw("usuario.nombre || ' ' || usuario.apellido_paterno || ' ' || usuario.apellido_materno AS usuario_nombre_completo"),
+        'usuario.cedula_profesional as usuario_cedula_profesional',
+        'usuario.registro_ssa as usuario_registro_ssa'
+      )
+      ->join('usuario', 'usuario.id', '=', 'historico_clinico.elaborado_por_usuario_id')
+      ->where('historico_clinico.borrado', 0)
+      ->where('historico_clinico.id', $historico_clinico_id)
+      ->get()->toArray();
+
+      # Mandamos a la  vista
+      return view('content.pages.historicoClinico.crear-historico',['datos_vista' => $view_data]);
+
+    } else {
+      return view('content.pages.pages-misc-error');
     }
-
-    $view_data['historico_clinico'] = HistoricoClinicoModel::with(
-      'historicoClinicoGinecoObstetricos',
-      'historicoClinicoContactoEmergencia',
-      'historicoClinicoHeredofamiliares',
-      'historicoClinicoPersonalesNoPatologicos',
-      'historicoClinicoPersonalesPatologicos',
-      'historicoClinicoLaborales',
-      'historicoClinicoEmpleo',
-      'historicoClinicoAparatosSistemas',
-      'historicoClinicoExploracionFisica',
-      'historicoClinicoDrogas'
-    )
-    ->where('borrado', 0)->where('id', $historico_clinico_id)
-    ->get()->toArray();
-
-    $view_data['usuario_creador_historico_clinico'] = HistoricoClinicoModel::select(
-      DB::raw("usuario.nombre || ' ' || usuario.apellido_paterno || ' ' || usuario.apellido_materno AS usuario_nombre_completo"),
-      'usuario.cedula_profesional as usuario_cedula_profesional',
-      'usuario.registro_ssa as usuario_registro_ssa'
-    )
-    ->join('usuario', 'usuario.id', '=', 'historico_clinico.elaborado_por_usuario_id')
-    ->where('historico_clinico.borrado', 0)
-    ->where('historico_clinico.id', $historico_clinico_id)
-    ->get()->toArray();
-
-    # Mandamos a la  vista
-    return view('content.pages.historicoClinico.crear-historico',['datos_vista' => $view_data]);
   }
 }
