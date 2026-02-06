@@ -88,9 +88,8 @@ class RecetaController extends Controller
       $usuario_almacenes = UsuarioAlmacenModel::select('empresa_id', 'empresa_nombre', 'almacen_id', 'almacen_nombre', 'almacen_codigo')->where('usuario_id', Auth::user()->id)->where('borrado', 0)->get()->toArray();
       $view_data['usuario_almacenes'] = $usuario_almacenes;
 
-      # Perfiles => 1=MEDICO GENERAL ; 2=MEDICO ESPECIALISTA
-      # Validamos si el usuario tiene permiso para acceder a esta seccion
-      if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2){
+      # Validamos si el usuario tiene cedula profesional para tener permiso para acceder a esta seccion
+      if(Auth::user()->cedula_profesional){
         $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
 
         $lastFolio = RecetaModel::max('id');
