@@ -214,8 +214,8 @@ class RecetaController extends Controller
 
   private function crearJsonConsumo($valeId, $paciente, $centroCostos){
     return [
-      "moveuserid" => 59,
-      "passhispatec" => "MarJim2024",
+      "moveuserid" => 445,
+      "passhispatec" => "S3rvMedic@",
       "valeid" => $valeId,
       "aplicationdate" => date('Y-m-d'),
       "receptionname" => $this->nombreCompleto($paciente),

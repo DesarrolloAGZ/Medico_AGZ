@@ -54,16 +54,16 @@ class ReportesDescargaController extends Controller
 
     # JOINS dinámicos
     if ($this->requires($columnas, ['paciente_gafete','paciente_nombre','paciente_apellido_paterno','paciente_apellido_materno','paciente_genero','paciente_curp'])) {
-      $query->join('paciente AS p', 'p.id', '=', 'r.paciente_id');
+      $query->join('paciente AS p', 'p.id', '=', 'r.paciente_id')->where('p.borrado', 0);
     }
     if ($this->requires($columnas, ['medico_tratante_nombre','medico_tratante_apellido_paterno','medico_tratante_apellido_materno','medico_tratante_correo'])) {
-      $query->join('usuario AS u', 'u.id', '=', 'r.usuario_id');
+      $query->join('usuario AS u', 'u.id', '=', 'r.usuario_id')->where('u.borrado', 0);
     }
     if ($this->requires($columnas, ['medicamento_recetado','medicamento_codigo','medicamento_cantidad_solicitada'])) {
-      $query->leftJoin('receta_medicamento AS rm', 'rm.receta_id', '=', 'r.id');
+      $query->leftJoin('receta_medicamento AS rm', 'rm.receta_id', '=', 'r.id')->where('rm.borrado', 0);
     }
     if ($this->requires($columnas, ['centro_costos_medicamento','vale_medicamento'])) {
-      $query->join('receta_consumo_historico AS rch', 'rch.receta_id', '=', 'r.id');
+      $query->join('receta_consumo_historico AS rch', 'rch.receta_id', '=', 'r.id')->where('rch.borrado', 0);
     }
 
     # Filtros
@@ -74,6 +74,7 @@ class ReportesDescargaController extends Controller
     if (!empty($f['medico'])) $query->where('r.usuario_id', $f['medico']);
 
     $query->select($select)->orderBy('r.id', 'ASC');
+    
     return Excel::download(new DynamicExportQuery($query, $columnas),"Reporte_Recetas_" . now()->format('Ymd_His') . ".xlsx");
   }
 
@@ -110,10 +111,10 @@ class ReportesDescargaController extends Controller
 
     # JOINS DINÁMICOS
     if ($this->requires($columnas, ['paciente_empresa','paciente_unidad_negocio','paciente_area','paciente_subarea'])) {
-      $query->join('paciente_empresa AS pe', 'pe.id', '=', 'p.paciente_empresa_id');
-      $query->join('paciente_unidad_negocio AS pun', 'pun.id', '=', 'p.paciente_unidad_negocio_id');
-      $query->join('paciente_area AS pa', 'pa.id', '=', 'p.paciente_area_id');
-      $query->join('paciente_subarea AS psa', 'psa.id', '=', 'p.paciente_subarea_id');
+      $query->join('paciente_empresa AS pe', 'pe.id', '=', 'p.paciente_empresa_id')->where('pe.borrado', 0);
+      $query->join('paciente_unidad_negocio AS pun', 'pun.id', '=', 'p.paciente_unidad_negocio_id')->where('pun.borrado', 0);
+      $query->join('paciente_area AS pa', 'pa.id', '=', 'p.paciente_area_id')->where('pa.borrado', 0);
+      $query->join('paciente_subarea AS psa', 'psa.id', '=', 'p.paciente_subarea_id')->where('psa.borrado', 0);
     }
 
     # Filtros
