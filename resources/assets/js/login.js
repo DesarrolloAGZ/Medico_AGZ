@@ -62,4 +62,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Inicialmente deshabilitar el botón hasta que los campos sean válidos
   checkFormValidity();
+
+  // Mostrar/ocultar contraseña
+  window.mostrarContrasena = function () {
+    const password = document.getElementById('password');
+    const icono = document.getElementById('iconoPassword');
+
+    if (password.type === 'password') {
+      password.type = 'text';
+      icono.classList.remove('fa-eye');
+      icono.classList.add('fa-eye-slash');
+    } else {
+      password.type = 'password';
+      icono.classList.remove('fa-eye-slash');
+      icono.classList.add('fa-eye');
+    }
+  };
 });

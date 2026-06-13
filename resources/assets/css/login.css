@@ -5,190 +5,118 @@ html {
   margin: 0;
 }
 body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif !important;
-  user-select: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffffff !important;
+  background: url('/images/medico_back_2.png') center center / cover no-repeat !important;
+  /* height: 100vh !important; */
+  margin: 0 !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  min-height: 100vh !important;
 }
-.contenedor-body {
-  width: 100%;
-  /* height: 100%; */
+body::before {
+  content: '' !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  backdrop-filter: blur(2px) !important;
+  background: rgba(0, 0, 0, 0.17) !important;
+  z-index: 0 !important;
 }
-img.responsive {
-  max-width: 100%;
+.login-container {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.card {
+  min-height: auto;
   height: auto;
+  border-radius: 20px !important;
+  background: white !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  color: #006c39 !important;
+  animation: fadeIn 1s ease !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
 }
-table {
-  user-select: none;
+.card-body {
+  padding: 0px !important;
 }
-table.centrada {
+.card-title {
+  color: #006c39 !important;
+  font-weight: 600 !important;
+  font-family: 'Nunito', sans-serif !important;
+}
+.icono-login-redondo {
+  padding: 15px !important;
+  background-color: #005f32 !important;
+  border-radius: 100% !important;
+  font-size: 20px !important;
+}
+.form-control {
+  background: rgba(255, 255, 255, 0.078) !important;
+  color: #006c39 !important;
+  border: 1px solid #c4c4c4 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+.input-group-text {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid #c4c4c4 !important;
+  color: #353434 !important;
+  cursor: pointer !important;
+  background: #f2f1f1 !important;
+}
+.copi-etiqueta {
   position: absolute;
-  width: 100%;
-  height: 100%;
-}
-td.centrada {
-  text-align: center;
-}
-
-.titulo-login {
-  color: #fff;
-  font-size: 30px;
-  text-align: center;
-  background: #0000005c;
-  margin: 0px;
-  padding: 10px;
-  border-radius: 20px;
-}
-
-/* FONDO CON MOVIMIENTO GRADIENTE
-==================================================================================================*/
-.fondo-gradiente {
-  background: rgba(0, 0, 0, 0.192);
-  position: fixed;
-  top: 0;
+  bottom: 0px;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-size: cover;
-  overflow: auto;
 }
-
-/* FORMULARIO PARA EL LOGIN
-==================================================================================================== */
-.login-box {
-  margin-top: 150px;
-  margin-left: 32%;
-  margin-right: 32%;
-  padding: 30px;
-  background: rgba(0, 0, 0, 0.658);
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.432);
-  border-radius: 0.5rem;
-  backdrop-filter: blur(4px);
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #197a2e) !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  height: 45px !important;
+  font-weight: 600 !important;
+  transition: 0.3s !important;
 }
-.login-box .user-box {
-  position: relative;
-  padding: 30px 0;
+.btn-success:hover {
+  background: linear-gradient(135deg, #28a745, #197a2e) !important;
 }
-.login-box .user-box input {
-  width: 100%;
-  padding: 0px 0;
-  font-size: 18px;
-  color: #ffffff;
-  margin-bottom: 30px;
-  border: none;
-  border-bottom: 1px solid #ffffff;
-  outline: none;
-  background: transparent;
+.btn-success:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
 }
-.login-box .user-box label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px 0;
-  font-size: 18px;
-  color: #ffffff;
-  pointer-events: none;
-  transition: 0.2s;
+.needs-validation {
+  padding-left: 30px !important;
+  padding-right: 30px !important;
 }
-.login-box .user-box input:focus ~ label,
-.login-box .user-box input:valid ~ label {
-  top: -15px;
-  left: 0;
-  color: #ffffff;
-  font-size: 18px;
+.form-label {
+  color: #686868 !important;
+  font-weight: 600 !important;
 }
-.login-box form button {
-  position: relative;
-  display: inline-block;
-  padding: 5px 20px;
-  color: #6d6d6d;
-  background: none;
-  border: none;
-  font-size: 20px;
-  text-decoration: none;
-  text-transform: uppercase;
-  overflow: hidden;
-  transition: 0.3s;
-  margin-top: 20px;
-  border-radius: 0px;
-  letter-spacing: 4px;
+button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background: #f4f4f5 !important;
 }
-.logIn {
-  width: 200px;
-  height: 50px;
+.soporte-login {
+  color: rgba(255, 255, 255, 0.85) !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
 }
-.logIn:hover {
-  background: #ffffffcb;
-  color: #000000b2;
-  border-radius: 5px;
-  box-shadow: 0 0 20px #ffffff;
+.link-soporte {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
 }
-.login-box button span {
-  position: absolute;
-  display: block;
+.link-soporte:hover {
+  color: #d4f5dd !important;
 }
-@keyframes btn-anim1 {
-  0% {
-    left: -100%;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
   }
-
-  50%,
-  100% {
-    left: 100%;
-  }
-}
-.login-box button span:nth-child(1) {
-  bottom: 2px;
-  left: -100%;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #ffff);
-  animation: btn-anim1 2s linear infinite;
-}
-/* Estilos para el botón deshabilitado */
-#btnLogin:disabled {
-  cursor: not-allowed; /* Cambia el cursor para mostrar que el botón no está habilitado */
-  opacity: 0.6; /* Reduce la opacidad para mostrar que está deshabilitado */
-}
-
-/* Deshabilita el hover cuando el botón está deshabilitado */
-#btnLogin:disabled:hover {
-  background-color: inherit; /* Evita el cambio de fondo cuando el cursor pasa sobre el botón */
-  color: inherit; /* Evita que el color del texto cambie */
-}
-
-/* RESOLUCIONES PARA PANTALLA DE TELEFONO
-==================================================================================================*/
-@media (min-width: 0px) and (max-width: 767px) {
-  .login-box {
-    margin-left: 10%;
-    margin-right: 10%;
-    padding: 10px;
-  }
-  .contenedor-body {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-/* RESOLUCIONES PARA PANTALLA DE TABLET
-=====================================================================================================*/
-@media (min-width: 768px) and (max-width: 1024px) {
-  .login-box {
-    margin-left: 20%;
-    margin-right: 20%;
-    padding: 10px;
-  }
-}
-/*  RESOLUCION PARA PANTALLA DE LAPTOP
-======================================================================================================*/
-@media (min-width: 1025px) and (max-width: 1500px) {
-  .login-box {
-    padding: 10px;
-    margin-left: 20%;
-    margin-right: 20%;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

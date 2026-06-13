@@ -71,7 +71,7 @@ class InicioController extends Controller
 
     if (!$ldapAuth) {
         return back()->withErrors([
-            'correo' => 'El usuario o contraseña no son válidos en el sistema AD.',
+            'correo' => 'El usuario no tiene acceso al sistema (AD).',
         ])->withInput();
     }
 
@@ -79,7 +79,7 @@ class InicioController extends Controller
 
     if (!$usuario) {
         return back()->withErrors([
-            'correo' => 'El usuario no está registrado o está desactivado en el sistema.',
+            'correo' => 'El usuario no tiene acceso al sistema (SM).',
         ])->withInput();
     }
 
