@@ -215,6 +215,8 @@ $(document).ready(function () {
         success: function (response) {
           pantallaCarga('off');
           if (response.error == false) {
+            $('#contenedor-datos_registro_paciente').removeClass('d-none');
+            $('#contenedor-sin_datos_encontrados').addClass('d-none');
             if (response.bandera == 1) {
               // Si la bandera es 1 es porque el paciente ya ha tenido consultas
               if (response.body != null) {
@@ -247,6 +249,8 @@ $(document).ready(function () {
                 $('#paciente_id').val(response.body.id);
                 alertify.success(response.msg);
               } else {
+                $('#contenedor-datos_registro_paciente').addClass('d-none');
+                $('#contenedor-sin_datos_encontrados').removeClass('d-none');
                 alertify.error(response.msg);
               }
             } else {
@@ -263,13 +267,19 @@ $(document).ready(function () {
                 alertify.success(response.msg);
               } else {
                 alertify.error(response.msg);
+                $('#contenedor-datos_registro_paciente').addClass('d-none');
+                $('#contenedor-sin_datos_encontrados').removeClass('d-none');
               }
             }
           } else {
+            $('#contenedor-datos_registro_paciente').addClass('d-none');
+            $('#contenedor-sin_datos_encontrados').removeClass('d-none');
             alertify.error(response.msg);
           }
         },
         error: function () {
+          $('#contenedor-datos_registro_paciente').addClass('d-none');
+          $('#contenedor-sin_datos_encontrados').removeClass('d-none');
           alertify.error('Ocurrió un error al buscar los pacientes en el APSI.');
         },
         complete: function () {

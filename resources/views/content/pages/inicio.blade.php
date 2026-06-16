@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('layouts/layoutMaster')
 
-@section('title', 'Inicio')
+@section('title', 'Inicio Consultas')
 
 @section('page-style')
 @endsection
@@ -58,7 +58,7 @@ $configData = Helper::appClasses();
                 </div>
               </div>
               <!-- Icono grande -->
-              <i class="fa-solid fa-user-group position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0;"></i>
+              <i class="fa-solid fa-user-group position-absolute text-primary" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.2; z-index: 0;"></i>
             </div>
           </div>
         </div>
@@ -76,7 +76,7 @@ $configData = Helper::appClasses();
                 </h4>
               </div>
               <!-- Icono grande -->
-              <i class="fa-solid fa-person-dress position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0; color: #ff6b9d;"></i>
+              <i class="fa-solid fa-person-dress position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.2; z-index: 0; color: #ff6b9d;"></i>
             </div>
           </div>
 
@@ -91,7 +91,7 @@ $configData = Helper::appClasses();
                 </h4>
               </div>
               <!-- Icono grande -->
-              <i class="fa-solid fa-person position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.1; z-index: 0; color: #4d8eff;"></i>
+              <i class="fa-solid fa-person position-absolute" style="font-size: 150px; right: -30px; bottom: -30px; opacity: 0.2; z-index: 0; color: #4d8eff;"></i>
             </div>
           </div>
 
@@ -108,7 +108,7 @@ $configData = Helper::appClasses();
             <div id="horizontalBarChart"></div>
           </div>
           <!-- Icono grande -->
-          <i class="fa-solid fa-stethoscope position-absolute" style="font-size: 120px; right: -20px; bottom: -20px; opacity: 0.08; z-index: 0; color: #6c757d;"></i>
+          <i class="fa-solid fa-stethoscope position-absolute" style="font-size: 120px; right: -20px; bottom: -20px; opacity: 0.2; z-index: 0; color: #6c757d;"></i>
         </div>
       </div>
 
@@ -132,7 +132,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
           <!-- Icono grande -->
-          <i class="fa-solid fa-virus position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.08; z-index: 0; color: #28a745;"></i>
+          <i class="fa-solid fa-virus position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.2; z-index: 0; color: #28a745;"></i>
         </div>
       </div>
 
@@ -152,7 +152,7 @@ $configData = Helper::appClasses();
             </div>
           </div>
           <!-- Icono grande -->
-          <i class="fa-solid fa-user-injured position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.08; z-index: 0; color: #fd7e14;"></i>
+          <i class="fa-solid fa-user-injured position-absolute" style="font-size: 140px; right: -25px; bottom: -25px; opacity: 0.2; z-index: 0; color: #fd7e14;"></i>
         </div>
       </div>
 

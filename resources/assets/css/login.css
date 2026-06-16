@@ -30,7 +30,7 @@ body::before {
   min-height: auto;
   height: auto;
   border-radius: 20px !important;
-  background: white !important;
+  background: #ffffffcb !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
   color: #006c39 !important;
   animation: fadeIn 1s ease !important;

@@ -17,7 +17,7 @@ class ReportesController extends Controller
 {
   public function recetas(Request $request)
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7){
 
       $view_data = [
         'catalogos' => [
@@ -55,7 +55,7 @@ class ReportesController extends Controller
   public function consultas(Request $request)
   {
     if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
-        
+
       $view_data = [
         'catalogos' => [
           'pacientes' => PacienteModel::select('paciente.id', 'paciente.nombre', 'paciente.apellido_paterno', 'paciente.apellido_materno')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->get()->toArray(),

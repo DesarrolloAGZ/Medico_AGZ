@@ -4,7 +4,15 @@
       "url": "/",
       "name": "Inicio",
       "icon": "menu-icon tf-icons mdi mdi-home-outline",
-      "slug": "pantalla-inicio"
+      "slug": "pantalla-inicio",
+      "perfiles": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
     },
     {
       "menuHeader": "Secciones"
@@ -13,24 +21,56 @@
       "name": "Pacientes",
       "icon": "menu-icon tf-icons mdi mdi-account-multiple",
       "slug": "pacientes",
+      "perfiles": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
       "submenu": [
         {
           "url": "/pacientes/nuevo",
-          "name": "Nuevo Paciente",
+          "name": "Nuevo paciente",
           "icon": "menu-icon me-1 tf-icons mdi mdi-account-plus",
-          "slug": "nuevo-paciente"
+          "slug": "nuevo-paciente",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         },
         {
           "url": "/pacientes/consultar",
-          "name": "Buscar Expediente",
+          "name": "Buscar expediente",
           "icon": "menu-icon me-1 tf-icons mdi mdi-folder-search-outline",
-          "slug": "listado-paciente"
+          "slug": "listado-paciente",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         },
         {
           "url": "/pacientes/buscar-consulta",
-          "name": "Buscar Consulta",
+          "name": "Buscar consulta",
           "icon": "menu-icon me-1 tf-icons mdi mdi-file-find-outline",
-          "slug": "listado-consultas"
+          "slug": "listado-consultas",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         }
       ]
     },
@@ -38,18 +78,53 @@
       "name": "Recetas",
       "icon": "menu-icon tf-icons mdi mdi-text-box-multiple",
       "slug": "recetas",
+      "perfiles": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
       "submenu": [
         {
           "url": "/receta/nueva",
           "name": "Crear receta",
           "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-plus-outline",
-          "slug": "receta-nueva"
+          "slug": "receta-nueva",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         },
         {
           "url": "/receta/listado",
           "name": "Ver recetas",
           "icon": "menu-icon me-1 tf-icons mdi mdi-format-list-text",
-          "slug": "receta-listado"
+          "slug": "receta-listado",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "url": "/receta/surtir",
+          "name": "Surtir receta",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-file-document-check",
+          "slug": "receta-surtir",
+          "perfiles": [
+            7
+          ]
         }
       ]
     },
@@ -57,18 +132,42 @@
       "name": "Historia clinica",
       "icon": "menu-icon tf-icons mdi mdi-clipboard-text-clock",
       "slug": "historia-clinica",
+      "perfiles": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
       "submenu": [
         {
           "url": "/historia_clinica/crear",
           "name": "Crear historia",
           "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-plus-outline",
-          "slug": "historia-clinica-crear"
+          "slug": "historia-clinica-crear",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         },
         {
           "url": "/historia_clinica/listado",
           "name": "Ver historias",
           "icon": "menu-icon me-1 tf-icons mdi mdi-format-list-text",
-          "slug": "historia-clinica-listado"
+          "slug": "historia-clinica-listado",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         }
       ]
     },
@@ -76,24 +175,77 @@
       "name": "Reportes",
       "icon": "menu-icon tf-icons mdi mdi-file-chart",
       "slug": "reportes",
+      "perfiles": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
       "submenu": [
         {
           "url": "/reportes/recetas",
           "name": "Rep. recetas",
           "icon": "menu-icon me-1 tf-icons mdi mdi-text-box-multiple",
-          "slug": "reporte-recetas"
+          "slug": "reporte-recetas",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
         },
         {
           "url": "/reportes/pacientes",
           "name": "Rep. pacientes",
           "icon": "menu-icon me-1 tf-icons mdi mdi-account-injury-outline",
-          "slug": "reporte-pacientes"
+          "slug": "reporte-pacientes",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
         },
         {
           "url": "/reportes/consultas",
           "name": "Rep. consultas",
           "icon": "menu-icon me-1 tf-icons mdi mdi-medical-cotton-swab",
-          "slug": "reporte-consultas"
+          "slug": "reporte-consultas",
+          "perfiles": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Medicamentos",
+      "icon": "menu-icon tf-icons mdi mdi-pill-multiple",
+      "slug": "farmacia-medicamentos",
+      "perfiles": [
+        7
+      ],
+      "submenu": [
+        {
+          "url": "/farmacia/medicamentos/existencias",
+          "name": "Existencias",
+          "icon": "menu-icon me-1 tf-icons mdi mdi-medication",
+          "slug": "farmacia-medicamentos-existencias",
+          "perfiles": [
+            7
+          ]
         }
       ]
     }

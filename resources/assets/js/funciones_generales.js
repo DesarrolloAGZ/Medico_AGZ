@@ -577,3 +577,69 @@ function formateaCampoGlucosa(nameInput) {
     this.value = valor;
   });
 }
+
+// Detectar cuando se pierde la conexion a internet mostrando una alerta
+function mostrarAlertaSinInternet() {
+  if (!document.getElementById('alerta-internet')) {
+    if (!document.getElementById('animacion-alerta-internet')) {
+      const style = document.createElement('style');
+      style.id = 'animacion-alerta-internet';
+      style.innerHTML = `
+        @keyframes pulseGlass {
+          0% { opacity: 1; transform: translateX(-50%) scale(1); }
+          50% { opacity: 1; transform: translateX(-50%) scale(1.02); }
+          100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    let alerta = document.createElement('div');
+    alerta.id = 'alerta-internet';
+    alerta.style.position = 'fixed';
+    alerta.style.top = '0px';
+    alerta.style.left = '50%';
+    alerta.style.transform = 'translateX(-50%)';
+    alerta.style.minWidth = '600px';
+    alerta.style.maxWidth = '90%';
+    alerta.style.padding = '12px 20px';
+    alerta.style.borderRadius = '12px';
+    alerta.style.zIndex = '9999';
+    // Efecto vidrio
+    alerta.style.background = 'rgba(255, 0, 0, 0.66)';
+    alerta.style.backdropFilter = 'blur(10px)';
+    alerta.style.webkitBackdropFilter = 'blur(10px)';
+    alerta.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+    alerta.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.2)';
+    // Texto
+    alerta.style.color = '#fff';
+    alerta.style.textAlign = 'center';
+    alerta.style.fontWeight = '500';
+    alerta.style.fontSize = '14px';
+    alerta.style.letterSpacing = '0.5px';
+    alerta.innerText = '⚠️Sin conexión a internet. Reintentando...';
+    // Animacion de pulso
+    alerta.style.animation = 'pulseGlass 2s infinite ease-in-out';
+    // Animación entrada
+    alerta.style.opacity = '0';
+    alerta.style.transition = 'all 0.4s ease';
+    document.body.appendChild(alerta);
+    setTimeout(() => {
+      alerta.style.opacity = '1';
+      alerta.style.top = '20px';
+    }, 50);
+  }
+}
+function quitarAlertaSinInternet() {
+  let alerta = document.getElementById('alerta-internet');
+  if (alerta) {
+    alerta.remove();
+  }
+}
+// Detectar cuando se pierde conexión
+window.addEventListener('offline', function () {
+  mostrarAlertaSinInternet();
+});
+// Detectar cuando regresa conexión
+window.addEventListener('online', function () {
+  quitarAlertaSinInternet();
+});

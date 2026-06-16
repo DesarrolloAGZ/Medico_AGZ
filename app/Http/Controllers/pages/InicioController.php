@@ -8,6 +8,7 @@ use App\Models\PacienteModel;
 use App\Models\PacienteDatosConsultaModel;
 use App\Models\PacienteTipoVisitaModel;
 use App\Models\UsuarioModel;
+use App\Models\RecetaEstatusModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,12 @@ class InicioController extends Controller
 {
   public function index()
   {
+    # Si tiene el perfil de farmacia se manda a la vista del gestor de farmacia
+    if (Auth::user()->usuario_perfil_id == 7) {
+      $view_data['catalogos']['estatusReceta'] = RecetaEstatusModel::where('borrado', 0)->get()->toArray(); # Estatus de las recetas
+      return view('content.pages.inicio_farmacia',['datos_vista' => $view_data]);
+    }
+
     $view_data['estadisticas']['pacientesHombres'] = PacienteModel::where('genero', 'M')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->count('paciente.id'); # Total de hombres atendidos
     $view_data['estadisticas']['pacientesMujeres'] = PacienteModel::where('genero', 'F')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->count('paciente.id'); # Total de mujeres atendidas
     $view_data['estadisticas']['enfermedadGeneral'] = PacienteDatosConsultaModel::where('paciente_tipo_visita_id', 1)->where('borrado', 0)->count(); # Total de pacientes que acuden por enfermedad general

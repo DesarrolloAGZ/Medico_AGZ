@@ -41,34 +41,46 @@ $navbarDetached = ($navbarDetached ?? '');
         </div>
         <!--/ Style Switcher -->
 
+        {{-- {{dd(Auth::user());}} --}}
         <ul class="navbar-nav flex-row align-items-center ms-auto">
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" id="userDropdownToggle">
               <div class="avatar avatar-online">
-                <img src="{{ asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                @if(Auth::user()->genero == 'F')
+                  <img src="{{ asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                @else
+                  <img src="{{ asset('assets/img/avatars/17.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                @endif
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu" style="display: none; right: 0px;">
               <!-- Opciones del menú -->
               <li style="pointer-events: none;">
                 <a class="dropdown-item" href="">
-                  <div class="d-flex">
+                  <div class="d-flex mb-3">
                     <div class="flex-shrink-0 me-3">
                       <div class="avatar avatar-online">
+                      @if(Auth::user()->genero == 'F')
                         <img src="{{ asset('assets/img/avatars/16.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                      @else
+                        <img src="{{ asset('assets/img/avatars/17.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                      @endif
                       </div>
                     </div>
-                    <div class="flex-grow-1">
+                    <div class="flex-grow-1 text-center" style="align-content: center;">
                       <span class="fw-semibold d-block">
                         @if (Auth::check())
                         {{ Auth::user()->username }}
                         @else
                         @endif
                       </span>
-                      <small class="text-muted">Agrizar</small>
                     </div>
                   </div>
+                  <small class="text-muted">{{ Auth::user()->nombre }} {{ Auth::user()->apellido_paterno }} {{ Auth::user()->apellido_materno }}</small></br>
+                  <small class="text-muted">Gafete #{{ Auth::user()->gafete }}</small></br>
+                  <small class="text-muted">{{ Auth::user()->correo }}@agrizar.com</small></br>
+                  <small class="text-muted">Agrizar {{ Auth::user()->catalogo_ranchos_agrizar_id }}</small>
                 </a>
               </li>
               <!-- Otras opciones -->
@@ -76,7 +88,7 @@ $navbarDetached = ($navbarDetached ?? '');
                 <a class="" href="javascript:void(0);">
                   <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="dropdown-item" style="pointer-events: auto;">
+                    <button type="submit" class="dropdown-item text-danger" style="pointer-events: auto;">
                       <i class="mdi mdi-logout me-2"></i>
                       <span class="align-middle">Cerrar sesión</span>
                     </button>

@@ -22,7 +22,7 @@ class RecetaController extends Controller
   # Retorna la vista de crear una receta nueva
   public function nuevaReceta(Request $request)
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7){
       $post = $request->all();
 
       if(count($post) == 1){
@@ -343,7 +343,7 @@ class RecetaController extends Controller
 
 
   public function recetasPaciente(Request $request){
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7){
 
       if(count($request->all()) == 0){
         $view_data['paciente']['recetas'] = RecetaModel::where('borrado', 0)->get()->toArray();
@@ -362,7 +362,7 @@ class RecetaController extends Controller
       return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
 
     } else {
-      return view('content.pages.pages-misc-error'); 
+      return view('content.pages.pages-misc-error');
     }
   }
 
