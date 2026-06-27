@@ -9,6 +9,8 @@ use App\Models\PacienteDatosConsultaModel;
 use App\Models\PacienteTipoVisitaModel;
 use App\Models\UsuarioModel;
 use App\Models\RecetaEstatusModel;
+use App\Models\RecetaModel;
+use App\Models\UsuarioFirmaModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -16,10 +18,26 @@ class InicioController extends Controller
 {
   public function index()
   {
+
+    # Funcion para checar las recetas caducadas
+    $this->caducarRecetas();
+
     # Si tiene el perfil de farmacia se manda a la vista del gestor de farmacia
     if (Auth::user()->usuario_perfil_id == 7) {
+      $view_data['recetas']['vigentes'] = RecetaModel::where('borrado', 0)->where('receta_estatus_id', 1)->count();
+      $view_data['recetas']['surtidas'] = RecetaModel::where('borrado', 0)->where('receta_estatus_id', 2)->count();
+      $view_data['recetas']['caducadas'] = RecetaModel::where('borrado', 0)->where('receta_estatus_id', 3)->count();
+      $view_data['recetas']['canceladas'] = RecetaModel::where('borrado', 0)->where('receta_estatus_id', 4)->count();
+
       $view_data['catalogos']['estatusReceta'] = RecetaEstatusModel::where('borrado', 0)->get()->toArray(); # Estatus de las recetas
-      return view('content.pages.inicio_farmacia',['datos_vista' => $view_data]);
+      return view('content.pages.inicio_farmacia', ['datos_vista' => $view_data]);
+    }
+
+    if (Auth::user()->cedula_profesional) {
+      $firma = UsuarioFirmaModel::where('usuario_id', Auth::user()->id)->where('borrado', 0)->first();
+      if (!$firma) {
+        return redirect()->route('usuario-firma');
+      }
     }
 
     $view_data['estadisticas']['pacientesHombres'] = PacienteModel::where('genero', 'M')->where('paciente.borrado', 0)->join('paciente_datos_consulta', 'paciente.id', '=', 'paciente_datos_consulta.paciente_id')->where('paciente_datos_consulta.borrado', 0)->distinct('paciente.id')->count('paciente.id'); # Total de hombres atendidos
@@ -32,32 +50,32 @@ class InicioController extends Controller
     $fechaInicio = now()->subDays(7)->format('Y-m-d');
     $fechaFin = now()->format('Y-m-d');
     $consultasPorDia = PacienteDatosConsultaModel::select(
-        DB::raw("DATE(created_at) as fecha_consulta"),
-        DB::raw("COUNT(*) as total")
+      DB::raw("DATE(created_at) as fecha_consulta"),
+      DB::raw("COUNT(*) as total")
     )
-    ->where('borrado', 0)
-    ->whereBetween(DB::raw("DATE(created_at)"), [$fechaInicio, $fechaFin])
-    ->groupBy(DB::raw("DATE(created_at)"))
-    ->get()
-    ->keyBy('fecha_consulta');
+      ->where('borrado', 0)
+      ->whereBetween(DB::raw("DATE(created_at)"), [$fechaInicio, $fechaFin])
+      ->groupBy(DB::raw("DATE(created_at)"))
+      ->get()
+      ->keyBy('fecha_consulta');
 
     # Genera serie de días
     $dias = collect();
     for ($i = 7; $i >= 0; $i--) {
-        $fecha = now()->subDays($i);
-        $diaSemana = $fecha->locale('es')->isoFormat('ddd');
-        $numeroDia = $fecha->day;
-        $esHoy = $i === 0;
-        $formatoDia = $diaSemana.' '.$numeroDia.($esHoy ? ' (Hoy)' : '');
-        $dias->push([
-            'dia' => $formatoDia,
-            'cantidad_consultas' => $consultasPorDia[$fecha->format('Y-m-d')]->total ?? 0
-        ]);
+      $fecha = now()->subDays($i);
+      $diaSemana = $fecha->locale('es')->isoFormat('ddd');
+      $numeroDia = $fecha->day;
+      $esHoy = $i === 0;
+      $formatoDia = $diaSemana . ' ' . $numeroDia . ($esHoy ? ' (Hoy)' : '');
+      $dias->push([
+        'dia' => $formatoDia,
+        'cantidad_consultas' => $consultasPorDia[$fecha->format('Y-m-d')]->total ?? 0
+      ]);
     }
 
     $view_data['estadisticas']['consultasPorDia'] = $dias;
 
-    return view('content.pages.inicio',['datos_vista' => $view_data]);
+    return view('content.pages.inicio', ['datos_vista' => $view_data]);
   }
 
   public function login()
@@ -68,8 +86,8 @@ class InicioController extends Controller
   public function autenticar(Request $request)
   {
     $request->validate([
-        'correo' => ['required', 'string'],
-        'password' => ['required'],
+      'correo' => ['required', 'string'],
+      'password' => ['required'],
     ]);
 
     $correoCompleto = $request->input('correo') . env('DOMINIO');
@@ -77,17 +95,17 @@ class InicioController extends Controller
     $ldapAuth = $this->validaLDAP($correoCompleto, $request->input('password'));
 
     if (!$ldapAuth) {
-        return back()->withErrors([
-            'correo' => 'El usuario no tiene acceso al sistema (AD).',
-        ])->withInput();
+      return back()->withErrors([
+        'correo' => 'El usuario no tiene acceso al sistema (AD).',
+      ])->withInput();
     }
 
     $usuario = UsuarioModel::where('correo', $request->input('correo'))->where('borrado', 0)->first();
 
     if (!$usuario) {
-        return back()->withErrors([
-            'correo' => 'El usuario no tiene acceso al sistema (SM).',
-        ])->withInput();
+      return back()->withErrors([
+        'correo' => 'El usuario no tiene acceso al sistema (SM).',
+      ])->withInput();
     }
 
     Auth::login($usuario);
@@ -100,8 +118,8 @@ class InicioController extends Controller
   {
     $url = env('LDAP_URL');
     $data = [
-        'username' => $username,
-        'password' => $password
+      'username' => $username,
+      'password' => $password
     ];
 
     // Configura cURL
@@ -120,9 +138,18 @@ class InicioController extends Controller
     curl_close($ch);
 
     if ($httpCode === 200 && $response === "true") {
-        return true;
+      return true;
     }
 
     return false;
+  }
+
+  private function caducarRecetas()
+  {
+    RecetaModel::where('receta_estatus_id', 1)->whereDate('created_at', '<', today())
+      ->update([
+        'receta_estatus_id' => 3,
+        'updated_at' => now()
+      ]);
   }
 }

@@ -292,12 +292,9 @@ function generarTabla() {
       }
     ],
     order: [[2, 'asc']],
-    displayLength: 30,
+    displayLength: 15,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"B>><"row"<"col-sm-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-    lengthMenu: [
-      [30, 50, 75, 100, 150, 200, -1],
-      [30, 50, 75, 100, 150, 200, 'Todos']
-    ],
+    lengthMenu: [15, 30, 50, 75, 100, 150, 200, -1],
     language: {
       paginate: {
         // remove previous & next text from pagination

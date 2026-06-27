@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\pages;
 
 use App\Helpers\Helpers;
@@ -14,6 +15,9 @@ use App\Models\UsuarioAlmacenModel;
 use App\Models\RecetaValeHistoricoModel;
 use App\Models\RecetaConsumoHistoricoModel;
 use App\Models\CatalogoRanchosAgrizarModel;
+use App\Models\UsuarioPerfilModel;
+use App\Models\UsuarioFirmaModel;
+use App\Models\RecetaFirmaPacienteModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
@@ -22,21 +26,23 @@ class RecetaController extends Controller
   # Retorna la vista de crear una receta nueva
   public function nuevaReceta(Request $request)
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7){
+    if (Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7) {
       $post = $request->all();
 
-      if(count($post) == 1){
+      if (count($post) == 1) {
         # Obtiene el ID desde la URL
         $detalle_receta_id = Crypt::decryptString($request->query('detalle_receta_id'));
 
+        # Datos generales de la receta
         $detalle_receta = RecetaModel::select(
           'receta.id as receta_id',
-          'usuario.nombre as usuario_creados_nombre',
+          'usuario.nombre as usuario_creador_nombre',
           'usuario.apellido_paterno as usuario_creador_apellido_p',
           'usuario.apellido_materno as usuario_creador_apellido_m',
           'usuario.registro_ssa',
           'usuario.cedula_profesional',
           'usuario.usuario_perfil_id',
+          'usuario_perfil.nombre as usuario_perfil',
           'paciente.nombre as paciente_nombre',
           'paciente.apellido_paterno as paciente_apellido_p',
           'paciente.apellido_materno as paciente_apellido_m',
@@ -44,35 +50,38 @@ class RecetaController extends Controller
           'receta.medicamento_indicaciones as medicamento',
           'receta.recomendaciones',
           'receta.created_at as fecha_creacion',
-          DB::raw("string_agg(receta_medicamento.medicamento_nombre || ' -> Cantidad: ' || receta_medicamento.cantidad_solicitada || '', ' || ') as medicamentos_txt")
+          'usuario_firma.firma as firma_usuario'
         )
-        ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
-        ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
-        ->join('receta_medicamento', 'receta_medicamento.receta_id', '=', 'receta.id')
-        ->where('receta.id', $detalle_receta_id)
-        ->where('usuario.borrado', 0)
-        ->where('receta_medicamento.borrado', 0)
-        ->where('receta.borrado', 0)
-        ->groupBy(
-          'receta.id',
-          'usuario.nombre',
-          'usuario.apellido_paterno',
-          'usuario.apellido_materno',
-          'usuario.registro_ssa',
-          'usuario.cedula_profesional',
-          'usuario.usuario_perfil_id',
-          'paciente.nombre',
-          'paciente.apellido_paterno',
-          'paciente.apellido_materno',
-          'paciente.edad',
-          'receta.medicamento_indicaciones',
-          'receta.recomendaciones',
-          'receta.created_at'
-        )->get()->toArray();
+          ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+          ->leftJoin('usuario_firma', function ($join) {
+            $join->on('usuario_firma.usuario_id', '=', 'usuario.id')
+              ->where('usuario_firma.borrado', 0);
+          })
+          ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+          ->join('usuario_perfil', 'usuario_perfil.id', '=', 'usuario.usuario_perfil_id')
+          ->where('receta.id', $detalle_receta_id)
+          ->where('usuario.borrado', 0)
+          ->where('receta.borrado', 0)
+          ->where('usuario_perfil.borrado', 0)
+          ->first();
 
-        $view_data['detalles_receta'] = $detalle_receta;
+        # Medicamentos de la receta
+        $medicamentos = RecetaMedicamentoModel::select(
+          'medicamento_nombre',
+          'abreviatura',
+          'cantidad_solicitada'
+        )
+          ->where('receta_id', $detalle_receta_id)
+          ->where('borrado', 0)
+          ->get()
+          ->toArray();
+
+        $view_data['detalles_receta'] = $detalle_receta ? [$detalle_receta->toArray()] : [];
+        $view_data['medicamentos'] = $medicamentos;
+
         # Mandamos un array vacío para que no falle la vista
         $view_data['todos_empleados_apsi'] = [];
+        $view_data['perfil_nombre'] = [];
       } else {
         # Obtener todos los empleados APSI
         $urlTodosLosEmpleadosApsi =  env('API_URL_KUDE') . '/obtenTodosLosEmpleadosAPSI.php';
@@ -83,24 +92,25 @@ class RecetaController extends Controller
 
         # guardamos los empleados en la variable de vista
         $view_data['todos_empleados_apsi'] = $response['response'];
+        $view_data['perfil_nombre'] = UsuarioPerfilModel::select('nombre')->where('id', Auth::user()->usuario_perfil_id)->first();
+        $view_data['firma_usuario_logueado'] = UsuarioFirmaModel::where('usuario_id', Auth::user()->id)->where('borrado', 0)->value('firma');
       }
 
       $usuario_almacenes = UsuarioAlmacenModel::select('empresa_id', 'empresa_nombre', 'almacen_id', 'almacen_nombre', 'almacen_codigo')->where('usuario_id', Auth::user()->id)->where('borrado', 0)->get()->toArray();
       $view_data['usuario_almacenes'] = $usuario_almacenes;
 
       # Validamos si el usuario tiene cedula profesional para tener permiso para acceder a esta seccion
-      if(Auth::user()->cedula_profesional){
+      if (Auth::user()->cedula_profesional) {
         $view_data['pacientes'] = PacienteModel::where('borrado', 0)->select('id', 'nombre', 'apellido_paterno', 'apellido_materno', 'edad')->get()->toArray();
 
         $lastFolio = RecetaModel::max('id');
         $view_data['folio'] = $lastFolio ? $lastFolio + 1 : 1;
 
         # Mandamos a la  vista
-        return view('content.pages.receta.nueva-receta',['datos_vista' => $view_data]);
+        return view('content.pages.receta.nueva-receta', ['datos_vista' => $view_data]);
       } else {
         return view('content.pages.pages-misc-error');
       }
-
     } else {
       return view('content.pages.pages-misc-error');
     }
@@ -121,9 +131,9 @@ class RecetaController extends Controller
     $validaEmpleadoRegistradoEnSistemaMedico = PacienteModel::where('gafete', $post['empleado']['gafete'])->where('borrado', 0)->first();
 
     $post['empleado']['created_at'] = now();
-    if(!$validaEmpleadoRegistradoEnSistemaMedico){
+    if (!$validaEmpleadoRegistradoEnSistemaMedico) {
       $registrarEmpleadoAlServicioMedico = PacienteModel::insertGetId($post['empleado']);
-      if(!$registrarEmpleadoAlServicioMedico){
+      if (!$registrarEmpleadoAlServicioMedico) {
         return response()->json(['error' => true, 'msg' => 'No fue posible registrar al empleado en el sistema médico automaticamente'], 500);
       } else {
         $datosPaciente = $this->obtenerDatosPaciente($registrarEmpleadoAlServicioMedico);
@@ -150,11 +160,13 @@ class RecetaController extends Controller
     return response()->json($respuestaBD);
   }
 
-  private function obtenerDatosPaciente($pacienteId){
+  private function obtenerDatosPaciente($pacienteId)
+  {
     return PacienteModel::select('nombre', 'apellido_paterno', 'apellido_materno', 'gafete')->where('id', $pacienteId)->first();
   }
 
-  private function agruparMedicamentos($medicamentos){
+  private function agruparMedicamentos($medicamentos)
+  {
     $grupos = [];
     foreach ($medicamentos as $item) {
       $clave = $item['empresa_id'] . '-' . $item['almacen_id'];
@@ -166,15 +178,16 @@ class RecetaController extends Controller
         "id" => $item["medicamento_id"],
         "codigo" => $item["medicamento_codigo"],
         "nombre" => $item["medicamento_nombre"],
-        "uso" => "",
-        "unidad" => "",
+        "uso" => "De uso médico",
+        "unidad" => $item["abreviatura"],
         "cantidad" => $item["cantidad_solicitada"]
       ];
     }
     return $grupos;
   }
 
-  private function crearJsonVale($grupo, $paciente){
+  private function crearJsonVale($grupo, $paciente)
+  {
     /*
     # Descomentar para obtener centro de costos dinámico del APSI
     $gafete = $paciente->gafete;
@@ -212,7 +225,8 @@ class RecetaController extends Controller
     ];
   }
 
-  private function crearJsonConsumo($valeId, $paciente, $centroCostos){
+  private function crearJsonConsumo($valeId, $paciente, $centroCostos)
+  {
     return [
       "moveuserid" => 445,
       "passhispatec" => "S3rvMedic@",
@@ -220,16 +234,17 @@ class RecetaController extends Controller
       "aplicationdate" => date('Y-m-d'),
       "receptionname" => $this->nombreCompleto($paciente),
       "signature" => "",
-      "observations" => "Consumo generado desde: Sistema del Servicio Medico -> Centro de costos: ".$centroCostos." -> Vale id: ".$valeId
+      "observations" => "Consumo generado desde: Sistema del Servicio Medico -> Centro de costos: " . $centroCostos . " -> Vale id: " . $valeId
     ];
   }
 
   private function nombreCompleto($paciente)
   {
-    return "Dr. ".Auth::user()->nombre." ".Auth::user()->apellido_paterno." ".Auth::user()->apellido_materno." > Paciente: ".$paciente->nombre." ".$paciente->apellido_paterno." ".$paciente->apellido_materno;
+    return "Dr. " . Auth::user()->nombre . " " . Auth::user()->apellido_paterno . " " . Auth::user()->apellido_materno . " > Paciente: " . $paciente->nombre . " " . $paciente->apellido_paterno . " " . $paciente->apellido_materno;
   }
 
-  private function postAPI($url, $json, $token){
+  private function postAPI($url, $json, $token)
+  {
     $response = Http::withHeaders([
       'Authorization' => 'Bearer ' . $token,
       'Accept' => 'application/json',
@@ -257,8 +272,10 @@ class RecetaController extends Controller
   }
 
   private $historicoConsumoId = null;
+  private $historicoValeId = null;
 
-  private function guardarRecetaBD($post, $result)  {
+  private function guardarRecetaBD($post, $result)
+  {
     DB::connection('pgsql')->beginTransaction();
     try {
       foreach ($post as $key => $value) {
@@ -281,11 +298,22 @@ class RecetaController extends Controller
         }
       }
 
-      if ($this->historicoConsumoId) {
-        RecetaConsumoHistoricoModel::where('id', $this->historicoConsumoId)->update(['receta_id' => $result["receta_id"]]);
+      $BanderaHacerConsumo = 'no';
+
+      if ($BanderaHacerConsumo == 'si') {
+        if ($this->historicoConsumoId) {
+          RecetaConsumoHistoricoModel::where('id', $this->historicoConsumoId)->update(['receta_id' => $result["receta_id"]]);
+        } else {
+          DB::connection('pgsql')->rollback();
+          return ['error' => true, 'msg' => "Error al registrar receta en BD. No se pudo asociar la receta con el historico del consumo"];
+        }
+      }
+
+      if ($this->historicoValeId) {
+        RecetaValeHistoricoModel::where('id', $this->historicoValeId)->update(['receta_id' => $result["receta_id"]]);
       } else {
         DB::connection('pgsql')->rollback();
-        return ['error' => true, 'msg' => "Error al registrar receta en BD. No se pudo asociar la receta con el historico"];
+        return ['error' => true, 'msg' => "Error al registrar receta en BD. No se pudo asociar la receta con el historico del vale"];
       }
 
       DB::connection('pgsql')->commit();
@@ -296,11 +324,14 @@ class RecetaController extends Controller
       ];
     } catch (\Exception $e) {
       DB::connection('pgsql')->rollback();
-      return ['error' => true,'msg' => "Error al registrar receta en BD",'return' => $e->getMessage()];
+      return ['error' => true, 'msg' => "Error al registrar receta en BD", 'return' => $e->getMessage()];
     }
   }
 
-  private function procesarGrupo($grupo, $token, $datosPaciente){
+  private function procesarGrupo($grupo, $token, $datosPaciente)
+  {
+    DB::connection('pgsql')->beginTransaction();
+
     try {
       # Generar vale
       $jsonVale = $this->crearJsonVale($grupo, $datosPaciente);
@@ -311,41 +342,49 @@ class RecetaController extends Controller
       }
 
       # Guardar histórico del vale
-      RecetaValeHistoricoModel::insert([
-          'json_data' => json_encode($jsonVale),
-          'respuesta_api' => json_encode($respuestaVale['data']),
-          'created_at' => now()
+      $this->historicoValeId = RecetaValeHistoricoModel::insertGetId([
+        'json_data' => json_encode($jsonVale),
+        'respuesta_api' => json_encode($respuestaVale['data']),
+        'vale_id' => $respuestaVale['data']['valeid'],
+        'centro_costos' => $jsonVale['centrocostocodigo'],
+        'created_at' => now()
       ]);
 
-      # Generar consumo en Hispatec
-      $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente, $jsonVale['centrocostocodigo']);
-      $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
+      $BanderaHacerConsumo = 'no';
 
-      if ($respuestaConsumo['error']) {
+      if ($BanderaHacerConsumo == 'si') {
+        # Generar consumo en Hispatec
+        $jsonConsumo = $this->crearJsonConsumo($respuestaVale['data']['valeid'], $datosPaciente, $jsonVale['centrocostocodigo']);
+        $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
+
+        if ($respuestaConsumo['error']) {
           return $respuestaConsumo;
-      }
+        }
 
-      # Guardar histórico consumo
-      $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
+        # Guardar histórico consumo
+        $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
           'json_data' => json_encode($jsonConsumo),
           'respuesta_api' => json_encode($respuestaConsumo['data']),
           'created_at' => now(),
           'centro_costos' => $jsonVale['centrocostocodigo'],
           'vale_id' => $respuestaVale['data']['valeid']
-      ]);
+        ]);
+      }
 
+      DB::connection('pgsql')->commit();
       return ['error' => false];
-
     } catch (\Exception $e) {
-      return ['error' => true,'msg' => "Error al comunicarse con las APIs",'return' => $e->getMessage()];
+      DB::connection('pgsql')->rollback();
+      return ['error' => true, 'msg' => "Error al comunicarse con las APIs", 'return' => $e->getMessage()];
     }
   }
 
 
-  public function recetasPaciente(Request $request){
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7){
+  public function recetasPaciente(Request $request)
+  {
+    if (Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5 || Auth::user()->usuario_perfil_id == 7) {
 
-      if(count($request->all()) == 0){
+      if (count($request->all()) == 0) {
         $view_data['paciente']['recetas'] = RecetaModel::where('borrado', 0)->get()->toArray();
       } else {
         $paciente_id = Crypt::decryptString($request->query('paciente_id'));
@@ -354,19 +393,19 @@ class RecetaController extends Controller
           return redirect()->back()->with('error', 'No se proporcionó un ID de paciente.');
         }
         $view_data['paciente_id'] = $paciente_id;
-        $view_data['paciente']['recetas'] = RecetaModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
-        $view_data['paciente']['datos_generales'] = PacienteModel::where('id',$paciente_id)->where('borrado', 0)->get()->toArray();
+        $view_data['paciente']['recetas'] = RecetaModel::where('id', $paciente_id)->where('borrado', 0)->get()->toArray();
+        $view_data['paciente']['datos_generales'] = PacienteModel::where('id', $paciente_id)->where('borrado', 0)->get()->toArray();
       }
 
       # Mandamos a la  vista
-      return view('content.pages.receta.listado-receta-paciente',['datos_vista' => $view_data]);
-
+      return view('content.pages.receta.listado-receta-paciente', ['datos_vista' => $view_data]);
     } else {
       return view('content.pages.pages-misc-error');
     }
   }
 
-  public function obtenerListadoRecetasPaciente(Request $request){
+  public function obtenerListadoRecetasPaciente(Request $request)
+  {
     # Obtener el paciente_id desde los datos POST
     $pacienteId = $request->input('paciente_id');
 
@@ -388,43 +427,43 @@ class RecetaController extends Controller
       'receta.recomendaciones as recomendaciones',
       'receta.created_at as fecha_creacion'
     )
-    ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
-    ->join('paciente', 'paciente.id', '=', 'receta.paciente_id');
+      ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+      ->join('paciente', 'paciente.id', '=', 'receta.paciente_id');
     if ($pacienteId) {
       $detalle_receta->where('receta.paciente_id', $pacienteId);
     }
     $detalle_receta = $detalle_receta->where('usuario.borrado', 0)
-    ->where('receta.borrado', 0)
-    ->orderBy('paciente.gafete', 'asc');
+      ->where('receta.borrado', 0)
+      ->orderBy('paciente.gafete', 'asc');
 
     return DataTables::eloquent($detalle_receta)
-    # filtrar por nombre sin importar mayusculas y minusculas
-   ->filter(function ($query) use ($request) {
-      $search = $request->input('search.value');
-      if (!empty($search)) {
-        $search = strtolower($search);
-        $query->where(function ($q) use ($search) {
-          $q->whereRaw('CAST(paciente.gafete AS TEXT) LIKE ?', ["%{$search}%"])
-          ->orWhereRaw('LOWER(paciente.nombre) LIKE ?', ["%{$search}%"])
-          ->orWhereRaw('LOWER(paciente.apellido_paterno) LIKE ?', ["%{$search}%"])
-          ->orWhereRaw('LOWER(paciente.apellido_materno) LIKE ?', ["%{$search}%"]);
-        });
-      }
-    })
-    ->addColumn('acciones', function ($detalle_receta) {
-      $detalle_receta_id_encriptado = Crypt::encryptString($detalle_receta->id);
+      # filtrar por nombre sin importar mayusculas y minusculas
+      ->filter(function ($query) use ($request) {
+        $search = $request->input('search.value');
+        if (!empty($search)) {
+          $search = strtolower($search);
+          $query->where(function ($q) use ($search) {
+            $q->whereRaw('CAST(paciente.gafete AS TEXT) LIKE ?', ["%{$search}%"])
+              ->orWhereRaw('LOWER(paciente.nombre) LIKE ?', ["%{$search}%"])
+              ->orWhereRaw('LOWER(paciente.apellido_paterno) LIKE ?', ["%{$search}%"])
+              ->orWhereRaw('LOWER(paciente.apellido_materno) LIKE ?', ["%{$search}%"]);
+          });
+        }
+      })
+      ->addColumn('acciones', function ($detalle_receta) {
+        $detalle_receta_id_encriptado = Crypt::encryptString($detalle_receta->id);
 
-      $botones = '';
+        $botones = '';
 
-      // Enlace en la tabla
-      $botones .= '<a href="' . route('receta-nueva', ['detalle_receta_id' => $detalle_receta_id_encriptado]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
-        '<i class="mdi mdi-text-box-check-outline mdi-20px"></i>' .
-      '</a>';
+        // Enlace en la tabla
+        $botones .= '<a href="' . route('receta-nueva', ['detalle_receta_id' => $detalle_receta_id_encriptado]) . '" class="btn btn-icon rounded-pill btn-info waves-effect waves-light m-1" title="Ver detalle de la receta">' .
+          '<i class="mdi mdi-text-box-check-outline mdi-20px"></i>' .
+          '</a>';
 
-      return $botones;
-    })
-    ->rawColumns(['acciones'])
-    ->make(true);
+        return $botones;
+      })
+      ->rawColumns(['acciones'])
+      ->make(true);
   }
 
   public function obtenerMedicamentosHispatec(Request $request)
@@ -480,6 +519,245 @@ class RecetaController extends Controller
         'error' => true,
         'message' => 'Excepción: ' . $e->getMessage()
       ], 500);
+    }
+  }
+
+  public function recetaSurtir(Request $request)
+  {
+    if (Auth::user()->usuario_perfil_id == 7) {
+      # Mandamos a la  vista
+      return view('content.pages.receta.surtir-receta');
+    } else {
+      return view('content.pages.pages-misc-error');
+    }
+  }
+
+  public function obtenerDetalleReceta(Request $request)
+  {
+    $result = array("error" => false, "msg" => null, 'receta' => null);
+
+    $get = $request->all();
+
+    # Datos generales de la receta
+    $detalle_receta = RecetaModel::select(
+      'receta.id as receta_id',
+      'usuario.nombre as usuario_creador_nombre',
+      'usuario.apellido_paterno as usuario_creador_apellido_p',
+      'usuario.apellido_materno as usuario_creador_apellido_m',
+      'usuario.cedula_profesional',
+      'paciente.id as paciente_id',
+      'paciente.nombre as paciente_nombre',
+      'paciente.apellido_paterno as paciente_apellido_p',
+      'paciente.apellido_materno as paciente_apellido_m',
+      'paciente.edad as paciente_edad',
+      'paciente.gafete as paciente_gafete',
+      'paciente.curp as paciente_curp',
+      'paciente.genero as paciente_genero',
+      'receta.created_at as fecha_creacion',
+      'receta_estatus.nombre as estatus',
+      'receta_estatus.clase as estatus_clase',
+      'receta_estatus.id as estatus_id'
+    )
+      ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+      ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
+      ->join('receta_estatus', 'receta_estatus.id', '=', 'receta.receta_estatus_id')
+      ->where('receta.id', $get['folioReceta'])
+      ->where('usuario.borrado', 0)
+      ->where('receta.borrado', 0)
+      ->first();
+
+    if (!$detalle_receta) {
+      $result['error'] = true;
+      $result["msg"] = 'No se encontraron detalles de la receta. Verifique que el folio sea válido. Si el problema persiste, contacte al equipo de desarrollo.';
+      return response()->json($result);
+    }
+
+    $detalle_receta->toArray();
+
+    # Medicamentos de la receta
+    $medicamentos = RecetaMedicamentoModel::select(
+      'medicamento_nombre',
+      'abreviatura',
+      'cantidad_solicitada'
+    )
+      ->where('receta_id', $get['folioReceta'])
+      ->where('borrado', 0)
+      ->get()->toArray();
+
+    if (!$medicamentos) {
+      $result['error'] = true;
+      $result["msg"] = 'No se encontraron detalles de los medicamentos. Verifique que el folio sea válido. Si el problema persiste, contacte al equipo de desarrollo.';
+      return response()->json($result);
+    }
+
+    $result['error'] = false;
+    $result["msg"] = 'Receta encontrada correctamente.';
+    $result["receta"]['detalle_receta'] = $detalle_receta;
+    $result["receta"]['medicamentos'] = $medicamentos;
+
+    return response()->json($result);
+  }
+
+  public function surtirRecetaCompleta(Request $request)
+  {
+    $result = array("error" => false, "msg" => null, 'receta' => null);
+
+    $get = $request->all();
+
+    $datosReceta = RecetaModel::where('id', $get['recetaid'])->first()->toArray();
+
+    $datosReceta['created_at'] = date('Y-m-d', strtotime($datosReceta['created_at']));
+    $fechaHoy = date('Y-m-d');
+
+    if ($fechaHoy != $datosReceta['created_at']) {
+      $result['error'] = true;
+      $result['msg'] = 'No es posible surtir la receta porque fue expedida el ' . $datosReceta['created_at'] . '. Las recetas únicamente pueden surtirse el mismo día de su expedición.';
+      return response()->json($result);
+    }
+
+    switch ($datosReceta['receta_estatus_id']) {
+      case 1:
+        // DB::connection('pgsql')->beginTransaction();
+
+        // try {
+        //   $datosHistoricoVale = RecetaValeHistoricoModel::where('receta_id', $get['recetaid'])->first()->toArray();
+        //   $valeId = $datosHistoricoVale['vale_id'];
+        //   $centroCostos = $datosHistoricoVale['centro_costos'];
+
+        //   $datosPaciente = $this->obtenerDatosPaciente($datosReceta['paciente_id']);
+
+        //   $jsonConsumo = $this->crearJsonConsumo($valeId, $datosPaciente, $centroCostos);
+
+        //   $token = Helpers::obtenerToken();
+        //   if (!$token) {
+        //     return response()->json(['error' => true, 'msg' => 'No se pudo obtener token'], 500);
+        //   }
+
+        //   $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
+
+        //   if ($respuestaConsumo['error']) {
+        //     return $respuestaConsumo;
+        //   }
+
+        //   # Guardar histórico consumo
+        //   $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
+        //     'json_data' => json_encode($jsonConsumo),
+        //     'respuesta_api' => json_encode($respuestaConsumo['data']),
+        //     'created_at' => now(),
+        //     'centro_costos' => $centroCostos,
+        //     'vale_id' => $valeId
+        //   ]);
+
+        $result['error'] = false;
+        $result["msg"] = 'La receta fue surtida correctamente y el consumo de los medicamentos se registró con éxito.';
+        //   DB::connection('pgsql')->commit();
+        // } catch (\Exception $e) {
+        //   DB::connection('pgsql')->rollback();
+        //   return ['error' => true, 'msg' => "No fue posible surtir la receta en el sistema. Intentalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.", 'return' => $e->getMessage()];
+        // }
+        break;
+
+      case 2:
+        $result['error'] = true;
+        $result["msg"] = 'La receta ya fue surtida anteriormente. No es posible volver a surtirla.';
+        break;
+
+      case 3:
+        $result['error'] = true;
+        $result["msg"] = 'La vigencia de la receta ha expirado. No es posible surtirla.';
+        break;
+
+      case 4:
+        $result['error'] = true;
+        $result["msg"] = 'La receta se encuentra cancelada. No es posible surtirla.';
+        break;
+    }
+
+    return response()->json($result);
+  }
+
+  public function guardarFirma(Request $request)
+  {
+    $result = ['error' => false, 'msg' => null];
+
+    $get = $request->all();
+
+    try {
+      if (empty($get['firma'])) {
+        return response()->json(['error' => true, 'msg' => 'No se recibió la firma del paciente.']);
+      }
+
+      if (empty($get['recetaid'])) {
+        return response()->json(['error' => true, 'msg' => 'No se recibió la receta.']);
+      }
+
+      DB::connection('pgsql')->beginTransaction();
+
+      // Obtener la receta
+      $receta = RecetaModel::find($get['recetaid']);
+
+      if (!$receta) {
+        DB::connection('pgsql')->rollBack();
+        return response()->json(['error' => true, 'msg' => 'La receta no existe.']);
+      }
+
+      // Limpiar Base64
+      $firma = str_replace('data:image/png;base64,', '', $get['firma']);
+      $firma = str_replace(' ', '+', $firma);
+
+      // Crear carpeta si no existe
+      $directorio = public_path('firmas_pacientes');
+
+      if (!file_exists($directorio)) {
+        mkdir($directorio, 0755, true);
+      }
+
+      // Nombre del archivo
+      $nombreArchivo = 'receta_' . $receta->id . '_' . time() . '.png';
+
+      // Guardar archivo
+      $guardado = file_put_contents($directorio . '/' . $nombreArchivo, base64_decode($firma));
+
+      if ($guardado === false) {
+        DB::connection('pgsql')->rollBack();
+        return response()->json(['error' => true, 'msg' => 'No fue posible guardar la firma del paciente.']);
+      }
+
+      $ruta = 'firmas_pacientes/' . $nombreArchivo;
+
+      // Guardar registro
+      $firmaPacienteId = RecetaFirmaPacienteModel::insertGetId([
+        'receta_id'  => $receta->id,
+        'paciente_id' => $receta->paciente_id,
+        'usuario_id' => Auth::user()->id,
+        'firma'      => $ruta,
+        'created_at' => now()
+      ]);
+
+      if (!$firmaPacienteId) {
+        DB::connection('pgsql')->rollBack();
+        return response()->json([
+          'error' => true,
+          'msg' => 'Ocurrió un error al intentar guardar la firma del paciente.'
+        ]);
+      }
+
+      // Actualizar estatus de la receta
+      $updateEstatus = RecetaModel::where('id', $receta->id)->update(['surtida' => 1, 'receta_estatus_id' => 2, 'updated_at' => now()]);
+
+      if (!$updateEstatus) {
+        DB::connection('pgsql')->rollBack();
+        return response()->json(['error' => true, 'msg' => 'Ocurrió un error al intentar actualizar el estatus de la receta.']);
+      }
+
+      DB::connection('pgsql')->commit();
+      $result['error'] = false;
+      $result['msg'] = 'La firma del paciente se guardó correctamente y la receta fue surtida.';
+
+      return response()->json($result);
+    } catch (\Exception $e) {
+      DB::connection('pgsql')->rollBack();
+      return response()->json(['error' => true, 'msg' => 'Ocurrió un error al guardar la firma del paciente.', 'detalle' => $e->getMessage()]);
     }
   }
 }

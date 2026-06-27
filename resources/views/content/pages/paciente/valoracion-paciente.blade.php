@@ -58,12 +58,12 @@ $configData = Helper::appClasses();
 
       <div class="row mb-4">
         @foreach($datos_vista['catalogos']['tipo_visita'] as $tipo)
-            <div class="col-md mb-md-0 mb-2"">
-                <div class="form-check custom-option custom-option-icon">
+            <div class="col-md mb-md-0 mb-2">
+                <div class="form-check custom-option custom-option-icon text-primary">
                     <label class="form-check-label custom-option-content" for="customRadioIcon{{ $tipo['id'] }}">
                         <span class="custom-option-body">
                             <i class="{{ $tipo['icono'] }}"></i>
-                            <span class="custom-option-title">{{ $tipo['nombre'] }}</span>
+                            <span class="custom-option-title text-primary">{{ $tipo['nombre'] }}</span>
                             <small>{{ $tipo['descripcion'] }}</small>
                         </span>
                         <input name="paciente_datos_consulta[paciente_tipo_visita_id]" class="form-check-input" type="radio" value="{{ $tipo['id'] }}" id="customRadioIcon{{ $tipo['id'] }}" {{ $loop->first ? 'checked' : '' }} />

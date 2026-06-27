@@ -25,7 +25,7 @@ class PacientesController extends Controller
   # Retorna la vista de registrar nuevo paciente
   public function nuevoPaciente()
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
+    if (Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5) {
 
       # Obtenemos las ocupaciones para mandarlas a la vista
       $view_data['catalogos']['empresas'] = PacienteEmpresaModel::where('borrado', 0)->get()->toArray();
@@ -33,8 +33,7 @@ class PacientesController extends Controller
       $view_data['catalogos']['area'] = PacienteAreaModel::where('borrado', 0)->get()->toArray();
       $view_data['catalogos']['subarea'] = PacienteSubareaModel::where('borrado', 0)->get()->toArray();
       # Mandamos a la  vista
-      return view('content.pages.paciente.nuevo-paciente',['datos_vista' => $view_data]);
-
+      return view('content.pages.paciente.nuevo-paciente', ['datos_vista' => $view_data]);
     } else {
       return view('content.pages.pages-misc-error');
     }
@@ -48,7 +47,7 @@ class PacientesController extends Controller
     # URL de la API ubicada en el KUDE
     $url =  env('API_URL_KUDE') . '/buscaEmpleadoAPSI.php';
 
-    try{
+    try {
 
       # Buscar un paciente por el gafete para ver si esta ya registrado en el sistema
       $pacienteExistente = PacienteModel::where('gafete', $numeroEmpleado)->where('borrado', 0)->first();
@@ -106,7 +105,8 @@ class PacientesController extends Controller
     }
   }
 
-  public function registrarPaciente(Request $request){
+  public function registrarPaciente(Request $request)
+  {
     # Parametros iniciales para la respuesta
     $result = array("error" => false, "msg" => null, 'url' => null, 'paciente_id' => null);
     # Obtenemos el POST
@@ -116,10 +116,8 @@ class PacientesController extends Controller
     try {
       $array_ids = array();
       # Iniciamos con el guardamos los datos obtenidos del formulario.
-      foreach ($post as $key => $value)
-      {
-        switch ($key)
-        {
+      foreach ($post as $key => $value) {
+        switch ($key) {
           # Guardamos los datos del paciente
           case "paciente":
             # Asignamos la fecha de registro
@@ -129,7 +127,7 @@ class PacientesController extends Controller
             #insertamos los valores en la tabla del paciente
             $paciente = PacienteModel::insertGetId($value);
 
-            if($paciente !== null){
+            if ($paciente !== null) {
               $array_ids["paciente_id"] = $paciente;
             } else {
               $result["error"] = true;
@@ -137,7 +135,7 @@ class PacientesController extends Controller
             }
             # Hacemos un ciclo para formar el array para el histórico de manera más dinámica
             $array_ids['historico']['paciente'] = $value;
-          break;
+            break;
         }
       }
 
@@ -153,15 +151,13 @@ class PacientesController extends Controller
         );
         # Insertamos el historico del registro
         $paciente_historico = PacienteHistoricoModel::insert($value_historico);
-        if (!$paciente_historico)
-        {
-            $result["error"] = true;
-            $result["msg"] = "No fue posible generar el historico del registro del paciente.";
+        if (!$paciente_historico) {
+          $result["error"] = true;
+          $result["msg"] = "No fue posible generar el historico del registro del paciente.";
         }
       }
       # Si no existe error al guardar el registro del historico entra
-      if (!$result["error"])
-      {
+      if (!$result["error"]) {
         # Si todo esta correcto hacemos el commit de la transaccion
         DB::connection('pgsql')->commit();
         $result['error'] = false;
@@ -186,8 +182,8 @@ class PacientesController extends Controller
 
   public function registrarValoracionPaciente(Request $request)
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5){
-      
+    if (Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4 || Auth::user()->usuario_perfil_id == 5) {
+
       # Obtiene el ID desde la URL
       $pacienteId = Crypt::decryptString($request->query('paciente_id'));
 
@@ -202,14 +198,14 @@ class PacientesController extends Controller
       $view_data['catalogos']['tipo_visita'] = PacienteTipoVisitaModel::where('borrado', 0)->get()->toArray();
 
       # Mandamos a la vista
-      return view('content.pages.paciente.valoracion-paciente',['datos_vista' => $view_data]);
-      
+      return view('content.pages.paciente.valoracion-paciente', ['datos_vista' => $view_data]);
     } else {
       return view('content.pages.pages-misc-error');
     }
   }
 
-  public function guardarValoracionPaciente(Request $request){
+  public function guardarValoracionPaciente(Request $request)
+  {
     # Parametros iniciales para la respuesta
     $result = array("error" => false, "msg" => null, 'url' => null);
     # Obtenemos el POST
@@ -217,9 +213,9 @@ class PacientesController extends Controller
 
     # Validación del CIE-10
     if (empty($post['paciente_datos_consulta']['cie_id'])) {
-        $result["error"] = true;
-        $result["msg"] = "Debe seleccionar un CIE-10 válido";
-        return response()->json($result);
+      $result["error"] = true;
+      $result["msg"] = "Debe seleccionar un CIE-10 válido";
+      return response()->json($result);
     }
 
     unset($post['paciente_datos_consulta']['cie_id_hidden']);
@@ -230,10 +226,8 @@ class PacientesController extends Controller
     try {
       $array_ids = array();
       # Iniciamos con el guardamos los datos obtenidos del formulario.
-      foreach ($post as $key => $value)
-      {
-        switch ($key)
-        {
+      foreach ($post as $key => $value) {
+        switch ($key) {
           # Guardamos los datos del paciente
           case "paciente_datos_consulta":
             # Asignamos la fecha de registro
@@ -245,7 +239,7 @@ class PacientesController extends Controller
             #insertamos los valores en la tabla del paciente
             $pacienteDatos = PacienteDatosConsultaModel::insertGetId($value);
 
-            if($pacienteDatos !== null){
+            if ($pacienteDatos !== null) {
               $array_ids["paciente_datos_consulta_id"] = $pacienteDatos;
             } else {
               $result["error"] = true;
@@ -253,7 +247,7 @@ class PacientesController extends Controller
             }
             # Hacemos un ciclo para formar el array para el histórico de manera más dinámica
             $array_ids['historico']['paciente_datos_consulta'] = $value;
-          break;
+            break;
         }
       }
 
@@ -269,15 +263,13 @@ class PacientesController extends Controller
         );
         # Insertamos el historico del registro
         $paciente_datos_consulta_historico = PacienteDatosConsultaHistoricoModel::insert($value_historico);
-        if (!$paciente_datos_consulta_historico)
-        {
-            $result["error"] = true;
-            $result["msg"] = "No fue posible generar el historico del registro de la valoracion del paciente.";
+        if (!$paciente_datos_consulta_historico) {
+          $result["error"] = true;
+          $result["msg"] = "No fue posible generar el historico del registro de la valoracion del paciente.";
         }
       }
       # Si no existe error al guardar el registro del historico entra
-      if (!$result["error"])
-      {
+      if (!$result["error"]) {
         # Si todo esta correcto hacemos el commit de la transaccion
         DB::connection('pgsql')->commit();
         $result['error'] = false;
@@ -289,7 +281,6 @@ class PacientesController extends Controller
         $result['error'] = true;
         $result["msg"] = '¡Lo sentimos! No fue posible registrar la valoracion del paciente.';
       }
-
     } catch (\Exception $e) {
       # Si existe un error no guardamos en la base de datos
       DB::connection('pgsql')->rollback();
@@ -300,7 +291,8 @@ class PacientesController extends Controller
     return response()->json($result);
   }
 
-  public function registrarNota(Request $request){
+  public function registrarNota(Request $request)
+  {
     # Parametros iniciales para la respuesta
     $result = array("error" => false, "msg" => null, 'url' => null);
     # Obtenemos el POST
@@ -310,10 +302,8 @@ class PacientesController extends Controller
     DB::connection('pgsql')->beginTransaction();
     try {
       # Iniciamos con el guardamos los datos obtenidos del formulario.
-      foreach ($post as $key => $value)
-      {
-        switch ($key)
-        {
+      foreach ($post as $key => $value) {
+        switch ($key) {
           # Guardamos los datos de la nota
           case "paciente_datos_consulta_nota":
             # Asignamos la fecha de registro
@@ -325,18 +315,17 @@ class PacientesController extends Controller
             #insertamos los valores en la tabla del paciente
             $nota = PacienteDatosConsultaNotaModel::insertGetId($value);
 
-            if($nota !== null){
+            if ($nota !== null) {
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar la nota, intenta de nuevo.";
             }
-          break;
+            break;
         }
       }
 
       # Si no existe error al guardar el registro de la nota entra
-      if (!$result["error"])
-      {
+      if (!$result["error"]) {
         # Si todo esta correcto hacemos el commit de la transaccion
         DB::connection('pgsql')->commit();
         $result['error'] = false;
@@ -364,18 +353,17 @@ class PacientesController extends Controller
 
       # Búsqueda con like y paginación
       $results = PacienteCIEModel::select('id', 'codigo', 'descripcion')
-      ->where('borrado', 0)
-      ->where(function($q) use ($query) {
-        $q->where('descripcion', 'iLIKE', "%{$query}%")
-        ->orWhere('codigo', 'iLIKE', "%{$query}%");
-      })
-      ->orderBy('descripcion')->get()->toArray();
+        ->where('borrado', 0)
+        ->where(function ($q) use ($query) {
+          $q->where('descripcion', 'iLIKE', "%{$query}%")
+            ->orWhere('codigo', 'iLIKE', "%{$query}%");
+        })
+        ->orderBy('descripcion')->get()->toArray();
 
       return response()->json([
-          'error' => false,
-          'data' => $results
+        'error' => false,
+        'data' => $results
       ]);
-
     } catch (\Exception $e) {
       return response()->json([
         'error' => true,

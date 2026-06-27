@@ -6,7 +6,6 @@ html {
 }
 body {
   background: url('/images/medico_back_2.png') center center / cover no-repeat !important;
-  /* height: 100vh !important; */
   margin: 0 !important;
   font-family: 'Segoe UI', sans-serif !important;
   min-height: 100vh !important;
@@ -19,7 +18,7 @@ body::before {
   width: 100% !important;
   height: 100% !important;
   backdrop-filter: blur(2px) !important;
-  background: rgba(0, 0, 0, 0.17) !important;
+  background: rgba(0, 0, 0, 0.058) !important;
   z-index: 0 !important;
 }
 .login-container {
@@ -30,12 +29,14 @@ body::before {
   min-height: auto;
   height: auto;
   border-radius: 20px !important;
-  background: #ffffffcb !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
   color: #006c39 !important;
   animation: fadeIn 1s ease !important;
   padding-left: 30px !important;
   padding-right: 30px !important;
+  background: rgba(255, 255, 255, 0.477) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
+  zoom: 0.8 !important;
 }
 .card-body {
   padding: 0px !important;
@@ -74,7 +75,7 @@ body::before {
   background: linear-gradient(135deg, #28a745, #197a2e) !important;
   border: none !important;
   border-radius: 0.5rem !important;
-  height: 45px !important;
+  height: 35px !important;
   font-weight: 600 !important;
   transition: 0.3s !important;
 }

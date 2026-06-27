@@ -66,7 +66,7 @@ $(document).ready(function () {
     if (!campoInvalidoEncontrado) {
       // Pregunta si se desea guardar el registro del paciente
       alertify.confirm(
-        '¿Desea guardar e imprimir la receta? Una vez guardada la receta se generará un consumo del medicamento seleccionado.',
+        '¿Desea guardar e imprimir la receta del medicamento seleccionado?',
         function (e, ui) {
           document.querySelector('.alertify')?.style.setProperty('display', 'none', 'important');
           guardarReceta();
@@ -136,7 +136,7 @@ function guardarReceta() {
         $('#receta-recomendaciones').val('');
         $('#receta-folio').text('#F-' + (response.receta_id + 1));
         arrayMedicamentosReceta = [];
-        document.querySelector('#contenedor-medicamentos .container').innerHTML = '';
+        $('#contenedor-medicamentos').empty();
         alertify.success('Receta guardada correctamente');
         document.getElementById('almacen_medicamentos').value = '';
         document.getElementById('listado-medicamentos-receta').innerHTML = '';
@@ -160,24 +160,24 @@ function obtenerCatalogoMedicamentosHispatec() {
   var almacen_id = $select.val();
   var empresa_id = $select.find('option:selected').data('empresa_id');
   var almacen_codigo = $select.find('option:selected').data('almacen_codigo');
+  const lista = document.getElementById('listado-medicamentos-receta');
 
   if (!almacen_id) {
     pantallaCarga('off');
-    alertify.error('No existe un almacen id asignado en la opción seleccionada, contacta con el equipo de Desarrollo.');
+    alertify.error('No se encontraron medicamentos con la opción seleccionada.');
+    lista.innerHTML = '';
     return;
   }
   if (!empresa_id) {
     pantallaCarga('off');
-    alertify.error(
-      'No existe una empresa id asignada en la opción seleccionada, contacta con el equipo de Desarrollo.'
-    );
+    alertify.error('No se encontraron medicamentos con la opción seleccionada.');
+    lista.innerHTML = '';
     return;
   }
   if (!almacen_codigo) {
     pantallaCarga('off');
-    alertify.error(
-      'No existe un almacen codigo asignado en la opción seleccionada, contacta con el equipo de Desarrollo.'
-    );
+    alertify.error('No se encontraron medicamentos con la opción seleccionada.');
+    lista.innerHTML = '';
     return;
   }
 
@@ -353,77 +353,60 @@ function agregarMedicamentoReceta(index) {
   const lista = document.getElementById('listado-medicamentos-receta');
   const listItem = lista.children[index];
   const medicamentoData = JSON.parse(listItem.getAttribute('data-medicamento'));
-
-  // Obtener la cantidad ingresada
   const inputCantidad = listItem.querySelector('.cantidad-input');
   const cantidad = parseFloat(inputCantidad.value) || 1;
-
-  // Validar nuevamente por seguridad
   const stockMaximo = medicamentoData.cantidad || 0;
+
   if (cantidad > stockMaximo) {
     alertify.error('La cantidad no puede ser mayor al stock disponible');
     return;
   }
 
-  // Agregar a la vista principal
   agregarMedicamentoAVista(medicamentoData, cantidad);
 
-  // Agregar al array de medicamentos de la receta
   arrayMedicamentosReceta.push({
     medicamento_id: medicamentoData.Id,
     medicamento_nombre: medicamentoData.nombre_articulo,
+    abreviatura: medicamentoData.Abreviatura || medicamentoData.unidadmedida,
     medicamento_codigo: medicamentoData.Codigo,
     cantidad_solicitada: cantidad,
     empresa_id: medicamentoData.Id_Empresa,
     almacen_id: medicamentoData.Id_Almacen
   });
 
-  // Resetear el input
   inputCantidad.value = 1;
   validarCantidad(inputCantidad);
 }
 
 // Función para mostrar en la vista principal (en un solo texto)
 function agregarMedicamentoAVista(medicamento, cantidad) {
-  const contenedor = document.querySelector('#contenedor-medicamentos .container');
-
-  // Crear el texto del medicamento
-  const textoMedicamento = `${medicamento.nombre_articulo} - ${cantidad} ${
-    medicamento.Abreviatura || medicamento.unidadmedida || ''
-  }`;
-
-  // Usamos el ID del medicamento como parte del ID del div
+  const tbody = document.getElementById('contenedor-medicamentos');
   const medicamentoId = `med-${medicamento.Id}-${Date.now()}`;
-
-  const medicamentoHTML = `
-    <small>
-      <div class="alert alert-primary alert-dismissible fade show mb-2" id="${medicamentoId}" data-medicamento-id="${medicamento.Id}" style="display: inline-flex; background-color: transparent; padding: 5px;" role="alert">
-        <div class="d-flex justify-content-between align-items-center" style="margin-right: 10px;">
-          <span style="margin-right: 11px;">${textoMedicamento}</span>
-          <button type="button" style="padding: 9px;" class="btn-close no-imprimir" onclick="removerMedicamento('${medicamentoId}')" aria-label="Close"></button>
-        </div>
-      </div>
-    </small>
+  const fila = `
+    <tr id="${medicamentoId}" data-medicamento-id="${medicamento.Id}">
+      <td class="fs-6">${medicamento.nombre_articulo}</td>
+      <td class="text-center fs-6">
+        ${medicamento.Abreviatura || medicamento.unidadmedida || ''}
+      </td>
+      <td class="text-center fs-6">
+        ${cantidad}
+      </td>
+      <td class="text-center no-imprimir">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removerMedicamento('${medicamentoId}')"><i class="mdi mdi-delete"></i></button>
+      </td>
+    </tr>
   `;
-
-  if (contenedor.innerHTML.trim() === '') {
-    contenedor.innerHTML = medicamentoHTML;
-  } else {
-    contenedor.insertAdjacentHTML('beforeend', medicamentoHTML);
-  }
+  tbody.insertAdjacentHTML('beforeend', fila);
 }
 
 // Función para remover medicamento tanto de la vista como del array
 function removerMedicamento(id) {
-  const elemento = document.getElementById(id);
-  if (elemento) {
-    // Obtener el ID del medicamento desde el atributo data
-    const medicamentoId = elemento.getAttribute('data-medicamento-id');
-    // Eliminar de la vista
-    elemento.remove();
-    // Eliminar del array
-    arrayMedicamentosReceta = arrayMedicamentosReceta.filter(item => item.medicamento_id != medicamentoId);
-    console.log('Medicamento eliminado:', medicamentoId);
-    console.log('Array actualizado:', arrayMedicamentosReceta);
+  const fila = document.getElementById(id);
+  if (!fila) return;
+  const medicamentoId = fila.getAttribute('data-medicamento-id');
+  fila.remove();
+  const index = arrayMedicamentosReceta.findIndex(item => item.medicamento_id == medicamentoId);
+  if (index !== -1) {
+    arrayMedicamentosReceta.splice(index, 1);
   }
 }

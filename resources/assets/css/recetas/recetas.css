@@ -4,9 +4,7 @@
 
 /* Estilo para el logo */
 .logo-superior-receta {
-  position: absolute;
-  width: 150px !important;
-  top: 50px;
+  width: 140px !important;
 }
 
 /* Contenedor para la firma */
@@ -19,10 +17,10 @@
 
 /* Línea de la firma */
 .firma-linea {
-  width: 80%; /* Puedes ajustar el ancho de la línea */
-  height: 1px;
-  background-color: #000; /* Color de la línea */
-  margin-bottom: 5px; /* Espacio entre la línea y el texto */
+  width: 50%;
+  height: 2px;
+  background-color: #000;
+  margin-bottom: 5px;
 }
 
 /* Texto de la firma */

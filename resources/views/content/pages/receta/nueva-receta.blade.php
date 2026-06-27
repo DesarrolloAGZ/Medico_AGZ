@@ -7,274 +7,399 @@ $configData = Helper::appClasses();
 @section('title', 'Nueva Receta')
 
 @section('page-style')
-  <link rel="stylesheet" href="{{ asset('assets/css/recetas/recetas.css') }}?v={{ date('YmdHis')}}">
-  <link rel="stylesheet" href="{{asset('assets/css/recetas/impresionReceta.css') }}?v={{ date('YmdHis')}}">
-
-  <style>
-    .editor-con-marca::before {
-      content: '' !important;
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      background-image: url('{{ env('APP_URL') }}/assets/img/logos/agzback.png') !important;
-      background-repeat: no-repeat !important;
-      background-position: center !important;
-      background-size: 50% auto !important;
-      opacity: 0.08 !important;
-      pointer-events: none !important;
-      z-index: 0 !important;
-    }
-    .list-group-timeline-item {
-      border-left: 3px solid #7367f0;
-      margin-bottom: 10px;
-    }
-
-    .list-group-timeline-item:hover {
-      background-color: #eae9f1;
-      border-radius: 10px;
-    }
-    #canvasMedicamentos{
-      zoom: 0.8;
-    }
-    #form-receta{
-      zoom: 0.8;
-    }
-  </style>
+<link rel="stylesheet" href="{{ asset('assets/css/recetas/recetas.css') }}?v={{ date('YmdHis') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/recetas/impresionReceta.css') }}?v={{ date('YmdHis') }}">
 @endsection
 
 @section('page-script')
-  <script src="{{ asset('assets/js/recetas/receta.js') }}?v={{ date('YmdHis')}}"></script>
+<script src="{{ asset('assets/js/recetas/receta.js') }}?v={{ date('YmdHis') }}"></script>
 
-  <script>
+<script>
     var datos_vista = @json($datos_vista);
-  </script>
+
+</script>
 @endsection
 
 @section('vendor-style')
-  <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-misc.css') }}">
-  <!-- Form Validation -->
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/formvalidation/dist/css/formValidation.min.css') }}" />
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
-  <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-misc.css') }}">
+<!-- Form Validation -->
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/formvalidation/dist/css/formValidation.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 
 @endsection
 
 @section('vendor-script')
-  <!-- Form Validation -->
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js') }}"></script>
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js') }}"></script>
-  <script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js') }}"></script>
-  <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
-  <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
-  <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
+<!-- Form Validation -->
+<script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 @endsection
 
 @include('content.pages.pantalla-carga')
-
 @section('content')
 
 @php
-// dd($datos_vista);
-// dd(Auth::user());
+$receta = $datos_vista['detalles_receta'][0] ?? null;
+$firma = $receta['firma_usuario'] ?? $datos_vista['firma_usuario_logueado'] ?? null;
+$nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usuario_creador_apellido_p'] . ' ' . $receta['usuario_creador_apellido_m'] : Auth::user()->nombre . ' ' . Auth::user()->apellido_paterno . ' ' . Auth::user()->apellido_materno;
 @endphp
 
-  <div class="card p-5 ajuste-hoja-impresion" style="width: 100%; height: 100%;">
+<form id="form-receta" method="POST" enctype="multipart/form-data" onSubmit="return false">
+    @csrf
 
-    <div class="divider no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
-      <div class="divider-text texto-titulo">Crear receta para el paciente</div>
-    </div>
-
-    <form id="form-receta" method="POST" enctype="multipart/form-data" onSubmit="return false">
-      @csrf
-      <div class="row no-imprimir {{ (!empty($datos_vista['detalles_receta']) && isset($datos_vista['detalles_receta'][0]['receta_id'])) ? 'd-none' : '' }}" style="justify-content: center; align-items: center;">
+    <div class="row no-imprimir {{ $receta ? 'd-none' : '' }}" style="justify-content: center; align-items: center;">
         <div class="col-md-6 mb-4">
-          <div class="form-floating form-floating-outline mb-6">
-            <select class="form-select select2 form-select-sm" id="empleado-gafete" name="empleado[gafete]" onchange="colocarPacienteEnReceta(this)">
-              <option value="" selected disabled>Selecciona una opción</option>
-              @foreach ($datos_vista['todos_empleados_apsi'] as $empleado)
-                <option
-                  value="{{ $empleado['codigo'] }}" data-genero="{{ $empleado['sexo'] }}" data-curp="{{ $empleado['curp'] }}"
-                  data-nombre="{{ $empleado['nombre'] }}" data-ap_paterno="{{ $empleado['ap_paterno'] }}"
-                  data-ap_materno="{{ $empleado['ap_materno'] }}"
-                  {{ isset($datos_vista['detalles_receta']['paciente_gafete']) && $datos_vista['detalles_receta']['paciente_gafete'] == $empleado['codigo'] ? 'selected' : '' }}>
-                  {{ $empleado['nombre'].' '.$empleado['ap_paterno'].' '.$empleado['ap_materno'] }}
-                </option>
-              @endforeach
-            </select>
-            <label for="empleado-gafete">Paciente <i class="text-danger">*</i></label>
-          </div>
-        </div>
+            <div class="form-floating form-floating-outline mb-6">
+                <select class="form-select select2 form-select-sm" id="empleado-gafete" name="empleado[gafete]" onchange="colocarPacienteEnReceta(this)">
 
-      </div>
+                    <option value="" selected disabled>Selecciona una opción</option>
 
-      <div class="row">
+                    @foreach ($datos_vista['todos_empleados_apsi'] as $empleado)
+                    <option value="{{ $empleado['codigo'] }}" data-genero="{{ $empleado['sexo'] }}" data-curp="{{ $empleado['curp'] }}" data-nombre="{{ $empleado['nombre'] }}" data-ap_paterno="{{ $empleado['ap_paterno'] }}" data-ap_materno="{{ $empleado['ap_materno'] }}" {{ ($receta['paciente_gafete'] ?? null) == $empleado['codigo'] ? 'selected' : '' }}>
+                        {{ $empleado['nombre'] . ' ' . $empleado['ap_paterno'] . ' ' . $empleado['ap_materno'] }}
+                    </option>
+                    @endforeach
 
-        <div class="editor-con-marca"></div>
-        <div class="divider divider-dark">
-          <div class="divider-text">-</div>
-        </div>
-
-        <img src="{{ asset('assets/img/logos/agzback.png') }}" alt="Logo" class="logo-superior-receta">
-
-        <div class="col-md-12 text-center {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ?'d-none':'' }}">
-          <label style="position: absolute; right: 0;"><strong>C.P.</strong> {{ Auth::user()->cedula_profesional }}</label>
-          <h3>Dr. {{ Auth::user()->nombre.' '.Auth::user()->apellido_paterno.' '.Auth::user()->apellido_materno }}</h3>
-          <label style="position: absolute; right: 0;"><strong>REG.SSA.</strong> {{ Auth::user()->registro_ssa }}</label>
-          @if (Auth::user()->usuario_perfil_id == 1)
-            <h4 style="color: #b1b0b0">MEDICO GENERAL</h4>
-          @endif
-          @if (Auth::user()->usuario_perfil_id == 2)
-            <h4 style="color: #b1b0b0">MEDICO ESPECIALISTA</h4>
-          @endif
-        </div>
-
-        <div class="col-md-12 text-center {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? '' : 'd-none' }}">
-          <label style="position: absolute; right: 0;"><strong>C.P.</strong> {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['cedula_profesional']) ? $datos_vista['detalles_receta'][0]['cedula_profesional'] : '' }}</label>
-          <h3>Dr. {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['usuario_creados_nombre']) ? $datos_vista['detalles_receta'][0]['usuario_creados_nombre'] . ' ' . $datos_vista['detalles_receta'][0]['usuario_creador_apellido_p'] . ' ' . $datos_vista['detalles_receta'][0]['usuario_creador_apellido_m'] : '' }}</h3>
-          <label style="position: absolute; right: 0;"><strong>REG.SSA.</strong> {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['registro_ssa']) ? $datos_vista['detalles_receta'][0]['registro_ssa'] : '' }}</label>
-          @if (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['usuario_perfil_id'] == 1)
-            <h4 style="color: #b1b0b0">MEDICO GENERAL</h4>
-          @endif
-          @if (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['usuario_perfil_id'] == 2)
-            <h4 style="color: #b1b0b0">MEDICO ESPECIALISTA</h4>
-          @endif
-        </div>
-
-        <div class="divider divider-dark">
-          <div class="divider-text">-</div>
-        </div>
-
-        <div class="col-md-12">
-          <p class="text-danger" style="position: absolute; right: 0;" id="receta-folio">#F-{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? $datos_vista['detalles_receta'][0]['receta_id'] : $datos_vista['folio'] }}</p>
-          <h4 style="color: #b1b0b0">RECETA MEDICA</h4>
-          <p style="position: absolute; right: 0;">Fecha: {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['fecha_creacion']) ? date('d/m/Y', strtotime($datos_vista['detalles_receta'][0]['fecha_creacion'])) : now()->format('d/m/Y') }}</p>
-          <p>Nombre: <label id="paciente_receta-nombre">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['paciente_nombre']) ? $datos_vista['detalles_receta'][0]['paciente_nombre'].' '.$datos_vista['detalles_receta'][0]['paciente_apellido_p'].' '.$datos_vista['detalles_receta'][0]['paciente_apellido_m']:'' }}</label></p>
-          <p style="position: absolute; right: 0;">Hora: {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['fecha_creacion']) ? date('H:i', strtotime($datos_vista['detalles_receta'][0]['fecha_creacion'])) : now()->format('H:m:s') }}</p>
-          <p>Edad: <label id="paciente_receta-edad"></label>{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['paciente_edad']) ? $datos_vista['detalles_receta'][0]['paciente_edad']:'' }} años</p>
-        </div>
-
-        <div class="col-md-12">
-          <p class="text-center" style="background: #eee;"><strong>Medicamentos</strong></p>
-        </div>
-        <div class="col-md-12" id="contenedor-medicamentos" style="min-height: 100px;">
-          <div class="container" style="width: 100%;padding: 0;margin: 0;display: contents; font-weight: bold; font-size: 16px;">
-            {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['medicamentos_txt']) ? $datos_vista['detalles_receta'][0]['medicamentos_txt'] : '' }}
-          </div>
-        </div>
-        <div class="col-md-12 text-center no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
-          <button type="button" class="btn btn-label-info mb-4 mt-4 btn-sm" id="boton-obtener_listado_medicamentos">Agregar medicamento</button>
-        </div>
-
-        <div class="col-md-12">
-          <p class="text-center" style="background: #eee;"><strong>Indicaciones del medicamento</strong></p>
-        </div>
-        <div class="col-md-12" style="font-size: 17px;">
-          <textarea {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'disabled' : '' }} id="receta-medicamento_indicaciones" name="receta[medicamento_indicaciones]" cols="30" rows="5" style="border: none; background: transparent; outline: none; width: 100%;">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['medicamento']) ? $datos_vista['detalles_receta'][0]['medicamento']:'' }}</textarea>
-        </div>
-
-        <div class="col-md-12">
-          <p class="text-center" style="background: #eee;"><strong>Recomendaciones generales</strong></p>
-        </div>
-        <div class="col-md-12" style="font-size: 17px;">
-          <textarea {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ?'disabled':'' }} id="receta-recomendaciones" name="receta[recomendaciones]" class="mb-5" cols="30" rows="5" style="border: none; background: transparent; outline: none; width: 100%;">{{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['recomendaciones']) ? $datos_vista['detalles_receta'][0]['recomendaciones'] : '' }}</textarea>
-        </div>
-
-        <div class="row mt-5">
-          <div class="col-md-6"></div>
-          <div class="col-md-6 text-center">
-            <div class="firma-contenedor">
-              <div class="firma-linea"></div>
-              <p class="firma-texto {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">Dr. {{ Auth::user()->nombre.' '.Auth::user()->apellido_paterno.' '.Auth::user()->apellido_materno }}</br>Firma o Sello</p>
-              <p class="firma-texto {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? '' : 'd-none' }}">Dr. {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['usuario_creados_nombre']) ? $datos_vista['detalles_receta'][0]['usuario_creados_nombre'] . ' ' . $datos_vista['detalles_receta'][0]['usuario_creador_apellido_p'] . ' ' . $datos_vista['detalles_receta'][0]['usuario_creador_apellido_m'] : '' }}</br>Firma o Sello</p>
+                </select>
+                <label for="empleado-gafete">Paciente <i class="text-danger">*</i></label>
             </div>
-          </div>
+        </div>
+    </div>
+
+    <div class="card p-5 ajuste-hoja-impresion" style="width: 100%; height: 100%; zoom: 0.7;">
+
+        <div class="row">
+            <div class="col-md-3 col-sm-3 d-flex" style="align-items: center;">
+                <img src="{{ asset('assets/img/logos/agzback.png') }}" alt="Logo" class="logo-superior-receta">
+            </div>
+
+            <div class="col-md-6 col-sm-6 text-center">
+                <span class="badge bg-primary fs-4" style="border-radius: 10px">RECETA MÉDICA</span>
+
+                <h5 class="text-primary mt-4">
+                    Folio: #F-{{ $receta['receta_id'] ?? $datos_vista['folio'] }}
+                </h5>
+            </div>
+
+            <div class="col-md-3 col-sm-3">
+                <div class="card shadow-none bg-label-primary text-end">
+                    <div class="card-body mt-2" style="align-self: center;">
+
+                        <h5 class="card-title text-primary">
+                            <i class="mdi mdi-calendar-month"></i>
+                            <b>Fecha:</b>
+                            <span class="text-primary">
+                                {{ isset($receta['fecha_creacion'])
+                                        ? date('d/m/Y', strtotime($receta['fecha_creacion']))
+                                        : now()->format('d/m/Y') }}
+                            </span>
+                        </h5>
+
+                        <h5 class="card-title text-primary">
+                            <i class="mdi mdi-clock-outline"></i>
+                            <b>Hora:</b>
+                            <span class="text-primary">
+                                {{ isset($receta['fecha_creacion'])
+                                        ? date('H:i:s', strtotime($receta['fecha_creacion']))
+                                        : now()->format('H:i:s') }}
+                            </span>
+                        </h5>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="divider divider-dark">
-          <div class="divider-text">-</div>
+        <div class="divider divider-primary">
+            <div class="divider-text">
+                <i class="mdi mdi-pill-multiple text-primary"></i>
+            </div>
         </div>
 
-      </div>
-    </form>
+        <div class="row mt-4">
+            <div class="col-md-4 col-sm-4">
+                <div class="col-md-12">
+                    <span class="badge bg-label-primary rounded-pill fs-5">PACIENTE</span>
+                </div>
 
-    <div class="row mt-5 no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? '' : 'd-none' }}">
-      <div class="col-md-12 mb-4 text-end">
+                <div class="col-md-12 mt-4">
+                    <h5 class="text-primary">
+                        <i class="mdi mdi-account-circle-outline text-primary fs-1 me-2"></i>
+                        <label id="paciente_receta-nombre">
+                            {{ $receta ? $receta['paciente_nombre'] . ' ' . $receta['paciente_apellido_p'] . ' ' . $receta['paciente_apellido_m'] : '' }}
+                        </label>
+                    </h5>
+
+                    <h5 class="text-secondary">
+                        <b>Edad:</b>
+                        <label id="paciente_receta-edad"></label>
+                        {{ $receta['paciente_edad'] ?? '' }} {{ $receta ? 'años' : '' }}
+                    </h5>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-4 text-center">
+                <h3>
+                    Dr.
+                    {{ $receta
+                            ? $receta['usuario_creador_nombre'] .
+                                ' ' .
+                                $receta['usuario_creador_apellido_p'] .
+                                ' ' .
+                                $receta['usuario_creador_apellido_m']
+                            : Auth::user()->nombre . ' ' . Auth::user()->apellido_paterno . ' ' . Auth::user()->apellido_materno }}
+                </h3>
+
+                <h4 class="text-primary">
+                    {{ $receta['usuario_perfil'] ?? $datos_vista['perfil_nombre']['nombre'] }}
+                </h4>
+
+                <h5>
+                    <strong>C.P.</strong>
+                    {{ $receta['cedula_profesional'] ?? Auth::user()->cedula_profesional }}
+                </h5>
+
+                <h5>
+                    <strong>REG.SSA.</strong>
+                    {{ $receta['registro_ssa'] ?? Auth::user()->registro_ssa }}
+                </h5>
+            </div>
+
+            <div class="col-md-4 col-sm-4 text-end">
+                <img src="{{ asset('images/caduceo.png') }}" alt="Logo" class="logo-superior-receta">
+            </div>
+        </div>
+
+        <div class="divider divider-dashed">
+            <div class="divider-text">-</div>
+        </div>
+
+        <h4 class="text-primary bg-label-primary p-2">
+            <i class="mdi mdi-pill-multiple text-primary fs-2 me-2"></i>MEDICAMENTOS
+        </h4>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-hover mb-0 table-sm" id="tabla-medicamentos-receta">
+                <thead class="bg-label-primary">
+                    <tr>
+                        <th width="65%">Medicamento</th>
+                        <th width="15%" class="text-center">Presentación</th>
+                        <th width="10%" class="text-center">Cantidad</th>
+                        <th width="10%" class="text-center no-imprimir {{ $receta ? 'd-none' : '' }}">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedor-medicamentos">
+                    @if ($receta)
+                    @foreach ($datos_vista['medicamentos'] as $medicamento)
+                    <tr>
+                        <td>{{ $medicamento['medicamento_nombre'] }}</td>
+                        <td class="text-center">{{ $medicamento['abreviatura'] }}</td>
+                        <td class="text-center">{{ $medicamento['cantidad_solicitada'] }}</td>
+                        <td class="text-center d-none"></td>
+                    </tr>
+                    @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-12 col-sm-12 text-center no-imprimir {{ $receta ? 'd-none' : '' }}">
+            <button type="button" class="btn btn-label-warning mb-4 mt-4 btn-sm" id="boton-obtener_listado_medicamentos">
+                <i class="mdi mdi-plus-thick me-2"></i>Agregar medicamento
+            </button>
+        </div>
+
+        <h4 class="text-primary bg-label-primary p-2">
+            <i class="mdi mdi-clipboard-list fs-2 me-2"></i>INDICACIONES DEL MEDICAMENTO
+        </h4>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12" style="font-size: 17px;">
+                <textarea {{ $receta ? 'disabled' : '' }} id="receta-medicamento_indicaciones" name="receta[medicamento_indicaciones]" cols="30" rows="5" style="border:none;background:transparent;outline:none;width:100%;">{{ $receta['medicamento'] ?? '' }}</textarea>
+            </div>
+        </div>
+
+        <h4 class="text-primary bg-label-primary p-2">
+            <i class="mdi mdi-heart-pulse text-primary fs-2 me-2"></i>RECOMENDACIONES GENERALES
+        </h4>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12" style="font-size: 17px;">
+                <textarea {{ $receta ? 'disabled' : '' }} id="receta-recomendaciones" name="receta[recomendaciones]" class="mb-5" cols="30" rows="5" style="border:none;background:transparent;outline:none;width:100%;">{{ $receta['recomendaciones'] ?? '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+
+            {{-- FIRMA (imagen) --}}
+            <div class="col-md-12 col-sm-12 text-center">
+                @if($firma)
+                <img src="{{ asset($firma) }}" style="max-height:120px;">
+                @else
+                <div style="height: 120px;"></div>
+                @endif
+            </div>
+
+            {{-- LÍNEA DE FIRMA --}}
+            <div class="col-md-12 col-sm-12 text-center d-flex justify-content-center">
+                <div class="firma-linea"></div>
+            </div>
+
+            {{-- TEXTO DEL MÉDICO --}}
+            <div class="col-md-12 col-sm-12 text-center">
+                <p class="firma-texto text-primary mb-0">
+                    Dr. {{ $nombreDoctor }}
+                    <br>
+                    Firma del Médico
+                </p>
+            </div>
+
+        </div>
+
+        <div class="row mt-4 text-center">
+            <div class="col-md-6 col-sm-6">
+                <div class="col-md-12 col-sm-12">
+                    <h5 class="text-primary">
+                        <i class="mdi mdi-barcode-scan me-2 fs-3"></i>Código de receta
+                    </h5>
+                </div>
+
+                @php
+                $codigo = ($receta['receta_id'] ?? $datos_vista['folio']);
+                @endphp
+
+                <div class="col-md-12 col-sm-12 d-flex justify-content-center">
+                    {!! DNS1D::getBarcodeHTML((string)$codigo, 'C128', 2.2, 60) !!}
+                </div>
+
+                <div class="col-md-12 col-sm-12 text-center">
+                    <strong>F-{{ $codigo }}</strong>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6">
+                <div class="row">
+                    <div class="col-md-1 col-sm-1">
+                        <i class="mdi mdi-clock-time-eight-outline text-primary fs-3"></i>
+                    </div>
+
+                    <div class="col-md-11 col-sm-11 text-start">
+                        <h5 class="text-primary">
+                            La presente receta tiene vigencia únicamente durante el día de su emisión
+                            [{{ isset($receta['fecha_creacion']) ? date('d/m/Y', strtotime($receta['fecha_creacion'])) : now()->format('d/m/Y') }}].
+
+                            <br>
+
+                            <span class="text-danger">
+                                <strong>A partir del día siguiente dejará de ser válida.</strong>
+                            </span>
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-1">
+                        <i class="mdi mdi-line-scan text-primary fs-3"></i>
+                    </div>
+
+                    <div class="col-md-11 col-sm-11 text-start">
+                        <h5 class="text-primary">
+                            Acuda a la farmacia de Agrizar y solicite el escaneo de este código de barras en el sistema
+                            del Servicio Médico para consultar la receta.
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+<div class="row mt-4 no-imprimir {{ $receta ? '' : 'd-none' }}">
+    <div class="col-md-12 col-sm-12 mb-4 text-end">
         <button id="boton-imprimir_receta_de_nuevo" type="button" class="btn btn-warning me-2" onclick="window.print();">
-          <span class="mdi mdi-printer" style="margin-right: 10px;"></span>imprimir de nuevo
+            <span class="mdi mdi-printer me-2"></span>
+            Imprimir de nuevo
         </button>
-      </div>
     </div>
+</div>
 
-    <div class="row mt-5 no-imprimir {{ (isset($datos_vista['detalles_receta']) && $datos_vista['detalles_receta'][0]['receta_id']) ? 'd-none' : '' }}">
-      <div class="col-md-12 mb-4 text-end">
+<div class="row mt-4 no-imprimir {{ $receta ? 'd-none' : '' }}">
+    <div class="col-md-12 col-sm-12 mb-4 text-end">
         <button id="boton-imprimir_receta" type="button" class="btn btn-warning me-2">
-          <span class="mdi mdi-printer" style="margin-right: 10px;"></span>Guardar e imprimir receta
+            <span class="mdi mdi-printer me-2"></span>
+            Guardar e imprimir receta
         </button>
-      </div>
     </div>
+</div>
 
-    <div class="col-md-12 no-imprimir">
-      <div class="btn-flex-group" style="position: fixed; bottom: 2rem; right: 0.8rem; z-index: 1080;">
-        <a href="/" class="btn btn-principal waves-effect waves-light me-2" type="button" >
-          <span class="mdi mdi-home me-2"></span>Inicio
+<div class="col-md-12 col-sm-12 no-imprimir">
+    <div class="btn-flex-group" style="position: fixed; bottom: 2rem; right: 0.8rem; z-index: 1080;">
+        <a href="/" class="btn btn-principal waves-effect waves-light me-2">
+            <span class="mdi mdi-home me-2"></span>
+            Inicio
         </a>
-      </div>
     </div>
-  </div>
+</div>
 
-  {{-- Listado del medicamento en un modal lateral --}}
-  <div class="offcanvas offcanvas-end no-imprimir" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="canvasMedicamentos" aria-labelledby="canvasMedicamentosLabel" style="width: 700px;">
+{{-- Listado del medicamento en un modal lateral --}}
+<div class="offcanvas offcanvas-end no-imprimir" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="canvasMedicamentos" aria-labelledby="canvasMedicamentosLabel" style="width: 700px;">
     <div class="offcanvas-header">
-      <h5 id="canvasMedicamentosLabel" class="offcanvas-title"><span class="mdi mdi-format-list-bulleted-square"></span> Listado de medicamentos</h5>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <h5 id="canvasMedicamentosLabel" class="offcanvas-title"><span class="mdi mdi-format-list-bulleted-square"></span> Listado de medicamentos</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
 
     <div class="offcanvas-body p-0 d-flex flex-column">
-      <!-- Sección FIJA (sin scroll) -->
-      <div class="p-3 border-bottom bg-white" style="flex-shrink: 0;">
-        <div class="row justify-content-center">
-          <div class="col-md-12 mb-3">
-            <div class="form-floating form-floating-outline">
-              <select class="form-select form-select-sm" id="almacen_medicamentos" name="almacen_medicamentos" onchange="obtenerCatalogoMedicamentosHispatec()">
-                <option value="" selected disabled>Selecciona una opción</option>
-                @foreach ($datos_vista['usuario_almacenes'] as $almacen)
-                  <option value="{{ $almacen['almacen_id'] }}" data-empresa_id="{{$almacen['empresa_id']}}" data-almacen_codigo="{{$almacen['almacen_codigo']}}">
-                    {{ $almacen['almacen_codigo'] }} - {{ $almacen['almacen_nombre'] }} ({{ $almacen['empresa_nombre'] }})
-                  </option>
-                @endforeach
-              </select>
-              <label for="almacen_medicamentos">Almacén <i class="text-danger">*</i></label>
+        <!-- Sección FIJA (sin scroll) -->
+        <div class="p-3 border-bottom bg-white" style="flex-shrink: 0;">
+            <div class="row justify-content-center">
+                <div class="col-md-12 mb-3">
+                    <div class="form-floating form-floating-outline">
+                        <select class="form-select form-select-sm" id="almacen_medicamentos" name="almacen_medicamentos" onchange="obtenerCatalogoMedicamentosHispatec()">
+                            <option value="" selected>Selecciona una opción</option>
+                            @foreach ($datos_vista['usuario_almacenes'] as $almacen)
+                            <option value="{{ $almacen['almacen_id'] }}" data-empresa_id="{{ $almacen['empresa_id'] }}" data-almacen_codigo="{{ $almacen['almacen_codigo'] }}">
+                                {{ $almacen['almacen_codigo'] }} - {{ $almacen['almacen_nombre'] }}
+                                ({{ $almacen['empresa_nombre'] }})
+                            </option>
+                            @endforeach
+                        </select>
+                        <label for="almacen_medicamentos">Almacén <i class="text-danger">*</i></label>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <div class="row justify-content-center" id="contenedor-filtros-medicamento" style="display: none;">
+                <div class="col-md-12">
+                    <div class="form-floating form-floating-outline">
+                        <input type="text" id="filtro-medicamento" name="filtro-medicamento" class="form-control" placeholder="Ingresa el medicamento a buscar." />
+                        <label for="filtro-medicamento">Buscar medicamento</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row justify-content-center" id="contenedor-filtros-medicamento" style="display: none;">
-          <div class="col-md-12">
-            <div class="form-floating form-floating-outline">
-              <input type="text" id="filtro-medicamento" name="filtro-medicamento" class="form-control" placeholder="Ingresa el medicamento a buscar." />
-              <label for="filtro-medicamento">Buscar medicamento</label>
+        <!-- Sección con SCROLL (solo la lista) -->
+        <div class="flex-grow-1" style="overflow-y: auto;">
+            <div class="p-3">
+                <ul class="list-group list-group-timeline" id="listado-medicamentos-receta">
+                </ul>
             </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Sección con SCROLL (solo la lista) -->
-      <div class="flex-grow-1" style="overflow-y: auto;">
-        <div class="p-3">
-          <ul class="list-group list-group-timeline" id="listado-medicamentos-receta">
-          </ul>
-        </div>
-      </div>
     </div>
 
     <div class="offcanvas-footer p-3 border-top bg-white">
-      <button type="button" class="btn btn-outline-danger w-100" data-bs-dismiss="offcanvas">
-        Cerrar
-      </button>
+        <button type="button" class="btn btn-outline-danger w-100" data-bs-dismiss="offcanvas">
+            Cerrar
+        </button>
     </div>
-  </div>
+</div>
+
 @endsection

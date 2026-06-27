@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +16,17 @@ Route::post('/logout', function () {
 Route::middleware(['auth'])->group(function () {
 
   Route::get('/', 'App\Http\Controllers\pages\InicioController@index')->name('pantalla-inicio');
+
+  Route::prefix('usuario')->group(function () {
+    Route::get('/firma', 'App\Http\Controllers\pages\usuario\UsuarioController@firma')->name('usuario-firma');
+
+    # ****************************************************************************************
+    # ****************************************************************************************
+
+    Route::prefix('api')->group(function () {
+      Route::post('/guardar-firma', 'App\Http\Controllers\pages\usuario\UsuarioController@guardarFirma')->name('guardar-firma-medico');
+    });
+  });
 
   Route::prefix('pacientes')->group(function () {
     Route::get('/nuevo', 'App\Http\Controllers\pages\PacientesController@nuevoPaciente')->name('nuevo-paciente');
@@ -38,12 +50,12 @@ Route::middleware(['auth'])->group(function () {
       Route::post('/buscar-cie', 'App\Http\Controllers\pages\PacientesController@buscarCie')->name('buscar-cie');
       Route::post('/obtener-lista-todas-consultas', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoTodasConsultas')->name('obtener-lista-pacientes');
     });
-
   });
 
   Route::prefix('receta')->group(function () {
     Route::get('/nueva', 'App\Http\Controllers\pages\RecetaController@nuevaReceta')->name('receta-nueva');
     Route::get('/listado', 'App\Http\Controllers\pages\RecetaController@recetasPaciente')->name('listado-recetas');
+    Route::get('/surtir', 'App\Http\Controllers\pages\RecetaController@recetaSurtir')->name('receta-surtir');
 
     # ****************************************************************************************
     # ****************************************************************************************
@@ -51,8 +63,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('api')->group(function () {
       Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
       Route::post('/obtener-catalogo-medicamentos-hispatec', 'App\Http\Controllers\pages\RecetaController@obtenerMedicamentosHispatec')->name('obtener-catalogo-medicamentos-hispatec');
+      Route::get('/obtener-detalle-receta', 'App\Http\Controllers\pages\RecetaController@obtenerDetalleReceta')->name('obtener-detalle-receta');
+      Route::get('/surtir-receta-completa', 'App\Http\Controllers\pages\RecetaController@surtirRecetaCompleta')->name('surtir-receta-completa');
+      Route::post('/guardar-firma-paciente', 'App\Http\Controllers\pages\RecetaController@guardarFirma')->name('guardar-firma-paciente');
     });
-
   });
 
   Route::prefix('historia_clinica')->group(function () {
@@ -86,11 +100,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
+  'auth:sanctum',
+  config('jetstream.auth_session'),
+  'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+  Route::get('/dashboard', function () {
+    return view('dashboard');
+  })->name('dashboard');
 });

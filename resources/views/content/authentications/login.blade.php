@@ -42,12 +42,14 @@
     <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center">
       <div class="container login-container">
         <div class="row justify-content-end">
-          <div class="col-lg-6 col-md-12 col-sm-12 d-flex flex-column align-items-center justify-content-center">
+          <div class="col-lg-5 col-md-12 col-sm-12 d-flex flex-column align-items-center justify-content-center">
 
             <div class="card">
               <div class="card-body">
                 <div class="pt-4 mt-3">
-                  <h5 class="card-title text-center pb-0 fs-4">Inicio de sesión</h5>
+                  <h5 class="card-title text-center pb-0 fs-4">
+                    <img src="{{ asset('images/surcos.png') }}" width="50" alt="Logo" style="margin-top: -10px;">
+                    Inicio de sesión</h5>
                 </div>
 
                 <form class="row g-3 needs-validation mb-2" id="frm-login" method="POST" action="{{ route('procesar-login') }}" >
@@ -80,9 +82,9 @@
                 </form>
 
                 <div class="row mb-4">
-                  <div class="col-4 text-center"><i class="fa-solid fa-user-shield" style="font-size: 30px;"></i></br>Confidencialidad</div>
-                  <div class="col-4 text-center"><i class="fa-solid fa-shield-halved" style="font-size: 30px;"></i></br>Seguridad</div>
-                  <div class="col-4 text-center"><i class="fa-regular fa-star" style="font-size: 30px;"></i></br>Calidad</div>
+                  <div class="col-4 text-center"><i class="fa-solid fa-user-shield" style="font-size: 25px;"></i></br>Confidencialidad</div>
+                  <div class="col-4 text-center"><i class="fa-solid fa-shield-halved" style="font-size: 25px;"></i></br>Seguridad</div>
+                  <div class="col-4 text-center"><i class="fa-regular fa-star" style="font-size: 25px;"></i></br>Calidad</div>
                 </div>
 
               </div>

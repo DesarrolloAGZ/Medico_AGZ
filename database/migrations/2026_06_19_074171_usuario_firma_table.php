@@ -11,12 +11,14 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('receta_consumo_historico', function (Blueprint $table) {
-      $table->increments('id')->comment('ID único del histórico de consumo de receta');
-      $table->json('json_data')->nullable()->comment('Estructura JSON con los datos del consumo de receta');
-      $table->text('respuesta_api')->nullable()->comment('Respuesta de la API del consumo de receta');
+    Schema::create('usuario_firma', function (Blueprint $table) {
+      $table->increments('id')->comment('ID único de la firma');
+      $table->unsignedBigInteger('usuario_id')->comment('Id del usuario relacionado a la firma');
+      $table->string('firma')->nullable()->comment('firma del usuario medico');
       $table->tinyInteger('borrado')->default('0')->comment('Borrado lógico 1=>Si 0=>No');
       $table->timestamps();
+
+      $table->foreign('usuario_id')->references('id')->on('usuario');
     });
   }
 
@@ -25,6 +27,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('receta_consumo_historico');
+    Schema::dropIfExists('usuario_firma');
   }
 };
