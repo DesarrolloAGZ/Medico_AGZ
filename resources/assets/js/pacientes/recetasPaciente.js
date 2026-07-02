@@ -1,23 +1,45 @@
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - VARIABLES
+// ###################################################################################################
+// ###################################################################################################
 moment.locale('es');
 
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - FUNCIONES INICIALIZADAS
+// ###################################################################################################
+// ###################################################################################################
+$(document).ready(function () {
+  pantallaCarga('off');
+
+  generarTabla();
+
+  formateaCampoNumeroEmpleado("[name='filtro-receta[numero_empleado]']");
+  formateaCampoNumeroEmpleado("[name='filtro-receta[folio]']");
+  formateaCampoNombre("[name='filtro-receta[empleado_nombre]']");
+});
+
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - FUNCIONES
+// ###################################################################################################
+// ###################################################################################################
 // Función para capitalizar la primera letra de una cadena
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-$(document).ready(function () {
-  // Ocultamos la pantalla de carga cuando la pantalla termino de cargar todo el contenido
-  pantallaCarga('off');
-
-  generarTabla();
-});
-
-$('#boton-recargar-tabla-recetas').on('click', function () {
-  generarTabla();
-});
-
 function generarTabla() {
-  var paciente_id = $('#paciente_id_hidden').val();
+  // Obtener valores de los filtros
+  const filtros = {
+    fecha_inicio: $('#filtro-receta-fecha_inicio').val(),
+    fecha_fin: $('#filtro-receta-fecha_fin').val(),
+    numero_empleado: $('#filtro-receta-numero_empleado').val(),
+    folio: $('#filtro-receta-folio').val(),
+    empleado_nombre: $('#filtro-receta-empleado_nombre').val(),
+    paciente_id: $('#paciente_id_hidden').val()
+  };
 
   // Verificar si la tabla ya existe y destruirla para evitar el error de reinitialise
   if ($.fn.DataTable.isDataTable('.datatables-basic-filas')) {
@@ -28,14 +50,21 @@ function generarTabla() {
     buttons: [],
     processing: true,
     serverSide: true,
+    responsive: true,
+    autoWidth: false,
     ajax: {
       url: '/pacientes/api/obtener-lista-recetas-paciente',
       type: 'POST',
+      data: function (d) {
+        d.fecha_inicio = filtros.fecha_inicio;
+        d.fecha_fin = filtros.fecha_fin;
+        d.numero_empleado = filtros.numero_empleado;
+        d.folio = filtros.folio;
+        d.empleado_nombre = filtros.empleado_nombre;
+        d.paciente_id = filtros.paciente_id;
+      },
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      data: {
-        paciente_id: paciente_id // Pasar paciente_id como parte de los datos
       },
       beforeSend: function () {
         pantallaCarga('on');
@@ -53,139 +82,60 @@ function generarTabla() {
       }
     },
     columns: [
-      { data: 'id' },
       { data: 'paciente_gafete' },
+      { data: 'receta_id' },
       { data: 'paciente_nombre' },
-      { data: 'nombre' },
-      { data: 'indicaciones_medicamento' },
-      { data: 'recomendaciones' },
-      { data: 'id' },
+      { data: 'medico_nombre' },
       { data: 'fecha_creacion' },
+      { data: 'estatus_nombre' },
       { data: 'acciones' }
     ],
     columnDefs: [
-      {
-        className: 'control',
-        orderable: false,
-        responsivePriority: 2,
-        targets: 0,
-        visible: false
-      },
       /* Acciones a realizar para cada fila */
       {
-        targets: 1,
+        targets: 0,
         title: 'Gafete',
         className: 'text-center',
-        width: '300px',
         render: function (data, type, full, meta) {
-          return `
-            <div class="row">
-              <div class="d-flex gap-2 align-items-center col-12">
-                <div class="card-info">
-                  <h6 class="mb-0">
-                    ${full.paciente_gafete != null ? full.paciente_gafete : ''}
-                  </h6>
-                </div>
-              </div>
-            </div>`;
+          return `<small>${full.paciente_gafete != null ? full.paciente_gafete : ''}</small>`;
+        }
+      },
+      {
+        targets: 1,
+        className: 'text-center',
+        title: 'Folio receta',
+        render: function (data, type, full, meta) {
+          return `<small><b>#F-${full.receta_id != null ? full.receta_id : ''}</b></small>`;
         }
       },
       {
         targets: 2,
         title: 'Nombre paciente',
         className: 'text-center',
-        width: '300px',
         render: function (data, type, full, meta) {
-          return `
-            <div class="row">
-              <div class="d-flex gap-2 align-items-center col-12">
-                <div class="card-info">
-                  <h6 class="mb-0">
-                    ${
-                      full.paciente_nombre
-                        ? `${full.paciente_nombre} ${full.paciente_apellido_p ?? ''} ${
-                            full.paciente_apellido_m ?? ''
-                          }`.trim()
-                        : ''
-                    }
-                  </h6>
-                </div>
-              </div>
-            </div>`;
+          return `<small>${
+            full.paciente_nombre
+              ? `${full.paciente_nombre} ${full.paciente_apellido_p ?? ''} ${full.paciente_apellido_m ?? ''}`.trim()
+              : ''
+          }</small>`;
         }
       },
       {
         targets: 3,
         title: 'Recetó',
         className: 'text-center',
-        width: '300px',
         render: function (data, type, full, meta) {
-          return `
-            <div class="row">
-              <div class="d-flex gap-2 align-items-center col-12">
-                <div class="card-info">
-                  <h6 class="mb-0">
-                    ${full.nombre ? `${full.nombre} ${full.apellido_p ?? ''} ${full.apellido_m ?? ''}`.trim() : ''}
-                  </h6>
-                </div>
-              </div>
-            </div>`;
+          return `<small>${
+            full.medico_nombre
+              ? `${full.medico_nombre} ${full.medico_apellido_p ?? ''} ${full.medico_apellido_m ?? ''}`.trim()
+              : ''
+          }</small>`;
         }
       },
       {
         targets: 4,
         className: 'text-center',
-        title: 'Indicaciones del medicamento',
-        render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${
-                                full.indicaciones_medicamento != null ? full.indicaciones_medicamento : ''
-                              }</h6>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 5,
-        className: 'text-center',
-        title: 'Recomendaciones',
-        orderable: false,
-        render: function (data, type, full, meta) {
-          return `
-                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.recomendaciones != null ? full.recomendaciones : ''}</h6>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 6,
-        className: 'text-center',
-        title: 'Folio',
-        orderable: false,
-        render: function (data, type, full, meta) {
-          return `
-                   <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">#F-${full.id != null ? full.id : ''}</h6>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 7,
-        className: 'text-center',
         title: 'Fecha de creación',
-        orderable: false,
         render: function (data, type, full, meta) {
           // Formatear la fecha usando moment.js en español
           let fecha_creacion = moment(full.fecha_creacion).format('DD MMMM YYYY, HH:mm');
@@ -193,27 +143,75 @@ function generarTabla() {
           // Capitalizar la primera letra del mes
           fecha_creacion = capitalizeFirstLetter(fecha_creacion);
 
-          return `
-                  <div class="row">
-                    <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                      <div class="card-info">
-                          <h6 class="mb-0">${fecha_creacion}</h6><br>
-                      </div>
-                    </div>
-                  </div>`;
+          return `<small>${fecha_creacion}</small>`;
+        }
+      },
+      {
+        targets: 5,
+        title: 'Estatus receta',
+        className: 'text-center',
+        render: function (data, type, full, meta) {
+          if (full.estatus_nombre) {
+            return `
+            <span class="badge rounded-pill badge-outline-dark ${full.estatus_clase}"><i class="${
+              full.estatus_icono
+            } me-2"></i>${full.estatus_nombre}</span>
+            </br>
+            <em><small>${
+              full.se_entrego_medicamento == 1 ? 'Se entregó medicamento' : 'No se ha entregado medicamento'
+            }</small></em>
+            `;
+          } else {
+            return ``;
+          }
         }
       }
     ],
-    order: [[1, 'asc']],
     displayLength: 15,
-    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+    dom: '<"row"<"col-md-6"l><"col-md-6 d-flex justify-content-end align-items-center"<"toolbar-recetas me-2">>><"row"<"col-12"tr>><"row"<"col-md-6"i><"col-md-6"p>>',
     lengthMenu: [15, 30, 50, 75, 100, 150, 200],
     language: {
+      lengthMenu: 'Mostrar _MENU_ registros',
+      zeroRecords: 'No se encontraron registros',
+      info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+      infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+      infoFiltered: '(filtrado de _MAX_ registros totales)',
+      search: 'Buscar:',
+      loadingRecords: 'Cargando...',
+      processing: 'Procesando...',
+      emptyTable: 'No hay datos disponibles en la tabla',
       paginate: {
-        // remove previous & next text from pagination
-        previous: 'Anterior',
-        next: 'Siguiente'
+        first: 'Primero',
+        last: 'Último',
+        next: 'Siguiente',
+        previous: 'Anterior'
       }
+    },
+    initComplete: function () {
+      $('.toolbar-recetas').html(`
+        <button onclick="borrarFiltrosTabla()" type="button" class="btn btn-label-warning" title="Borrar filtros"><span class="mdi mdi-filter-remove"></span></button>
+        <button onclick="generarTabla()" type="button" title="Recargar tabla" class="btn btn-label-secondary"><span class="mdi mdi-autorenew me-1"></span></button>
+    `);
     }
   });
 }
+
+function borrarFiltrosTabla() {
+  // Borra los valores de los filtros
+  $('#filtro-receta-fecha_inicio').val('');
+  $('#filtro-receta-fecha_fin').val('');
+  $('#filtro-receta-numero_empleado').val('');
+  $('#filtro-receta-folio').val('');
+  $('#filtro-receta-empleado_nombre').val('');
+
+  // Muestra alerta de que se borraron filtros
+  alertify.success('Filtros borrados correctamente.');
+
+  generarTabla();
+}
+
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - BOTONES
+// ###################################################################################################
+// ###################################################################################################

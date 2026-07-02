@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\pages;
+namespace App\Http\Controllers\pages\receta;
 
 use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
@@ -42,6 +42,7 @@ class RecetaController extends Controller
           'usuario.registro_ssa',
           'usuario.cedula_profesional',
           'usuario.usuario_perfil_id',
+          'usuario.universidad_egreso',
           'usuario_perfil.nombre as usuario_perfil',
           'paciente.nombre as paciente_nombre',
           'paciente.apellido_paterno as paciente_apellido_p',
@@ -50,12 +51,16 @@ class RecetaController extends Controller
           'receta.medicamento_indicaciones as medicamento',
           'receta.recomendaciones',
           'receta.created_at as fecha_creacion',
-          'usuario_firma.firma as firma_usuario'
+          'usuario_firma.firma as firma_usuario',
+          'receta_firma_paciente.firma as firma_paciente'
         )
           ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
           ->leftJoin('usuario_firma', function ($join) {
             $join->on('usuario_firma.usuario_id', '=', 'usuario.id')
               ->where('usuario_firma.borrado', 0);
+          })
+          ->leftJoin('receta_firma_paciente', function ($join) {
+            $join->on('receta_firma_paciente.receta_id', '=', 'receta.id');
           })
           ->join('paciente', 'paciente.id', '=', 'receta.paciente_id')
           ->join('usuario_perfil', 'usuario_perfil.id', '=', 'usuario.usuario_perfil_id')
@@ -406,15 +411,12 @@ class RecetaController extends Controller
 
   public function obtenerListadoRecetasPaciente(Request $request)
   {
-    # Obtener el paciente_id desde los datos POST
-    $pacienteId = $request->input('paciente_id');
-
     $detalle_receta = RecetaModel::select(
-      'receta.id as id',
+      'receta.id as  receta_id',
       'receta.paciente_id as paciente_id',
-      'usuario.nombre as nombre',
-      'usuario.apellido_paterno as apellido_p',
-      'usuario.apellido_materno as apellido_m',
+      'usuario.nombre as medico_nombre',
+      'usuario.apellido_paterno as medico_apellido_p',
+      'usuario.apellido_materno as medico_apellido_m',
       'usuario.registro_ssa as registro_ssa',
       'usuario.cedula_profesional as cedula_profesional',
       'usuario.usuario_perfil_id as usuario_perfil_id',
@@ -425,16 +427,60 @@ class RecetaController extends Controller
       'paciente.edad as paciente_edad',
       'receta.medicamento_indicaciones as indicaciones_medicamento',
       'receta.recomendaciones as recomendaciones',
-      'receta.created_at as fecha_creacion'
+      'receta.created_at as fecha_creacion',
+      'receta_estatus.nombre as estatus_nombre',
+      'receta_estatus.icono as estatus_icono',
+      'receta_estatus.clase as estatus_clase',
+      'receta.surtida as se_entrego_medicamento'
     )
       ->join('usuario', 'usuario.id', '=', 'receta.usuario_id')
+      ->leftJoin('receta_estatus', function ($join) {
+        $join->on('receta_estatus.id', '=', 'receta.receta_estatus_id')
+          ->where('receta_estatus.borrado', 0);
+      })
       ->join('paciente', 'paciente.id', '=', 'receta.paciente_id');
-    if ($pacienteId) {
-      $detalle_receta->where('receta.paciente_id', $pacienteId);
+
+
+    # Filtros de fechas en la query
+    if ($request->filled('fecha_inicio') && !$request->filled('fecha_fin')) {
+      $detalle_receta->whereDate('receta.created_at', '=', $request->fecha_inicio);
+    } elseif (!$request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+      $detalle_receta->whereDate('receta.created_at', '=', $request->fecha_fin);
+    } elseif ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+      $detalle_receta->whereBetween('receta.created_at', [
+        $request->fecha_inicio . ' 00:00:00',
+        $request->fecha_fin . ' 23:59:59'
+      ]);
     }
+
+    # Filtro por numero de empleado
+    if ($request->filled('numero_empleado')) {
+      $detalle_receta->where('paciente.gafete', 'iLIKE', "%$request->numero_empleado%");
+    }
+
+    # Filtro por folio
+    if ($request->filled('folio')) {
+      $detalle_receta->where('receta.id', '=', $request->folio);
+    }
+
+    # Filtro por nombre
+    if ($request->filled('empleado_nombre')) {
+      $nombre = $request->empleado_nombre;
+      $detalle_receta->where(function ($q) use ($nombre) {
+        $q->where('paciente.nombre', 'iLIKE', "%$nombre%")
+          ->orWhere('paciente.apellido_paterno', 'iLIKE', "%$nombre%")
+          ->orWhere('paciente.apellido_materno', 'iLIKE', "%$nombre%")
+          ->orWhereRaw("CONCAT(paciente.nombre, ' ', paciente.apellido_paterno, ' ', paciente.apellido_materno) iLIKE ?", ["%$nombre%"]);
+      });
+    }
+
+    if ($request->filled('paciente_id')) {
+      $detalle_receta->where('receta.paciente_id', $request->paciente_id);
+    }
+
     $detalle_receta = $detalle_receta->where('usuario.borrado', 0)
       ->where('receta.borrado', 0)
-      ->orderBy('paciente.gafete', 'asc');
+      ->orderBy('receta.id', 'desc');
 
     return DataTables::eloquent($detalle_receta)
       # filtrar por nombre sin importar mayusculas y minusculas
@@ -451,7 +497,7 @@ class RecetaController extends Controller
         }
       })
       ->addColumn('acciones', function ($detalle_receta) {
-        $detalle_receta_id_encriptado = Crypt::encryptString($detalle_receta->id);
+        $detalle_receta_id_encriptado = Crypt::encryptString($detalle_receta->receta_id);
 
         $botones = '';
 

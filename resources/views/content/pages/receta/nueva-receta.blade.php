@@ -47,7 +47,9 @@ $configData = Helper::appClasses();
 @php
 $receta = $datos_vista['detalles_receta'][0] ?? null;
 $firma = $receta['firma_usuario'] ?? $datos_vista['firma_usuario_logueado'] ?? null;
+$firmaPaciente = $receta['firma_paciente'] ?? null;
 $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usuario_creador_apellido_p'] . ' ' . $receta['usuario_creador_apellido_m'] : Auth::user()->nombre . ' ' . Auth::user()->apellido_paterno . ' ' . Auth::user()->apellido_materno;
+$universidadEgreso = $receta ? $receta['universidad_egreso'] : Auth::user()->universidad_egreso;
 @endphp
 
 <form id="form-receta" method="POST" enctype="multipart/form-data" onSubmit="return false">
@@ -156,6 +158,9 @@ $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usu
                             : Auth::user()->nombre . ' ' . Auth::user()->apellido_paterno . ' ' . Auth::user()->apellido_materno }}
                 </h3>
 
+                <h5 class="text-muted {{ (isset($universidadEgreso) && !empty($universidadEgreso)) ? '' : 'd-none' }}">
+                    Egresado de {{ $receta['universidad_egreso'] ?? $universidadEgreso }}
+                </h5>
                 <h4 class="text-primary">
                     {{ $receta['usuario_perfil'] ?? $datos_vista['perfil_nombre']['nombre'] }}
                 </h4>
@@ -165,10 +170,10 @@ $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usu
                     {{ $receta['cedula_profesional'] ?? Auth::user()->cedula_profesional }}
                 </h5>
 
-                <h5>
+                {{-- <h5>
                     <strong>REG.SSA.</strong>
                     {{ $receta['registro_ssa'] ?? Auth::user()->registro_ssa }}
-                </h5>
+                </h5> --}}
             </div>
 
             <div class="col-md-4 col-sm-4 text-end">
@@ -235,29 +240,58 @@ $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usu
             </div>
         </div>
 
-        <div class="row mt-4">
+        <div class="row mt-4 mb-4">
 
-            {{-- FIRMA (imagen) --}}
-            <div class="col-md-12 col-sm-12 text-center">
-                @if($firma)
-                <img src="{{ asset($firma) }}" style="max-height:120px;">
-                @else
-                <div style="height: 120px;"></div>
+            <div class="col-md-6">
+                @if($firmaPaciente)
+                {{-- FIRMA (imagen) --}}
+                <div class="col-md-12 text-center">
+                    @if($firmaPaciente)
+                    <img src="{{ asset($firmaPaciente) }}" style="max-height:120px;">
+                    @else
+                    <div style="height: 120px;"></div>
+                    @endif
+                </div>
+
+                {{-- LÍNEA DE FIRMA --}}
+                <div class="col-md-12 col-sm-12 text-center d-flex justify-content-center">
+                    <div class="firma-linea"></div>
+                </div>
+
+                {{-- TEXTO DEL MÉDICO --}}
+                <div class="col-md-12 col-sm-12 text-center">
+                    <p class="firma-texto text-primary mb-0">
+                        {{ $receta ? $receta['paciente_nombre'] . ' ' . $receta['paciente_apellido_p'] . ' ' . $receta['paciente_apellido_m'] : '' }}
+                        <br>
+                        Firma del paciente
+                    </p>
+                </div>
                 @endif
             </div>
 
-            {{-- LÍNEA DE FIRMA --}}
-            <div class="col-md-12 col-sm-12 text-center d-flex justify-content-center">
-                <div class="firma-linea"></div>
-            </div>
+            <div class="col-md-6">
+                {{-- FIRMA (imagen) --}}
+                <div class="col-md-12 text-center">
+                    @if($firma)
+                    <img src="{{ asset($firma) }}" style="max-height:120px;">
+                    @else
+                    <div style="height: 120px;"></div>
+                    @endif
+                </div>
 
-            {{-- TEXTO DEL MÉDICO --}}
-            <div class="col-md-12 col-sm-12 text-center">
-                <p class="firma-texto text-primary mb-0">
-                    Dr. {{ $nombreDoctor }}
-                    <br>
-                    Firma del Médico
-                </p>
+                {{-- LÍNEA DE FIRMA --}}
+                <div class="col-md-12 col-sm-12 text-center d-flex justify-content-center">
+                    <div class="firma-linea"></div>
+                </div>
+
+                {{-- TEXTO DEL MÉDICO --}}
+                <div class="col-md-12 col-sm-12 text-center">
+                    <p class="firma-texto text-primary mb-0">
+                        Dr. {{ $nombreDoctor }}
+                        <br>
+                        Firma del médico
+                    </p>
+                </div>
             </div>
 
         </div>
@@ -323,7 +357,7 @@ $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usu
 </form>
 
 <div class="row mt-4 no-imprimir {{ $receta ? '' : 'd-none' }}">
-    <div class="col-md-12 col-sm-12 mb-4 text-end">
+    <div class="col-md-12 col-sm-12 mb-4 text-center">
         <button id="boton-imprimir_receta_de_nuevo" type="button" class="btn btn-warning me-2" onclick="window.print();">
             <span class="mdi mdi-printer me-2"></span>
             Imprimir de nuevo
@@ -332,7 +366,7 @@ $nombreDoctor = $receta ? $receta['usuario_creador_nombre'] . ' ' . $receta['usu
 </div>
 
 <div class="row mt-4 no-imprimir {{ $receta ? 'd-none' : '' }}">
-    <div class="col-md-12 col-sm-12 mb-4 text-end">
+    <div class="col-md-12 col-sm-12 mb-4 text-center">
         <button id="boton-imprimir_receta" type="button" class="btn btn-warning me-2">
             <span class="mdi mdi-printer me-2"></span>
             Guardar e imprimir receta

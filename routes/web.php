@@ -29,57 +29,57 @@ Route::middleware(['auth'])->group(function () {
   });
 
   Route::prefix('pacientes')->group(function () {
-    Route::get('/nuevo', 'App\Http\Controllers\pages\PacientesController@nuevoPaciente')->name('nuevo-paciente');
-    Route::get('/registrar-valoracion', 'App\Http\Controllers\pages\PacientesController@registrarValoracionPaciente')->name('registrar-valoracion-paciente');
-    Route::get('/consultar', 'App\Http\Controllers\pages\PacientesSeguimientoController@listadoPacientes')->name('listado-paciente');
-    Route::get('/expediente', 'App\Http\Controllers\pages\PacientesSeguimientoController@expedientePacientes')->name('listado-expediente-paciente');
-    Route::get('/detalle-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
-    Route::get('/buscar-consulta', 'App\Http\Controllers\pages\PacientesSeguimientoController@todasLasConsultas')->name('listado-consultas');
+    Route::get('/nuevo', 'App\Http\Controllers\pages\pacientes\PacientesController@nuevoPaciente')->name('nuevo-paciente');
+    Route::get('/registrar-valoracion', 'App\Http\Controllers\pages\pacientes\PacientesController@registrarValoracionPaciente')->name('registrar-valoracion-paciente');
+    Route::get('/consultar', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@listadoPacientes')->name('listado-paciente');
+    Route::get('/expediente', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@expedientePacientes')->name('listado-expediente-paciente');
+    Route::get('/detalle-consulta', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@detalleConsultaPaciente')->name('detalle-consulta-paciente');
+    Route::get('/buscar-consulta', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@todasLasConsultas')->name('listado-consultas');
 
     # ****************************************************************************************
     # ****************************************************************************************
 
     Route::prefix('api')->group(function () {
-      Route::post('/consultar', 'App\Http\Controllers\pages\PacientesController@consultarPacienteApsi')->name('consultar-paciente');
-      Route::post('/registrar', 'App\Http\Controllers\pages\PacientesController@registrarPaciente')->name('registrar-paciente');
-      Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
-      Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
-      Route::post('/obtener-lista-consultas-paciente', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoConsultasPaciente')->name('obtener-lista-consultas-paciente');
-      Route::post('/registrar-nota', 'App\Http\Controllers\pages\PacientesController@registrarNota')->name('registrar-nota');
-      Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\RecetaController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
-      Route::post('/buscar-cie', 'App\Http\Controllers\pages\PacientesController@buscarCie')->name('buscar-cie');
-      Route::post('/obtener-lista-todas-consultas', 'App\Http\Controllers\pages\PacientesSeguimientoController@obtenerListadoTodasConsultas')->name('obtener-lista-pacientes');
+      Route::post('/consultar', 'App\Http\Controllers\pages\pacientes\PacientesController@consultarPacienteApsi')->name('consultar-paciente');
+      Route::post('/registrar', 'App\Http\Controllers\pages\pacientes\PacientesController@registrarPaciente')->name('registrar-paciente');
+      Route::post('/guardar-valoracion', 'App\Http\Controllers\pages\pacientes\PacientesController@guardarValoracionPaciente')->name('guardar-valoracion-paciente');
+      Route::post('/obtener-lista-pacientes', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@obtenerListadoPacientes')->name('obtener-lista-pacientes');
+      Route::post('/obtener-lista-consultas-paciente', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@obtenerListadoConsultasPaciente')->name('obtener-lista-consultas-paciente');
+      Route::post('/registrar-nota', 'App\Http\Controllers\pages\pacientes\PacientesController@registrarNota')->name('registrar-nota');
+      Route::post('/obtener-lista-recetas-paciente', 'App\Http\Controllers\pages\receta\RecetaController@obtenerListadoRecetasPaciente')->name('obtener-lista-recetas-paciente');
+      Route::post('/buscar-cie', 'App\Http\Controllers\pages\pacientes\PacientesController@buscarCie')->name('buscar-cie');
+      Route::post('/obtener-lista-todas-consultas', 'App\Http\Controllers\pages\pacientes\PacientesSeguimientoController@obtenerListadoTodasConsultas')->name('obtener-lista-pacientes');
     });
   });
 
   Route::prefix('receta')->group(function () {
-    Route::get('/nueva', 'App\Http\Controllers\pages\RecetaController@nuevaReceta')->name('receta-nueva');
-    Route::get('/listado', 'App\Http\Controllers\pages\RecetaController@recetasPaciente')->name('listado-recetas');
-    Route::get('/surtir', 'App\Http\Controllers\pages\RecetaController@recetaSurtir')->name('receta-surtir');
+    Route::get('/nueva', 'App\Http\Controllers\pages\receta\RecetaController@nuevaReceta')->name('receta-nueva');
+    Route::get('/listado', 'App\Http\Controllers\pages\receta\RecetaController@recetasPaciente')->name('listado-recetas');
+    Route::get('/surtir', 'App\Http\Controllers\pages\receta\RecetaController@recetaSurtir')->name('receta-surtir');
 
     # ****************************************************************************************
     # ****************************************************************************************
 
     Route::prefix('api')->group(function () {
-      Route::post('/registrar-receta', 'App\Http\Controllers\pages\RecetaController@registrarReceta')->name('registrar-receta');
-      Route::post('/obtener-catalogo-medicamentos-hispatec', 'App\Http\Controllers\pages\RecetaController@obtenerMedicamentosHispatec')->name('obtener-catalogo-medicamentos-hispatec');
-      Route::get('/obtener-detalle-receta', 'App\Http\Controllers\pages\RecetaController@obtenerDetalleReceta')->name('obtener-detalle-receta');
-      Route::get('/surtir-receta-completa', 'App\Http\Controllers\pages\RecetaController@surtirRecetaCompleta')->name('surtir-receta-completa');
-      Route::post('/guardar-firma-paciente', 'App\Http\Controllers\pages\RecetaController@guardarFirma')->name('guardar-firma-paciente');
+      Route::post('/registrar-receta', 'App\Http\Controllers\pages\receta\RecetaController@registrarReceta')->name('registrar-receta');
+      Route::post('/obtener-catalogo-medicamentos-hispatec', 'App\Http\Controllers\pages\receta\RecetaController@obtenerMedicamentosHispatec')->name('obtener-catalogo-medicamentos-hispatec');
+      Route::get('/obtener-detalle-receta', 'App\Http\Controllers\pages\receta\RecetaController@obtenerDetalleReceta')->name('obtener-detalle-receta');
+      Route::get('/surtir-receta-completa', 'App\Http\Controllers\pages\receta\RecetaController@surtirRecetaCompleta')->name('surtir-receta-completa');
+      Route::post('/guardar-firma-paciente', 'App\Http\Controllers\pages\receta\RecetaController@guardarFirma')->name('guardar-firma-paciente');
     });
   });
 
   Route::prefix('historia_clinica')->group(function () {
-    Route::get('/crear', 'App\Http\Controllers\pages\HistoricoClinicoController@crearHistorico')->name('historia-clinica-crear');
-    Route::get('/listado', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@listadoHistoricos')->name('historia-clinica-listado');
-    Route::get('/consultar', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@consultarHistoricoClinico')->name('historico-clinico-consultar');
+    Route::get('/crear', 'App\Http\Controllers\pages\historicoClinico\HistoricoClinicoController@crearHistorico')->name('historia-clinica-crear');
+    Route::get('/listado', 'App\Http\Controllers\pages\historicoClinico\HistoricoClinicoSeguimientoController@listadoHistoricos')->name('historia-clinica-listado');
+    Route::get('/consultar', 'App\Http\Controllers\pages\historicoClinico\HistoricoClinicoSeguimientoController@consultarHistoricoClinico')->name('historico-clinico-consultar');
 
     # ****************************************************************************************
     # ****************************************************************************************
 
     Route::prefix('api')->group(function () {
-      Route::post('/registrar-historico', 'App\Http\Controllers\pages\HistoricoClinicoController@registrarHistoricoClinico')->name('registrar-historico');
-      Route::post('/obtener-lista-historicos-clinicos', 'App\Http\Controllers\pages\HistoricoClinicoSeguimientoController@obtenerListadoHistoricosClinicos')->name('obtener-lista-historicos-clinicos');
+      Route::post('/registrar-historico', 'App\Http\Controllers\pages\historicoClinico\HistoricoClinicoController@registrarHistoricoClinico')->name('registrar-historico');
+      Route::post('/obtener-lista-historicos-clinicos', 'App\Http\Controllers\pages\historicoClinico\HistoricoClinicoSeguimientoController@obtenerListadoHistoricosClinicos')->name('obtener-lista-historicos-clinicos');
     });
   });
 
@@ -96,6 +96,15 @@ Route::middleware(['auth'])->group(function () {
       Route::post('/pacientes/exportar', 'App\Http\Controllers\pages\reportes\ReportesDescargaController@exportarPacientes');
       Route::post('/consultas/exportar', 'App\Http\Controllers\pages\reportes\ReportesDescargaController@exportarConsultas');
     });
+  });
+
+  Route::prefix('medicamentos')->group(function () {
+    Route::get('/existencias', 'App\Http\Controllers\pages\medicamentos\MedicamentosController@existencias')->name('medicamentos-existencias');
+
+    # ****************************************************************************************
+    # ****************************************************************************************
+
+    Route::prefix('api')->group(function () {});
   });
 });
 

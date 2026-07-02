@@ -7,6 +7,24 @@ $configData = Helper::appClasses();
 @section('title', 'Surtir Receta')
 
 @section('page-style')
+<style>
+    .badge-pulse {
+        animation: badgePulse 1.4s infinite;
+    }
+
+    @keyframes badgePulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.08);
+        }
+    }
+
+</style>
 @endsection
 
 @section('page-script')
@@ -67,7 +85,7 @@ $configData = Helper::appClasses();
                 <div class="card shadow-none bg-label-primary">
                     <div class="card-body mt-2" style="align-self: center;">
                         <h6 class="text-primary"><i class="mdi mdi-shield-check-outline fs-4 me-2"></i>Listo para escanear</h6>
-                        <h6><small>Una vez escaneada la receta, se mostrarán los detalles y podrá ser surtida.</small></h6>
+                        <h6><small>Una vez escaneada la receta, se mostrarán los detalles y podrá ser surtida. Solo pueden ser surtidas las recetas vigentes.</small></h6>
                     </div>
                 </div>
             </div>
@@ -84,7 +102,8 @@ $configData = Helper::appClasses();
                         <h6 class="text-primary">Detalles de la receta</h6>
                     </div>
                     <div class="col-md-3 text-end">
-                        <span class="badge rounded-pill bg-label-secondary fs-6" id="detalle_receta-estatus"></span>
+                        <span class="badge rounded-pill bg-label-secondary fs-5 fw-bold shadow-sm badge-pulse" id="detalle_receta-estatus">
+                        </span>
                     </div>
                 </div>
 

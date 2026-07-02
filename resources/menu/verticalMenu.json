@@ -233,16 +233,16 @@
     {
       "name": "Medicamentos",
       "icon": "menu-icon tf-icons mdi mdi-pill-multiple",
-      "slug": "farmacia-medicamentos",
+      "slug": "medicamentos",
       "perfiles": [
         7
       ],
       "submenu": [
         {
-          "url": "/farmacia/medicamentos/existencias",
+          "url": "/medicamentos/existencias",
           "name": "Existencias",
           "icon": "menu-icon me-1 tf-icons mdi mdi-medication",
-          "slug": "farmacia-medicamentos-existencias",
+          "slug": "medicamentos-existencias",
           "perfiles": [
             7
           ]

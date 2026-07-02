@@ -1,10 +1,15 @@
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - VARIABLES
+// ###################################################################################################
+// ###################################################################################################
 moment.locale('es');
 
-// Función para capitalizar la primera letra de una cadena
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-}
-
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - FUNCIONES INICIALIZADAS
+// ###################################################################################################
+// ###################################################################################################
 $(document).ready(function () {
   // Ocultamos la pantalla de carga cuando la pantalla termino de cargar todo el contenido
   pantallaCarga('off');
@@ -12,9 +17,15 @@ $(document).ready(function () {
   generarTabla();
 });
 
-$('#boton-recargar-tabla-pacientes').on('click', function () {
-  generarTabla();
-});
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - FUNCIONES
+// ###################################################################################################
+// ###################################################################################################
+// Función para capitalizar la primera letra de una cadena
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
 
 function generarTabla() {
   var paciente_id = $('#paciente_id_hidden').val();
@@ -28,6 +39,8 @@ function generarTabla() {
     buttons: [],
     processing: true,
     serverSide: true,
+    responsive: true,
+    autoWidth: false,
     ajax: {
       url: '/pacientes/api/obtener-lista-consultas-paciente',
       type: 'POST',
@@ -53,7 +66,6 @@ function generarTabla() {
       }
     },
     columns: [
-      { data: 'id' },
       { data: 'motivo_consulta' },
       { data: 'codigo' },
       { data: 'temperatura' },
@@ -67,162 +79,83 @@ function generarTabla() {
       { data: 'acciones' }
     ],
     columnDefs: [
-      {
-        className: 'control',
-        orderable: false,
-        responsivePriority: 2,
-        targets: 0,
-        visible: false
-      },
       /* Acciones a realizar para cada fila */
       {
-        targets: 1,
+        targets: 0,
         title: 'Motivo de consulta',
-        className: 'text-center',
         width: '300px',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.motivo_consulta != null ? full.motivo_consulta : ''}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small>${full.motivo_consulta != null ? full.motivo_consulta : ''}</small>`;
+        }
+      },
+      {
+        targets: 1,
+        className: 'text-center',
+        title: 'CIE-10',
+        render: function (data, type, full, meta) {
+          return `<small><b>${full.codigo != null ? full.codigo : ''}</b></small>`;
         }
       },
       {
         targets: 2,
         className: 'text-center',
-        title: 'CIE-10',
+        title: '°C',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.codigo != null ? full.codigo : ''}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.temperatura}</b></small>`;
         }
       },
       {
         targets: 3,
         className: 'text-center',
-        title: '°C',
-        orderable: false,
+        title: 'kg',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.temperatura}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.peso}</b></small>`;
         }
       },
       {
         targets: 4,
         className: 'text-center',
-        title: 'kg',
-        orderable: false,
+        title: 'Cm',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.peso}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.altura}</b></small>`;
         }
       },
       {
         targets: 5,
         className: 'text-center',
-        title: 'Cm',
-        orderable: false,
+        title: 'IMC',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.altura}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.imc}</b></small>`;
         }
       },
       {
         targets: 6,
         className: 'text-center',
-        title: 'IMC',
-        orderable: false,
+        title: 'Lpm',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.imc}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.frecuencia_cardiaca}</b></small>`;
         }
       },
       {
         targets: 7,
         className: 'text-center',
-        title: 'Lpm',
-        orderable: false,
+        title: '%O',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.frecuencia_cardiaca}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.saturacion_oxigeno}</b></small>`;
         }
       },
       {
         targets: 8,
         className: 'text-center',
-        title: '%O',
-        orderable: false,
+        title: 'mmHg',
         render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.saturacion_oxigeno}</h6>
-                          </div>
-                      </div>
-                  </div>`;
+          return `<small><b>${full.presion_arterial}</b></small>`;
         }
       },
       {
         targets: 9,
         className: 'text-center',
-        title: 'mmHg',
-        orderable: false,
-        render: function (data, type, full, meta) {
-          return `
-                  <div class="row">
-                      <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                          <div class="card-info ">
-                              <h6 class="mb-0">${full.presion_arterial}</h6>
-                          </div>
-                      </div>
-                  </div>`;
-        }
-      },
-      {
-        targets: 10,
-        className: 'text-center',
         title: 'Fecha consulta',
-        orderable: false,
         render: function (data, type, full, meta) {
           // Formatear la fecha usando moment.js en español
           let fecha_creacion = moment(full.fecha_registro).format('DD MMMM YYYY, HH:mm');
@@ -230,27 +163,41 @@ function generarTabla() {
           // Capitalizar la primera letra del mes
           fecha_creacion = capitalizeFirstLetter(fecha_creacion);
 
-          return `
-                  <div class="row">
-                    <div class="d-flex gap-2 align-items-center col-12" style="justify-content: center;">
-                      <div class="card-info">
-                        <h6 class="mb-0">${fecha_creacion}</h6>
-                      </div>
-                    </div>
-                  </div>`;
+          return `<small>${fecha_creacion}</small>`;
         }
       }
     ],
     order: [[1, 'asc']],
     displayLength: 15,
-    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>><"row"<"col-sm-12"B>><""t><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+    dom: '<"row"<"col-md-6"l><"col-md-6 d-flex justify-content-end align-items-center"<"toolbar-recetas me-2">>><"row"<"col-12"tr>><"row"<"col-md-6"i><"col-md-6"p>>',
     lengthMenu: [15, 30, 50, 75, 100, 150, 200],
     language: {
+      lengthMenu: 'Mostrar _MENU_ registros',
+      zeroRecords: 'No se encontraron registros',
+      info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+      infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+      infoFiltered: '(filtrado de _MAX_ registros totales)',
+      search: 'Buscar:',
+      loadingRecords: 'Cargando...',
+      processing: 'Procesando...',
+      emptyTable: 'No hay datos disponibles en la tabla',
       paginate: {
-        // remove previous & next text from pagination
-        previous: 'Anterior',
-        next: 'Siguiente'
+        first: 'Primero',
+        last: 'Último',
+        next: 'Siguiente',
+        previous: 'Anterior'
       }
+    },
+    initComplete: function () {
+      $('.toolbar-recetas').html(`
+        <button onclick="generarTabla()" type="button" title="Recargar tabla" class="btn btn-label-secondary"><span class="mdi mdi-autorenew me-1"></span></button>
+    `);
     }
   });
 }
+
+// ###################################################################################################
+// ###################################################################################################
+// ############################################## - BOTONES
+// ###################################################################################################
+// ###################################################################################################

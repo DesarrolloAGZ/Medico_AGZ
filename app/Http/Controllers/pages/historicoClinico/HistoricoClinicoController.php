@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\pages;
+namespace App\Http\Controllers\pages\historicoClinico;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -25,18 +25,18 @@ class HistoricoClinicoController extends Controller
   # Retorna la vista de crear una receta nueva
   public function crearHistorico(Request $request)
   {
-    if(Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4){
+    if (Auth::user()->usuario_perfil_id == 1 || Auth::user()->usuario_perfil_id == 2 || Auth::user()->usuario_perfil_id == 3 || Auth::user()->usuario_perfil_id == 4) {
 
       $view_data = [];
       # Mandamos a la  vista
       return view('content.pages.historicoClinico.crear-historico', ['datos_vista' => $view_data]);
-      
     } else {
       return view('content.pages.pages-misc-error');
     }
   }
 
-  public function registrarHistoricoClinico(Request $request){
+  public function registrarHistoricoClinico(Request $request)
+  {
     # Parametros iniciales para la respuesta
     $result = array("error" => false, "msg" => null, 'url' => null, 'historico_clinico_id' => null);
     # Obtenemos el POST
@@ -47,24 +47,22 @@ class HistoricoClinicoController extends Controller
     try {
       $array_ids = array();
       # Iniciamos con el guardamos los datos obtenidos del formulario.
-      foreach ($post as $key => $value)
-      {
+      foreach ($post as $key => $value) {
         # Guardamos los datos del historico clinico
-        switch ($key)
-        {
+        switch ($key) {
           case "historico_clinico":
             # Asignamos la fecha de registro
             $value['created_at'] = 'now()';
 
             $historico_clinico = HistoricoClinicoModel::insertGetId($value);
 
-            if($historico_clinico !== null){
+            if ($historico_clinico !== null) {
               $array_ids["historico_clinico_id"] = $historico_clinico;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos generales del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_gineco_obstetricos":
             # Asignamos la fecha de registro
@@ -72,13 +70,13 @@ class HistoricoClinicoController extends Controller
             $value['historico_clinico_id'] = $array_ids["historico_clinico_id"];
 
             $historico_clinico_gineco_obstetricos = HistoricoClinicoGinecoObstetricosModel::insertGetId($value);
-            if($historico_clinico_gineco_obstetricos !== null){
+            if ($historico_clinico_gineco_obstetricos !== null) {
               $array_ids["historico_clinico_gineco_obstetricos_id"] = $historico_clinico_gineco_obstetricos;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos gineco obstetricos del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_contacto_emergencia":
             # Iterar sobre cada contacto de emergencia
@@ -89,14 +87,14 @@ class HistoricoClinicoController extends Controller
 
               $historico_clinico_contacto_emergencia = HistoricoClinicoContactoEmergenciaModel::insertGetId($contacto);
 
-              if($historico_clinico_contacto_emergencia !== null){
+              if ($historico_clinico_contacto_emergencia !== null) {
                 $array_ids["historico_clinico_contacto_emergencia_id"] = $historico_clinico_contacto_emergencia;
               } else {
                 $result["error"] = true;
                 $result["msg"] = "No fue posible registrar los datos de contacto de emergencia del histórico clínico, intenta de nuevo.";
               }
             }
-          break;
+            break;
 
           case "historico_clinico_heredofamiliares":
             # Asignamos la fecha de registro
@@ -104,13 +102,13 @@ class HistoricoClinicoController extends Controller
             $value['historico_clinico_id'] = $array_ids["historico_clinico_id"];
 
             $historico_clinico_heredofamiliares = HistoricoClinicoHeredofamiliaresModel::insertGetId($value);
-            if($historico_clinico_heredofamiliares !== null){
+            if ($historico_clinico_heredofamiliares !== null) {
               $array_ids["historico_clinico_heredofamiliares_id"] = $historico_clinico_heredofamiliares;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos heredofamiliares del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_personales_no_patologicos":
             # Asignamos la fecha de registro
@@ -118,13 +116,13 @@ class HistoricoClinicoController extends Controller
             $value['historico_clinico_id'] = $array_ids["historico_clinico_id"];
 
             $historico_clinico_personales_no_patologicos = HistoricoClinicoPersonalesNoPatologicosModel::insertGetId($value);
-            if($historico_clinico_personales_no_patologicos !== null){
+            if ($historico_clinico_personales_no_patologicos !== null) {
               $array_ids["historico_clinico_personales_no_patologicos_id"] = $historico_clinico_personales_no_patologicos;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos personales no patológicos del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_personales_patologicos":
             # Asignamos la fecha de registro
@@ -132,13 +130,13 @@ class HistoricoClinicoController extends Controller
             $value['historico_clinico_id'] = $array_ids["historico_clinico_id"];
 
             $historico_clinico_personales_patologicos = HistoricoClinicoPersonalesPatologicosModel::insertGetId($value);
-            if($historico_clinico_personales_patologicos !== null){
+            if ($historico_clinico_personales_patologicos !== null) {
               $array_ids["historico_clinico_personales_patologicos_id"] = $historico_clinico_personales_patologicos;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos personales patológicos del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_laborales":
             # Iterar sobre cada antecedente laboral
@@ -155,14 +153,14 @@ class HistoricoClinicoController extends Controller
               $laboral['ergonomicos'] = (isset($laboral['ergonomicos']) && $laboral['ergonomicos'] == '1') ? 1 : 0;
 
               $historico_clinico_laborales = HistoricoClinicoLaboralesModel::insertGetId($laboral);
-              if($historico_clinico_laborales !== null){
+              if ($historico_clinico_laborales !== null) {
                 $array_ids["historico_clinico_laborales_id"] = $historico_clinico_laborales;
               } else {
                 $result["error"] = true;
                 $result["msg"] = "No fue posible registrar los datos laborales del histórico clínico, intenta de nuevo.";
               }
             }
-          break;
+            break;
 
           case "historico_clinico_empleo":
             # Asignamos la fecha de registro
@@ -170,13 +168,13 @@ class HistoricoClinicoController extends Controller
             $value['historico_clinico_id'] = $array_ids["historico_clinico_id"];
 
             $historico_clinico_empleo = HistoricoClinicoEmpleoModel::insertGetId($value);
-            if($historico_clinico_empleo !== null){
+            if ($historico_clinico_empleo !== null) {
               $array_ids["historico_clinico_empleo_id"] = $historico_clinico_empleo;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos del empleo del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_aparatos_sistemas":
             # Asignamos la fecha de registro
@@ -195,13 +193,13 @@ class HistoricoClinicoController extends Controller
             $value['piel_faneras'] = (isset($value['piel_faneras']) && $value['piel_faneras'] == 'on') ? 1 : 0;
 
             $historico_clinico_aparatos_sistemas = HistoricoClinicoAparatosSistemasModel::insertGetId($value);
-            if($historico_clinico_aparatos_sistemas !== null){
+            if ($historico_clinico_aparatos_sistemas !== null) {
               $array_ids["historico_clinico_aparatos_sistemas_id"] = $historico_clinico_aparatos_sistemas;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos del interrogatorio por aparatos y sistemas del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_exploracion_fisica":
             # Asignamos la fecha de registro
@@ -211,13 +209,13 @@ class HistoricoClinicoController extends Controller
             $value['tatuajes'] = (isset($value['tatuajes']) && $value['tatuajes'] == 'on') ? 1 : 0;
 
             $historico_clinico_exploracion_fisica = HistoricoClinicoExploracionFisicaModel::insertGetId($value);
-            if($historico_clinico_exploracion_fisica !== null){
+            if ($historico_clinico_exploracion_fisica !== null) {
               $array_ids["historico_clinico_exploracion_fisica_id"] = $historico_clinico_exploracion_fisica;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos de exploración física del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
 
           case "historico_clinico_drogas":
             # Asignamos la fecha de registro
@@ -227,19 +225,18 @@ class HistoricoClinicoController extends Controller
             $value['antidoping'] = (isset($value['antidoping']) && $value['antidoping'] == 'on') ? 1 : 0;
 
             $historico_clinico_drogas = HistoricoClinicoDrogasModel::insertGetId($value);
-            if($historico_clinico_drogas !== null){
+            if ($historico_clinico_drogas !== null) {
               $array_ids["historico_clinico_drogas_id"] = $historico_clinico_drogas;
             } else {
               $result["error"] = true;
               $result["msg"] = "No fue posible registrar los datos de drogas del histórico clínico, intenta de nuevo.";
             }
-          break;
+            break;
         }
       }
 
       # Si no existe error al guardar el registro del historico clinico entra
-      if (!$result["error"])
-      {
+      if (!$result["error"]) {
         # Si todo esta correcto hacemos el commit de la transaccion
         DB::connection('pgsql')->commit();
         $result['error'] = false;
@@ -252,7 +249,6 @@ class HistoricoClinicoController extends Controller
         $result['error'] = true;
         $result["msg"] = '¡Lo sentimos! No fue posible registrar información del paciente.';
       }
-
     } catch (\Exception $e) {
       # Si existe un error no guardamos en la base de datos
       DB::connection('pgsql')->rollback();

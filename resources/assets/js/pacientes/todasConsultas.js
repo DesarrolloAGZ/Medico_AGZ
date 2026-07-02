@@ -57,7 +57,6 @@ function generarTabla() {
       url: '/pacientes/api/obtener-lista-todas-consultas',
       type: 'POST',
       data: function (d) {
-        // Combinar los parámetros de DataTables con nuestros filtros
         return $.extend({}, d, {
           fecha_inicio: filtros.fecha_inicio,
           fecha_fin: filtros.fecha_fin,
