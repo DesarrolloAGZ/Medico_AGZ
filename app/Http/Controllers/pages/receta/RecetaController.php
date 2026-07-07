@@ -303,6 +303,7 @@ class RecetaController extends Controller
         }
       }
 
+      # Se quito el consumo de Hispatec para que se haga al surtir la receta desde la farmacia
       $BanderaHacerConsumo = 'no';
 
       if ($BanderaHacerConsumo == 'si') {
@@ -355,6 +356,7 @@ class RecetaController extends Controller
         'created_at' => now()
       ]);
 
+      # Se quito el consumo de Hispatec para que se haga al surtir la receta desde la farmacia
       $BanderaHacerConsumo = 'no';
 
       if ($BanderaHacerConsumo == 'si') {
@@ -663,44 +665,45 @@ class RecetaController extends Controller
 
     switch ($datosReceta['receta_estatus_id']) {
       case 1:
-        // DB::connection('pgsql')->beginTransaction();
+        DB::connection('pgsql')->beginTransaction();
 
-        // try {
-        //   $datosHistoricoVale = RecetaValeHistoricoModel::where('receta_id', $get['recetaid'])->first()->toArray();
-        //   $valeId = $datosHistoricoVale['vale_id'];
-        //   $centroCostos = $datosHistoricoVale['centro_costos'];
+        try {
+          $datosHistoricoVale = RecetaValeHistoricoModel::where('receta_id', $get['recetaid'])->first()->toArray();
+          $valeId = $datosHistoricoVale['vale_id'];
+          $centroCostos = $datosHistoricoVale['centro_costos'];
 
-        //   $datosPaciente = $this->obtenerDatosPaciente($datosReceta['paciente_id']);
+          $datosPaciente = $this->obtenerDatosPaciente($datosReceta['paciente_id']);
 
-        //   $jsonConsumo = $this->crearJsonConsumo($valeId, $datosPaciente, $centroCostos);
+          $jsonConsumo = $this->crearJsonConsumo($valeId, $datosPaciente, $centroCostos);
 
-        //   $token = Helpers::obtenerToken();
-        //   if (!$token) {
-        //     return response()->json(['error' => true, 'msg' => 'No se pudo obtener token'], 500);
-        //   }
+          $token = Helpers::obtenerToken();
+          if (!$token) {
+            return response()->json(['error' => true, 'msg' => 'No se pudo obtener token'], 500);
+          }
 
-        //   $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
+          $respuestaConsumo = $this->postAPI(env('GENERA_CONSUMO_HISPATEC'), $jsonConsumo, $token);
 
-        //   if ($respuestaConsumo['error']) {
-        //     return $respuestaConsumo;
-        //   }
+          if ($respuestaConsumo['error']) {
+            return $respuestaConsumo;
+          }
 
-        //   # Guardar histórico consumo
-        //   $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
-        //     'json_data' => json_encode($jsonConsumo),
-        //     'respuesta_api' => json_encode($respuestaConsumo['data']),
-        //     'created_at' => now(),
-        //     'centro_costos' => $centroCostos,
-        //     'vale_id' => $valeId
-        //   ]);
+          # Guardar histórico consumo
+          $this->historicoConsumoId = RecetaConsumoHistoricoModel::insertGetId([
+            'json_data' => json_encode($jsonConsumo),
+            'respuesta_api' => json_encode($respuestaConsumo['data']),
+            'created_at' => now(),
+            'receta_id' => $get['recetaid'],
+            'centro_costos' => $centroCostos,
+            'vale_id' => $valeId
+          ]);
 
-        $result['error'] = false;
-        $result["msg"] = 'La receta fue surtida correctamente y el consumo de los medicamentos se registró con éxito.';
-        //   DB::connection('pgsql')->commit();
-        // } catch (\Exception $e) {
-        //   DB::connection('pgsql')->rollback();
-        //   return ['error' => true, 'msg' => "No fue posible surtir la receta en el sistema. Intentalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.", 'return' => $e->getMessage()];
-        // }
+          $result['error'] = false;
+          $result["msg"] = 'La receta fue surtida correctamente y el consumo de los medicamentos se registró con éxito.';
+          DB::connection('pgsql')->commit();
+        } catch (\Exception $e) {
+          DB::connection('pgsql')->rollback();
+          return ['error' => true, 'msg' => "No fue posible surtir la receta en el sistema. Intentalo de nuevo y si el problema persiste contacta con el equipo de desarrollo.", 'return' => $e->getMessage()];
+        }
         break;
 
       case 2:

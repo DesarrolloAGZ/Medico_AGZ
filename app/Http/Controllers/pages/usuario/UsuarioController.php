@@ -42,10 +42,10 @@ class UsuarioController extends Controller
       $firma = str_replace(' ', '+', $firma);
 
       $nombreArchivo = 'firma_' . $usuario_id . '_' . time() . '.png';
-      $ruta = 'firmas/' . $nombreArchivo;
+      $ruta = 'firmas_medicos/' . $nombreArchivo;
 
       // Guardar archivo
-      $directorio = public_path('firmas');
+      $directorio = public_path('firmas_medicos');
 
       if (!file_exists($directorio)) {
         mkdir($directorio, 0755, true);
@@ -57,7 +57,7 @@ class UsuarioController extends Controller
 
       file_put_contents($path, base64_decode($firma));
 
-      $ruta = 'firmas/' . $nombreArchivo;
+      $ruta = 'firmas_medicos/' . $nombreArchivo;
 
       // Guardar en BD
       $firmaUsuarioId = UsuarioFirmaModel::insertGetId([
