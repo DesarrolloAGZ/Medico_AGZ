@@ -141,8 +141,6 @@ function buscarReceta(codigo) {
       // Estatus
       var $estatus = $('#detalle_receta-estatus');
 
-      console.log(datos.estatus_id);
-
       if (datos.estatus_id != 1) {
         $('#boton-surtir_receta_completa').addClass('d-none');
       } else {
@@ -353,6 +351,14 @@ $('#boton-limpiar_datos_escaneo_receta').on('click', function () {
 });
 
 $('#boton-surtir_receta_completa').on('click', function () {
-  pantallaCarga('on');
-  surtirReceta();
+  alertify.confirm(
+    '¿Desea surtir la receta completa? Asegúrese de que el paciente haya recibido todos los medicamentos antes de continuar.',
+    function (e, ui) {
+      pantallaCarga('on');
+      surtirReceta();
+    },
+    function (e, ui) {
+      // alertify.error('Operación cancelada, no guardado');
+    }
+  );
 });
