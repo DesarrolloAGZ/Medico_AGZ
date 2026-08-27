@@ -92,7 +92,7 @@ class InicioController extends Controller
 
     $correoCompleto = $request->input('correo') . env('DOMINIO');
 
-    $ldapAuth = $this->validaLDAP($correoCompleto, $request->input('password'));
+    $ldapAuth = $this->validarAD($correoCompleto, $request->input('password'));
 
     if (!$ldapAuth) {
       return back()->withErrors([
@@ -114,33 +114,52 @@ class InicioController extends Controller
     return redirect()->intended('/');
   }
 
-  private function validaLDAP($username, $password)
+  function validarAD($usuario, $password)
   {
-    $url = env('LDAP_URL');
-    $data = [
-      'username' => $username,
-      'password' => $password
-    ];
+    # Constantes
+    $dominio = env('AD_DOMAIN', 'agrizar.com');
+    $timeout = env('AD_TIMEOUT', 5);
+    $version = env('AD_LDAP_VERSION', 3);
+    $port = env('AD_PORT', 389);
+    $dcs = explode(',', env('AD_CONTROLLERS', ''));
 
-    // Configura cURL
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-    // Ejecuta la solicitud
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // Cierra la conexión cURL
-    curl_close($ch);
-
-    if ($httpCode === 200 && $response === "true") {
-      return true;
+    if (empty($dcs) || empty($dcs[0])) {
+      return false;
     }
 
+    # Extraer usuario del correo
+    if (strpos($usuario, '@') !== false) {
+      $parts = explode('@', $usuario);
+      $user = $parts[0];
+      $domain = $parts[1];
+    } else {
+      $user = $usuario;
+      $domain = $dominio;
+    }
+
+    # Intentar con cada DC para la conexion
+    foreach ($dcs as $dc) {
+      $dc = trim($dc);
+      if (empty($dc)) continue;
+
+      # Conectar con ldap
+      $ldap = @ldap_connect($dc, $port);
+      if (!$ldap) continue;
+
+      # Configuramos opciones
+      ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, $version);
+      ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+      ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, $timeout);
+
+      # Autenticar con el usuario con dominio
+      $userDn = $user . '@' . $domain;
+
+      if (@ldap_bind($ldap, $userDn, $password)) {
+        ldap_close($ldap);
+        return true;
+      }
+      ldap_close($ldap);
+    }
     return false;
   }
 
