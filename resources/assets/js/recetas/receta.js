@@ -68,6 +68,7 @@ $(document).ready(function () {
       alertify.confirm(
         '¿Desea guardar e imprimir la receta del medicamento seleccionado?',
         function (e, ui) {
+          pantallaCarga('on');
           document.querySelector('.alertify')?.style.setProperty('display', 'none', 'important');
           guardarReceta();
         },
